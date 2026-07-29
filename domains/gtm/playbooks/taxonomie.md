@@ -164,13 +164,21 @@ De algemene regel staat in de root-[`CLAUDE.md`](../../../CLAUDE.md), sectie 5:
 ontbrekende labels heten ongelabeld, worden apart geteld en worden nooit over de
 bekende waarden verdeeld.
 
-Binnen GTM is er één val die het benoemen waard is.
+Binnen GTM zijn er twee dingen die het benoemen waard zijn.
 
 **`direct` is geen vuilnisbak.** Het betekent: er was aantoonbaar geen bron. Een
 bron die onderweg verloren is gegaan, bijvoorbeeld door een redirect die de
-parameters liet vallen, is **ongelabeld** en niet `direct`. Die twee door elkaar
-halen laat een meetprobleem eruitzien als een groeiend eigen merk, en dat is een
-prettige conclusie om per ongeluk te trekken.
+parameters liet vallen of door een bezoeker die opslag blokkeert, is
+**ongelabeld** en niet `direct`. Die twee door elkaar halen laat een
+meetprobleem eruitzien als een groeiend eigen merk, en dat is een prettige
+conclusie om per ongeluk te trekken.
+
+**In de datalaag is ongelabeld `NULL`.** Geen extra waarde in de lijst, want
+zodra "onbekend" een waarde wordt, verschijnt hij in rapportages naast de echte
+waarden alsof hij er een van is. `NULL` valt vanzelf buiten elke groepering op
+waarde en dwingt af dat het apart geteld wordt. `segment` en `source` in
+`gtm_events` zijn daarom nullable, en `meta.labelled` zegt in één boolean of een
+rij gelabeld binnenkwam.
 
 ---
 

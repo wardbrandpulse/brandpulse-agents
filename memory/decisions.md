@@ -77,6 +77,17 @@ is dat een geaggregeerde export en geen join.
 schrijven, dan de projectnaam. De keuze voor een apart project zelf niet: die
 wordt met elke extra klant sterker, niet zwakker.
 
+**Nadere notitie bij het `domain`-constraint (2026-07-29).** De check-constraint
+op `agent_recommendations.domain` staat op alleen `gtm`. Dat is **typefout-
+bescherming, geen principiële domeinbeperking.** De kolom bestaat juist omdat er
+een tweede domein verwacht wordt; zonder die verwachting zou de kolom er niet
+zijn. Het constraint zorgt er alleen voor dat een waarde als `gmt` of `content `
+wordt geweigerd in plaats van stil geaccepteerd, want een rij met een verkeerd
+gespeld domein is onvindbaar en niet fout. Een domein toevoegen is dus een
+migratie van één regel en geen discussie. Deze notitie staat er omdat het
+constraint over een halfjaar anders leest als een architectuurstandpunt dat
+niemand heeft ingenomen.
+
 ## 2026-07-29, de feedbackloop heet `agent_recommendations` en krijgt een `domain`-kolom
 
 **Context.** De tabel met voorspelling en uitkomst was gepland als

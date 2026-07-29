@@ -55,7 +55,15 @@ over `occurred_at`; `ingested_at` is er om te zien of de aanlevering hapert.
 **`domain` naast `client` in `agent_recommendations`.** De feedbackloop is qua
 structuur domeinoverstijgend. De check-constraint staat voorlopig op alleen
 `gtm`, zodat een tweede domein een bewuste migratie vergt in plaats van een
-stille rij met een typefout.
+stille rij met een typefout. Dat is typefoutbescherming en geen principiële
+domeinbeperking; zie `memory/decisions.md`.
+
+**`segment` en `source` mogen NULL zijn.** `NULL` betekent **ongelabeld**: we
+weten het niet. Dat is iets anders dan `source = 'direct'`, wat betekent dat er
+aantoonbaar geen bron was. Ongelabelde rijen worden apart geteld en nooit
+verdeeld over de bekende waarden. `meta.labelled` geeft in één boolean aan of
+een rij gelabeld binnenkwam, zodat je daar op kunt filteren zonder drie kolommen
+op `is null` te toetsen.
 
 ## Toegang
 
@@ -106,28 +114,60 @@ De sleutel staat niet in deze repo en komt er ook niet in. Zie
 ## Controleren of er data binnenkomt
 
 ```sql
--- laatste events, nieuwste eerst
-select occurred_at, ingested_at, client, segment, source, asset, event_type
+-- 1. Komt er iets binnen? Laatste events, nieuwste eerst.
+select occurred_at, event_type, segment, source, asset,
+       meta->>'path' as pad, (meta->>'labelled')::boolean as gelabeld
 from gtm_events
 order by occurred_at desc
 limit 20;
 
--- volume per dag en per bron, laatste twee weken
-select date_trunc('day', occurred_at) as dag, source, count(*)
+-- 2. Komt seg in de praktijk aan? Aandeel gelabeld per dag.
+--    Blijft dit op 0 staan terwijl er wel campagneverkeer loopt, dan gaat de
+--    parameter onderweg verloren en is dat de eerste bevinding, niet het kanaal.
+select date_trunc('day', occurred_at)::date as dag,
+       count(*) as bezoeken,
+       count(*) filter (where segment is not null) as met_segment,
+       round(100.0 * count(*) filter (where segment is not null) / count(*)) as pct_gelabeld
 from gtm_events
-where occurred_at > now() - interval '14 days'
-group by 1, 2
-order by 1 desc, 3 desc;
+where event_type = 'site_visit' and occurred_at > now() - interval '14 days'
+group by 1 order by 1 desc;
 
--- vertraging tussen bron en aanlevering
-select event_type,
-       count(*) as n,
-       max(ingested_at - occurred_at) as grootste_vertraging
+-- 3. Verdeling over segment en bron. NULL is een eigen regel en wordt niet
+--    verdeeld over de bekende waarden.
+select coalesce(segment, '(ongelabeld)') as segment,
+       coalesce(source, '(ongelabeld)') as source,
+       count(*) as n
 from gtm_events
-group by 1
-order by 2 desc;
+where occurred_at > now() - interval '7 days'
+group by 1, 2 order by 3 desc;
+
+-- 4. Harde conversies, met de first touch die ze meekregen.
+select occurred_at, segment, source, asset,
+       meta->'detail'->>'surface' as vlak,
+       meta->>'first_seen_at' as eerste_aanraking
+from gtm_events
+where event_type = 'meeting_booked'
+order by occurred_at desc;
+
+-- 5. Waar wijkt de laatste bron af van de first touch? Toont of de
+--    first-touch-regel daadwerkelijk iets doet.
+select segment, source as first_touch_source,
+       meta->'visit'->>'source' as bron_van_dit_bezoek, count(*)
+from gtm_events
+where meta->'visit'->>'source' is not null
+  and meta->'visit'->>'source' is distinct from source
+group by 1, 2, 3 order by 4 desc;
+
+-- 6. Vertraging tussen bron en aanlevering.
+select event_type, count(*) as n, max(ingested_at - occurred_at) as grootste_vertraging
+from gtm_events group by 1 order by 2 desc;
 ```
 
-Let bij de tweede query op de drempel uit
+Let bij query 3 op de drempel uit
 [`significantie-drempels.md`](../domains/gtm/playbooks/significantie-drempels.md):
 onder 30 sessies per bron per week is er niets over een kanaal te zeggen.
+
+Snelle controle of een omgeving überhaupt is geconfigureerd, zonder iets prijs
+te geven: `GET /api/gtm` op de site geeft `{"ok":true,"configured":true|false}`.
+Staat daar `false`, dan ontbreken de omgevingsvariabelen en worden events
+aangenomen en weggegooid.

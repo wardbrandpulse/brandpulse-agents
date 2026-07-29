@@ -52,12 +52,58 @@ van de marketingsite voordat de tracking uit stap 3 live gaat.
   `wardbrandpulse/QRius`. Dit is de site die de GTM-events moet gaan leveren.
 - **Portaal en consumentenpagina:** `apps/portal` en `apps/landing` in dezelfde
   repository. Deze staan niet in scope voor GTM-tracking.
-- **Hoofddomein:** `TODO: door Ward in te vullen`
+- **Hoofddomein:** `https://qrius.id`
 - **Bestaande webanalytics:** Vercel Web Analytics. Blijft staan zoals het
-  staat, wordt niet gedupliceerd en niet vervangen. `TODO`, bevestigen op welk
-  Vercel-project dit aanstaat.
-- **Waar de UTM's op landen:** `TODO`, de eerste bestemmingspagina's per asset
-  vastleggen zodra de site live is.
+  staat, wordt niet gedupliceerd en niet vervangen. Er zit geen
+  analytics-package in de app, dus het loopt via de Vercel-projectinstelling.
+  `TODO`, bevestigen op welk Vercel-project dit aanstaat.
+- **Waar de UTM's op landen:** elke route van de marketingsite. Er is geen
+  aparte campagnelandingspagina; de parameters worden op iedere pagina gelezen.
+
+### Tracking
+
+Gebouwd in fase 1B stap 3. De code staat in `apps/website/src/lib/gtm/` en
+`apps/website/src/app/api/gtm/`.
+
+| Wat | Waarde |
+|---|---|
+| Bewaartermijn first touch | **90 dagen**, gerekend vanaf de eerste aanraking |
+| Opslag | `localStorage`, sleutel `qrius-gtm-first-touch` |
+| Sessiemarkering | `sessionStorage`, sleutel `qrius-gtm-session` |
+| Ingest | `POST /api/gtm` op de marketingsite |
+| Diagnose | `GET /api/gtm` geeft `{"ok":true,"configured":…}` |
+
+**De bewaartermijn van 90 dagen** is gekozen op de lengte van de
+oriëntatieperiode hier: een outboundmail, weken later een magazine, daarna pas
+een boeking. Korter en de bron is weg voordat de deal in beeld komt; veel langer
+en een verouderd label krijgt krediet voor een bezoek waar het niets mee te
+maken had. Het venster is **vast, niet schuivend**: het verloopt 90 dagen na de
+eerste aanraking en wordt bij een later bezoek niet verlengd. Een schuivend
+venster zou van first touch stilletjes "eerste aanraking binnen 90 dagen van de
+laatste activiteit" maken, en dat is een zwakkere claim.
+
+Het getal staat ook in `RETENTION_DAYS` in `apps/website/src/lib/gtm/attribution.ts`.
+Wijzig je het daar, wijzig het dan hier ook; twee getallen die uit elkaar lopen
+zijn erger dan één verkeerd getal.
+
+**Wat er wordt vastgelegd:** alleen campagnelabels (segment, source, medium,
+asset, campagne) en twee tijdstempels. Geen bezoeker-identificatie, geen
+willekeurig ID, geen fingerprint. Twee bezoekers die via dezelfde link
+binnenkomen hebben een identiek record.
+
+**Welke events:**
+
+| Event | Wanneer | Status |
+|---|---|---|
+| `site_visit` | één keer per browsersessie | actief |
+| `pricing_view` | op `/get-qrius` | actief |
+| `meeting_booked` | Cal.com meldt een geslaagde boeking, op `/demo` en `/voor-partners` | actief |
+| `magazine_view` | zou op de magazinepagina komen | **niet aangesloten, die pagina bestaat niet** |
+
+`site_visit` telt sessies en geen paginaweergaven, omdat de drempel in
+[`significantie-drempels.md`](../../../domains/gtm/playbooks/significantie-drempels.md)
+in sessies per bron per week is uitgedrukt. Paginaweergaven worden al door
+Vercel geteld en worden hier niet gedupliceerd.
 
 ## Verzenden
 
@@ -83,10 +129,13 @@ Zonder een ingevuld verzenddomein wordt er geen outbound verstuurd.
 
 - **Harde conversie:** een geboekte afspraak via Cal.com. Dit is de **enige**
   harde conversie. Alle andere events zijn tussenstappen.
-- **Dragen de boekingen de taxonomie?** Nee, nog niet. Dit moet geregeld worden,
-  anders is een boeking niet toe te wijzen aan segment, bron en asset, en breekt
-  de keten op precies het punt waar hij het meest waard is. Zie
-  [`taxonomie.md`](../../../domains/gtm/playbooks/taxonomie.md), sectie 5.
+- **Dragen de boekingen de taxonomie?** In onze eigen rapportage wel. De site
+  luistert op `bookingSuccessful` van de Cal-embed en schrijft een
+  `meeting_booked`-event weg met de first-touch-attributie uit de browser, plus
+  `meta.detail.surface` (`demo` of `partners`). De keten breekt daar dus niet
+  meer. **In Cal.com zelf niet:** Cal weet nog steeds niets van segment, bron of
+  asset, dus een export uit Cal blijft onverdeeld. Dat is alleen een probleem
+  zodra iemand op Cal-cijfers gaat sturen.
 
 ## Taxonomiewaarden die voor dit project gelden
 
@@ -104,12 +153,30 @@ Een selectie uit de canonieke lijst in
 ## Openstaand
 
 1. De twee omgevingsvariabelen zetten in het Vercel-project van de
-   marketingsite.
-2. Tracking in `apps/website`: UTM's en `seg` vastleggen bij eerste bezoek, en
-   een route handler die naar `gtm_events` schrijft. Fase 1B stap 3.
+   marketingsite. Zonder deze worden events aangenomen en weggegooid.
+2. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
+   Artikel 5 zegt nu dat Qrius geen tracking gebruikt die surfgedrag volgt; dat
+   klopt nog steeds (geen identificatie, geen derden, niet cross-site), maar
+   campagne-attributie wordt er niet genoemd. Zie de aantekening hieronder.
 3. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
-4. Cal.com-eventtypes vastleggen en de taxonomie meegeven aan de boeking.
-5. Hoofddomein en bestemmingspagina's per asset vastleggen.
-6. Waar de pijplijn wordt bijgehouden.
+4. Cal.com-eventtypes vastleggen in dit bestand.
+5. Waar de pijplijn wordt bijgehouden.
+6. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
+   zetten. De component staat klaar, de pagina bestaat nog niet.
+
+### Aantekening bij het cookiebeleid
+
+`/cookies` artikel 1 rekent local storage uitdrukkelijk tot "cookies", artikel 2
+kent twee categorieën (functioneel en anoniem analytisch) en artikel 5 stelt dat
+Qrius geen tracking gebruikt die surfgedrag volgt of gegevens naar derden
+stuurt.
+
+De first-touch-opslag past binnen die belofte: alleen campagnelabels, geen
+identificatie, eigen domein, geen derden, geen cross-site volgen. Ze wordt
+alleen nergens genoemd, en 90 dagen bewaartermijn is niet gedeclareerd. Er is op
+de site geen consentbanner om op aan te haken, dus die is er ook niet ingebouwd.
+
+Of het beleid een zin krijgt, en of er een consentvraag voor moet komen, is een
+juridische afweging. `TODO: door Ward te beslissen.`
 
 `TODO: door Ward in te vullen`
