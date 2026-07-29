@@ -81,9 +81,9 @@ twintig replies zichtbaar welk bezwaar het traject blokkeert.
 De letterlijke zinsnede erbij, omdat de code de nuance wegpoetst en de nuance
 later nodig is bij het herschrijven van de propositie.
 
-De codelijst hoort bij de datalaag van het project en is per domein hetzelfde.
-Nieuwe codes toevoegen gaat langs dezelfde route als nieuwe
-taxonomiewaarden: eerst vastleggen, dan de datalaag, dan pas gebruiken.
+De codelijst staat in [`taxonomie.md`](taxonomie.md), sectie 6, en geldt binnen
+het hele domein. Nieuwe codes toevoegen gaat langs dezelfde route als nieuwe
+taxonomiewaarden: eerst daar vastleggen, dan de datalaag, dan pas gebruiken.
 
 ---
 

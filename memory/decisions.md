@@ -16,6 +16,67 @@ Format per besluit:
 
 ---
 
+## 2026-07-29, de GTM-datalaag krijgt een eigen Supabase-project: `Brandpulse GTM`
+
+**Context.** `gtm_events`, `gtm_objections` en `agent_recommendations` moesten
+ergens landen. De organisatie heeft vier bestaande projecten, waarvan één de
+productiedatabase van het Qrius-platform is. De vraag was of de commerciële data
+van Brandpulse daarin mag, in een eigen schema met eigen RLS, of in een apart
+project.
+
+**Besluit.** Een apart Supabase-project, `Brandpulse GTM`, ref
+`syyhnsghnozaqctaavbl`, regio `eu-west-1`, 10 dollar per maand. Zie
+`infra/brandpulse-gtm.md`.
+
+**Alternatieven, en waarom ze afvielen.** Optie (b) was een schema `gtm` binnen
+het bestaande Qrius-project, met eigen RLS. Afgevallen op drie gronden, in
+volgorde van gewicht:
+
+1. **Eigendom en overdracht, de doorslaggever.** `gtm_events` krijgt een
+   `client`-kolom omdat er meer klanten bij komen. In optie (b) zou commerciële
+   data over klant B, C en D in de productiedatabase van klant A staan. Wordt
+   Qrius ooit verkocht, afgesplitst of overgedragen, dan gaat die data mee. Dat
+   is niet met permissies te repareren en niet met een migratie terug te
+   draaien. Tien dollar per maand weegt daar niet tegenop.
+2. **Een eigen schema is geen vertrouwensgrens.** Zie hieronder; dit is de les
+   die breder geldt dan deze keuze.
+3. **Migratiehistorie.** De productiehistorie van het Qrius-project is gedrift
+   en migraties moeten daar handmatig vooraf worden toegepast. Elke
+   GTM-schemawijziging zou langs dat proces moeten, en een GTM-migratie zou
+   omgekeerd de preview-replay van de productrepo kunnen breken op de
+   `schema_migrations`-primary key. Een nieuw project begint met een schone
+   historie.
+
+Daarnaast, lichter meegewogen: contactpersonen en verbatims zijn
+persoonsgegevens met een ander doel en een andere bewaartermijn dan platformdata
+waarvoor Qrius verwerker is.
+
+**De les die breder geldt.** Een apart schema biedt **geen** bescherming zolang
+de service-role sleutel in gebruik is. RLS wordt door die rol genegeerd en
+Supabase kent geen sleutel per schema. In het Qrius-project is die sleutel al in
+gebruik, onder meer in de landing-app. Een schema geeft dus ordelijkheid, geen
+grens. Scheiding die telt, loopt via een apart project met eigen sleutels. Deze
+regel geldt bij elke toekomstige afweging in de trant van "zet het netjes in een
+eigen schema", in welk domein dan ook.
+
+**Over de naam.** Niet `Brandpulse Data`, wat het oorspronkelijke voorstel was.
+Die naam laat alles toe en nodigt daarmee op termijn dezelfde vermenging uit die
+hier wordt opgelost. `Brandpulse GTM` dwingt scope af. `agent_recommendations`
+mag erin: de tabel is qua structuur domeinoverstijgend maar bevat voorlopig
+alleen GTM-adviezen. Schrijft een tweede domein er ooit in, dan wordt de
+projectnaam op dat moment heroverwogen, met een echt tweede geval in plaats van
+een vermoeden. Dezelfde redenering als bij het diagnoseprincipe hieronder.
+
+**Gevolg.** Twee databases om te beheren en twee sets omgevingsvariabelen,
+bewust met verschillende namen zodat een verkeerd geconfigureerde omgeving niet
+stilletjes naar de andere database schrijft. Joins tussen GTM-data en
+Qrius-productdata zijn niet meer mogelijk in SQL; mocht dat ooit nodig zijn, dan
+is dat een geaggregeerde export en geen join.
+
+**Herzien wanneer.** Als een tweede domein in `agent_recommendations` gaat
+schrijven, dan de projectnaam. De keuze voor een apart project zelf niet: die
+wordt met elke extra klant sterker, niet zwakker.
+
 ## 2026-07-29, de feedbackloop heet `agent_recommendations` en krijgt een `domain`-kolom
 
 **Context.** De tabel met voorspelling en uitkomst was gepland als

@@ -27,7 +27,17 @@ clients/
   qrius/                        eerste klantproject
     profiel.md                  domeinonafhankelijk
     gtm/                        alles wat met go-to-market te maken heeft
+infra/
+  brandpulse-gtm.md             de eigen datalaag: tabellen, toegang, env-vars
+  migratie-proces.md            hoe een schemawijziging gaat
+supabase/
+  migrations/                   de bron van het schema, niet de database
 ```
+
+`infra/` hoort bij geen van beide assen: het is geen methodiek en geen
+klantcontext, maar infrastructuur die het bureau zelf bezit en die over klanten
+en domeinen heen gedeeld wordt. Die map kwam er pas toen die categorie
+daadwerkelijk bestond.
 
 ## Een nieuw klantproject toevoegen
 
@@ -45,6 +55,9 @@ clients/
 4. Raak de bestaande domeinen niet aan.
 
 ## Status
+
+Fase 1B, stap 2 afgerond: de datalaag staat in een eigen Supabase-project. De
+tracking in de marketingsite (stap 3) is nog niet gebouwd.
 
 Fase 1A: repo-scaffold, geheugenlagen, taxonomie. Er zijn bewust nog geen
 agents, geen routing en geen orchestrator. Zie `memory/decisions.md` voor de

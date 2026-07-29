@@ -8,7 +8,7 @@ root-`CLAUDE.md`.
 **Geen sleutels, tokens of wachtwoorden in dit bestand.**
 
 - **Laatst bijgewerkt:** 2026-07-29
-- **Status:** grotendeels open. De datalaag is nog niet gekozen, dat is fase 1B.
+- **Status:** de datalaag staat, de tracking nog niet. Zie "Openstaand".
 
 ---
 
@@ -16,17 +16,35 @@ root-`CLAUDE.md`.
 
 | Bron | Waarvoor | Aanduiding | Status |
 |---|---|---|---|
-| gebeurtenissen | de GTM-events (`gtm_events`) | **nog niet gekozen** | besluit in fase 1B |
-| bezwaren | gecodeerde replies (`gtm_objections`) | **nog niet gekozen** | besluit in fase 1B |
-| aanbevelingen | voorspelling en uitkomst (`agent_recommendations`, gedeeld over domeinen, met `domain`-kolom) | **nog niet gekozen** | besluit in fase 1B |
-| productdata Qrius | platformdata van Qrius-klanten | Supabase-project `rylmnfaaylnnnbiuywlq` (productie) | bestaat |
+| gebeurtenissen | de GTM-events (`gtm_events`) | Supabase-project `Brandpulse GTM`, ref `syyhnsghnozaqctaavbl` | bestaat |
+| bezwaren | gecodeerde replies (`gtm_objections`) | zelfde project | bestaat |
+| aanbevelingen | voorspelling en uitkomst (`agent_recommendations`, met `domain` naast `client`) | zelfde project | bestaat |
+| productdata Qrius | platformdata van Qrius-klanten | Supabase-project `QRious`, ref `rylmnfaaylnnnbiuywlq` (productie) | bestaat, **buiten scope voor GTM** |
 | pijplijn | waar deals en stadia staan | `TODO` | |
 
-**Let op bij de productdatabron.** Dat project bevat productdata van
-Qrius-klanten, niet de commerciële data van Brandpulse. Die twee horen niet
-zonder meer bij elkaar: het is de kern van de keuze die in fase 1B voorligt. De
-regel is dat GTM-data van Brandpulse niet vermengd raakt met platformdata van
-derden.
+**De twee databases worden niet vermengd.** `Brandpulse GTM` bevat commerciële
+data van het bureau over meerdere klanten. Het Qrius-project bevat platformdata
+van Qrius-klanten. Er wordt vanuit GTM niet naar het Qrius-project geschreven en
+er worden geen joins tussen beide gelegd. De onderbouwing staat in
+[`../../../memory/decisions.md`](../../../memory/decisions.md) (2026-07-29), de
+details van het GTM-project in
+[`../../../infra/brandpulse-gtm.md`](../../../infra/brandpulse-gtm.md).
+
+### Connectie en omgevingsvariabelen
+
+Apart van die van Qrius, en bewust met andere namen zodat een verkeerd
+geconfigureerde omgeving niet stilletjes in de verkeerde database schrijft.
+
+| Variabele | Wijst naar | Zichtbaarheid |
+|---|---|---|
+| `GTM_SUPABASE_URL` | `https://syyhnsghnozaqctaavbl.supabase.co` | server |
+| `GTM_SUPABASE_SERVICE_ROLE_KEY` | dashboard, project `Brandpulse GTM` | **alleen** server, nooit in een browserbundel |
+
+De bestaande `NEXT_PUBLIC_SUPABASE_*`-variabelen van QRius wijzen naar het
+Qrius-project en blijven ongemoeid. Ze worden **niet** hergebruikt voor GTM.
+
+`TODO: door Ward in te vullen`, beide variabelen zetten in het Vercel-project
+van de marketingsite voordat de tracking uit stap 3 live gaat.
 
 ## Websites en analytics
 
@@ -85,11 +103,13 @@ Een selectie uit de canonieke lijst in
 
 ## Openstaand
 
-1. Waar leven `gtm_events`, `gtm_objections` en `agent_recommendations`? Besluit
-   in fase 1B.
-2. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
-3. Cal.com-eventtypes vastleggen en de taxonomie meegeven aan de boeking.
-4. Hoofddomein en bestemmingspagina's per asset vastleggen.
-5. Waar de pijplijn wordt bijgehouden.
+1. De twee omgevingsvariabelen zetten in het Vercel-project van de
+   marketingsite.
+2. Tracking in `apps/website`: UTM's en `seg` vastleggen bij eerste bezoek, en
+   een route handler die naar `gtm_events` schrijft. Fase 1B stap 3.
+3. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
+4. Cal.com-eventtypes vastleggen en de taxonomie meegeven aan de boeking.
+5. Hoofddomein en bestemmingspagina's per asset vastleggen.
+6. Waar de pijplijn wordt bijgehouden.
 
 `TODO: door Ward in te vullen`

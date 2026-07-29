@@ -188,3 +188,60 @@ Overal waar een aanraking wordt vastgelegd, dus minimaal:
 Elke plek waar een aanraking landt zonder de drie dimensies, is een plek waar de
 keten breekt. Bij een gebroken keten valt niet de laatste stap uit, maar de
 toewijzing van alles ervoor.
+
+---
+
+## 6. Aanvullende waardelijsten van de datalaag
+
+Naast de drie dimensies kent de datalaag nog vier gesloten lijsten. Ze staan
+hier omdat er per domein **één** bron voor waardelijsten is (root-`CLAUDE.md`,
+sectie 5), niet verspreid over de plek waar ze toevallig gebruikt worden.
+Dezelfde regels gelden: eerst hier, dan de datalaag, dan pas in gebruik, en
+nooit hernoemen.
+
+### `event_type`, wat er gebeurde
+
+| Waarde | Betekenis |
+|---|---|
+| `email_sent` | mail verstuurd |
+| `email_open` | mail geopend, zie principe 5 in [`outbound-principes.md`](outbound-principes.md): draagt geen conclusie |
+| `email_click` | op een link in de mail geklikt |
+| `email_reply` | antwoord ontvangen |
+| `email_bounce` | mail niet bezorgd |
+| `site_visit` | bezoek aan de site |
+| `magazine_view` | magazine bekeken |
+| `pricing_view` | prijspagina bekeken |
+| `demo_request` | demo aangevraagd |
+| `meeting_booked` | afspraak geboekt, de harde conversie |
+| `stage_change` | verschuiving in de pijplijn |
+| `deal_lost` | verloren |
+
+`meeting_booked` is de enige harde conversie. Alle andere zijn tussenstappen en
+worden nooit als conversie gerapporteerd.
+
+### `objection_code`, waar de reply op vastliep
+
+| Waarde | Waar het meestal op neerkomt |
+|---|---|
+| `te-vroeg` | de deadline voelt ver weg, of men gelooft in uitstel |
+| `doet-leverancier-al` | een bestaande partij claimt dit te dekken |
+| `geen-budget` | geen post op de begroting |
+| `wat-is-dpp` | de categorie is onbekend |
+| `intern-bouwen` | het lijkt op iets dat IT ook kan |
+| `geen-eigenaar` | het valt tussen afdelingen in |
+| `anders` | restcategorie |
+
+Groeit `anders` boven een tiende van de replies, dan ontbreekt er een code. Dat
+gaat vóór het beantwoorden van de bezwaren: een restcategorie die groeit,
+verbergt precies het patroon dat je zoekt.
+
+### `status`, waar een aanbeveling staat
+
+`voorgesteld` · `geaccepteerd` · `afgewezen` · `uitgevoerd`
+
+### `domain`, welk domein het advies gaf
+
+Op dit moment alleen `gtm`. Dit is de enige lijst die niet GTM-specifiek is: hij
+hoort bij de domeinoverstijgende aanbevelingentabel en staat hier voorlopig
+omdat er één domein is. Komt er een tweede, dan verhuist deze lijst mee met de
+heroverweging van de projectnaam. Zie `memory/decisions.md` (2026-07-29).
