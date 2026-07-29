@@ -171,3 +171,23 @@ Snelle controle of een omgeving überhaupt is geconfigureerd, zonder iets prijs
 te geven: `GET /api/gtm` op de site geeft `{"ok":true,"configured":true|false}`.
 Staat daar `false`, dan ontbreken de omgevingsvariabelen en worden events
 aangenomen en weggegooid.
+
+## Overleeft `seg` de deploy
+
+[`seg-check.sh`](seg-check.sh) loopt elke route af en meldt per route of de
+campagneparameters behouden blijven.
+
+```
+./infra/seg-check.sh https://qrius.id
+```
+
+Draai dit **na elke wijziging aan routing, middleware of redirects**. Een route
+die de parameters stript, laat campagneverkeer ongelabeld binnenkomen, en dat is
+onzichtbaar tot je je afvraagt waarom een kanaal niets oplevert.
+
+Op een preview met Vercel Deployment Protection geeft elke route een 302 naar
+`sso-api`. Zet er dan een geldige share-token bij:
+
+```
+SHARE=<token> ./infra/seg-check.sh https://<preview>.vercel.app
+```
