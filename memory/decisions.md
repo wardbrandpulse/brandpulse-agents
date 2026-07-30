@@ -61,10 +61,19 @@ halverwege verandert, draagt geen conclusie over de hele reeks. Concreet:
 - De rijen van vóór het moment zijn een **bovengrens** op het aantal sessies,
   nooit een ondergrens.
 
-Het omslagmoment is te bepalen uit de data: de vier tabblad-rijen van
-2026-07-30 zijn de laatste van de oude soort. De precieze grens is het moment
-waarop de fix op productie live ging; leg dat vast in
-`clients/qrius/gtm/config.md` zodra de deploy rond is.
+**Het omslagmoment.** De laatste rij van de oude soort is
+`2026-07-30 09:08:35 UTC`; de fix is gemerged als `56fa65c2` en kort daarna
+gedeployd. Tussen die twee momenten is geen enkele rij binnengekomen, dus de
+grens is ondubbelzinnig zonder de exacte deployseconde. De query's staan in
+`clients/qrius/gtm/config.md`. Het betreft vier rijen, dus in de praktijk is de
+eenvoudigste route: negeer die vier bij elke trendvraag en zeg dat je dat doet.
+
+**Kandidaat voor promotie.** De onderliggende regel, dat een wijziging van de
+meeteenheid een breuk in de reeks oplevert die benoemd moet worden en niet mag
+worden weggerekend, is niet GTM-specifiek. Hij staat nu als aanvulling in
+`domains/gtm/playbooks/significantie-drempels.md`. Bij een tweede domein
+opnieuw beoordelen; met één domein is er geen tweede onafhankelijke context, dus
+de promotieregel is niet gehaald.
 
 **Herzien wanneer.** Als de 30 minuten niet meer aansluiten bij hoe de doelgroep
 de site gebruikt, of als er ooit een reden komt om sessies met een

@@ -121,11 +121,26 @@ sessies. Dat is een bewuste ondergrens aan wat we willen weten.
 `sessionStorage` en telde een rij een **tabblad**, niet een sessie. Eén sessie
 gaf toen vier rijen. Die rijen blijven staan en worden niet herrekend.
 
-- **Omslagmoment:** `TODO`, het tijdstip vastleggen waarop de fix live ging.
+**Omslagmoment.** De laatste rij van de oude soort is
+`2026-07-30 09:08:35 UTC`. De fix is gemerged als `56fa65c2` en daarna naar
+productie gedeployd; tussen die laatste oude rij en de deploy is **geen enkele
+rij** binnengekomen. De grens is daarmee ondubbelzinnig zonder dat de exacte
+deployseconde nodig is:
+
+```sql
+-- oude eenheid: tabblad-sessies, alleen als bovengrens bruikbaar
+select * from gtm_events where occurred_at <= '2026-07-30 09:08:35+00';
+-- nieuwe eenheid: bezoekerssessies
+select * from gtm_events where occurred_at >  '2026-07-30 09:08:35+00';
+```
+
 - Vergelijk geen periode van vóór het moment met een periode erna.
 - Rijen van vóór het moment zijn een **bovengrens** op het aantal sessies.
 - Elke analyse die over het moment heen kijkt, benoemt de breuk in "Wat ik niet
   kon vaststellen".
+
+Het gaat om vier rijen van de oude soort, dus praktisch is de eenvoudigste
+route: negeer die vier bij elke trendvraag en zeg dat je dat doet.
 
 De onderbouwing staat in
 [`../../../memory/decisions.md`](../../../memory/decisions.md) (2026-07-30).
