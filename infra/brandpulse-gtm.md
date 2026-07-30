@@ -185,6 +185,33 @@ Draai dit **na elke wijziging aan routing, middleware of redirects**. Een route
 die de parameters stript, laat campagneverkeer ongelabeld binnenkomen, en dat is
 onzichtbaar tot je je afvraagt waarom een kanaal niets oplevert.
 
+### Vastgesteld op 2026-07-30
+
+**`seg` overleeft de Vercel-edge.** Handmatig getest op productie door Ward. De
+vier redirects vuurden af en `seg=ebike` bleef in alle vier gevallen intact:
+
+| Redirect | `seg` |
+|---|---|
+| `/over-qrius` naar `/over-ons` | behouden |
+| `/voor-merkhouders` naar `/toepassingen` | behouden |
+| `/voor-bureaus` naar `/voor-partners` | behouden |
+| `/demo/` naar `/demo` (trailing slash) | behouden |
+
+Dit is een vaststelling, geen aanname: het is op de echte edge gemeten, niet
+alleen tegen een lokale build. Bevestigd in de data, zie hieronder.
+
+**Wat hiermee nog niet is vastgesteld.** De overige 22 routes zijn alleen tegen
+een lokale productiebuild getoetst, niet op de edge. Dat is zwakker bewijs: het
+toetst `next.config.js`, de trailing-slash-normalisatie en het ontbreken van
+middleware, maar niet de edgelaag. Draai `seg-check.sh` tegen productie om dat
+gat te dichten.
+
+**Bevestigd in de data.** Vier `site_visit`-rijen uit die sessie, alle vier met
+`segment = ebike`, `source = outbound`, `medium = email`, en alle vier met
+hetzelfde `first_seen_at`. Dat laatste is het bewijs dat de first-touch-regel
+werkt: drie van de vier bezoeken kwamen binnen zonder `utm_source` in de URL en
+kregen alsnog `outbound` in de kolommen, uit de opslag.
+
 Op een preview met Vercel Deployment Protection geeft elke route een 302 naar
 `sso-api`. Zet er dan een geldige share-token bij:
 

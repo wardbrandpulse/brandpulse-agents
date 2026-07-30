@@ -7,8 +7,9 @@ root-`CLAUDE.md`.
 
 **Geen sleutels, tokens of wachtwoorden in dit bestand.**
 
-- **Laatst bijgewerkt:** 2026-07-29
-- **Status:** de datalaag staat, de tracking nog niet. Zie "Openstaand".
+- **Laatst bijgewerkt:** 2026-07-30
+- **Status:** datalaag en tracking staan live op productie en er komen events
+  binnen. Twee openstaande punten, zie "Openstaand".
 
 ---
 
@@ -95,15 +96,34 @@ binnenkomen hebben een identiek record.
 
 | Event | Wanneer | Status |
 |---|---|---|
-| `site_visit` | één keer per browsersessie | actief |
+| `site_visit` | eerste paginaweergave per **browsercontext**, zie waarschuwing | actief |
 | `pricing_view` | op `/get-qrius` | actief |
 | `meeting_booked` | Cal.com meldt een geslaagde boeking, op `/demo` en `/voor-partners` | actief |
 | `magazine_view` | zou op de magazinepagina komen | **niet aangesloten, die pagina bestaat niet** |
 
-`site_visit` telt sessies en geen paginaweergaven, omdat de drempel in
+**⚠️ `site_visit` is niet één per bezoekerssessie.** De bedoeling was één rij per
+sessie, omdat de drempel in
 [`significantie-drempels.md`](../../../domains/gtm/playbooks/significantie-drempels.md)
-in sessies per bron per week is uitgedrukt. Paginaweergaven worden al door
-Vercel geteld en worden hier niet gedupliceerd.
+in sessies per bron per week rekent. De sessiemarkering staat in
+`sessionStorage`, en dat is per **tabblad**, niet per bezoeker. Iemand die de
+site in drie tabbladen opent, levert drie rijen op.
+
+Vastgesteld op 2026-07-30 in de eerste productietest: één beschreven sessie gaf
+vier `site_visit`-rijen, waarvan twee op hetzelfde pad met een seconde ertussen.
+De first-touch-opslag in `localStorage` bleef in al die gevallen intact (zelfde
+`first_seen_at`), dus opslag werkte; het is het per-tabblad-karakter van
+`sessionStorage`, geen storing.
+
+**Gevolg voor rapportage:** een rij is op dit moment een tabblad-sessie en geen
+bezoekerssessie. Tel `site_visit` daarom als bovengrens, en toets de
+kanaaldrempel van 30 per bron per week met dat voorbehoud, tot dit is opgelost.
+
+`TODO: door Ward te beslissen`, of de sessiemarkering naar `localStorage` gaat
+met een aflopend venster (bijvoorbeeld 30 minuten inactiviteit), wat rijen per
+bezoeker in plaats van per tabblad oplevert. Dat verandert de betekenis van de
+kolom, dus het is een meetkeuze en geen bugfix.
+
+Paginaweergaven worden al door Vercel geteld en worden hier niet gedupliceerd.
 
 ## Verzenden
 
@@ -152,16 +172,18 @@ Een selectie uit de canonieke lijst in
 
 ## Openstaand
 
-1. De twee omgevingsvariabelen zetten in het Vercel-project van de
-   marketingsite. Zonder deze worden events aangenomen en weggegooid.
-2. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
+1. Beslissen of `site_visit` per bezoeker gaat tellen in plaats van per
+   tabblad. Zie de waarschuwing hierboven; dit raakt de kanaaldrempel.
+2. `seg-check.sh` tegen productie draaien voor de overige 22 routes. De vier
+   redirects zijn op 2026-07-30 op de edge bevestigd, de rest alleen lokaal.
+3. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
    Artikel 5 zegt nu dat Qrius geen tracking gebruikt die surfgedrag volgt; dat
    klopt nog steeds (geen identificatie, geen derden, niet cross-site), maar
    campagne-attributie wordt er niet genoemd. Zie de aantekening hieronder.
-3. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
-4. Cal.com-eventtypes vastleggen in dit bestand.
-5. Waar de pijplijn wordt bijgehouden.
-6. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
+4. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
+5. Cal.com-eventtypes vastleggen in dit bestand.
+6. Waar de pijplijn wordt bijgehouden.
+7. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
    zetten. De component staat klaar, de pagina bestaat nog niet.
 
 ### Aantekening bij het cookiebeleid
