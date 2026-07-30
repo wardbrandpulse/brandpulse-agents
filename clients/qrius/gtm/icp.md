@@ -1,102 +1,129 @@
 # Qrius, ICP
 
-Wie is een goede prospect, en net zo belangrijk: wie niet.
+Versie 2, vastgesteld door Ward op 2026-07-30. Vervangt de werkhypothese van
+2026-07-29.
 
-- **Laatst bijgewerkt:** 2026-07-29
-- **Onderbouwing:** geen. Nul gesprekken vastgelegd, nul gewonnen deals
-  geanalyseerd. **Dit hele bestand is een werkhypothese**, geen profiel.
+- **Laatst bijgewerkt:** 2026-07-30
+- **Status:** `klant`
+- **Bewijs: n=0.** Nul gesprekken, nul verzonden reeksen, nul gewonnen deals.
 
-> Alles hieronder is afgeleid uit het product en uit de gekozen taxonomie, niet
-> uit waarnemingen bij de doelgroep. Gebruik het om een eerste lijst te bouwen,
-> niet om een uitspraak te onderbouwen. Zodra er twintig verzonden mails per
-> segment zijn (de drempel uit
-> [`significantie-drempels.md`](../../../domains/gtm/playbooks/significantie-drempels.md)),
-> wordt dit bestand herschreven op basis van wat er terugkwam.
+**Wat "vastgesteld met n=0" betekent.** De criteria en het scoremodel staan vast
+als werkafspraak: hier wordt vanaf nu op geselecteerd en geprioriteerd. Ze zijn
+niet getoetst aan de markt. Er mag dus geen enkele kwantitatieve uitspraak op
+gebaseerd worden, en de openstaande aannames staan als leringen met n=0 in
+[`memory/learnings.md`](memory/learnings.md). Zie de bewijslastregel in de
+root-[`CLAUDE.md`](../../../CLAUDE.md).
 
 ---
 
-## Bedrijfsprofiel
+## 1. Diskwalificatie
 
-- **Sector(en):** `ebike` als eerste, daarna `retail` en `food`. `bureau` is een
-  ander type prospect en heeft een eigen profiel nodig, zie onderaan.
-- **Kenmerk dat er in elk geval toe doet:** de partij is
-  verantwoordelijk voor productinformatie richting de eindklant, dus een merk,
-  producent of importeur, en niet een partij die andermans producten
-  doorverkoopt zonder eigen merknaam. `Afgeleid uit het product, niet getoetst.`
-- **Omvang:** `TODO: door Ward in te vullen`. Er is geen enkele aanwijzing over
-  welke bedrijfsomvang past. Groot genoeg om een compliance-vraagstuk te hebben,
-  klein genoeg om niet zelf te bouwen, is een plausibele vorm maar geen bekend
-  feit.
-- **Geografie:** `TODO`. De relevante regelgeving is Europees; of het
-  bewerkingsgebied Nederland, de Benelux of breder is, is een keuze en geen
-  gegeven.
-- **Aantal producten of SKU's:** `TODO`. Dit is waarschijnlijk relevant, omdat
-  het aantal paspoorten met het assortiment meeschaalt.
+Vijf criteria. **Eén "ja" is genoeg om te diskwalificeren.** Deze stap gaat vóór
+het scoremodel: eerst uitsluiten, dan pas ordenen.
 
-## Rollen
-
-Volledig ongetoetst. Ingevuld met wat aannemelijk is, expliciet als aanname.
-
-| Rol | Functietitels | Waar ze op letten |
+| # | Criterium, diskwalificeert bij "ja" | Waarom |
 |---|---|---|
-| Beslisser | `TODO` | |
-| Beïnvloeder | `TODO` | |
-| Gebruiker | `TODO`, aannemelijk: degene die productdata beheert | werklast, hoeveel handmatig werk erbij komt |
-| Blokkeerder | `TODO`, aannemelijk: IT of de partij die zegt dat een bestaand systeem dit al doet | koppelingen, dubbele registratie |
+| 1 | Geen eigen merk | Zonder eigen merk ligt de verantwoordelijkheid voor de productinformatie elders, en daarmee ook de aanschafbeslissing |
+| 2 | Geen fysiek product | Een productpaspoort hangt aan een fysiek artikel; zonder artikel is er niets om aan te hangen |
+| 3 | Onder 30 modellen (GTIN's) | Te weinig volume om het beheer te laten opwegen tegen de inspanning |
+| 4 | Brengt niet op de EU-markt | De verplichting die de urgentie levert, geldt dan niet |
+| 5 | Bouwt intern, met vastgelegd budget én team | "Vastgelegd" is het onderscheid: een intentie is geen diskwalificatie, een goedgekeurd project wel |
 
-De blokkeerder is hier expliciet benoemd omdat een van de vastgestelde
-bezwaarcodes `doet-leverancier-al` is. Dat bezwaar komt zelden van de beslisser.
+Bij criterium 3 gaat het om **modellen**, dus GTIN's, niet om verkochte stuks.
+Een fabrikant met drie modellen en een miljoen stuks valt af; een merk met
+tachtig modellen en kleine oplages niet.
 
-## Trigger
+Bij criterium 5 zit het onderscheid in "vastgelegd". "We overwegen het zelf te
+bouwen" is bezwaar `intern-bouwen` en blijft in aanmerking komen. Een project met
+budget en een toegewezen team is een gepasseerde beslissing.
 
-Wat maakt dat ze **nu** zoeken en niet volgend jaar. Concrete gebeurtenissen,
-geen eigenschappen.
+### Expliciet géén diskwalificatie: al een DPP-oplossing live
 
-- Een naderende verplichting met een datum. Voor `ebike` is dat de aanname rond
-  het batterijpaspoort, zie
-  [`sectors/ebike.md`](../../../domains/gtm/memory/sectors/ebike.md). **Nog niet
-  bevestigd en de datum is nog niet geverifieerd.**
-- `TODO`, andere triggers: een klant of retailer die erom vraagt, een audit, een
-  nieuwe productlijn, een exportmarkt met eigen eisen.
+Bedrijven die al een DPP-oplossing in productie hebben, worden **niet**
+uitgesloten. Ze vormen een **aparte beweging** met eigen verwachtingen: de cyclus
+is langer, want er ligt een bestaande keuze en meestal een contract onder.
 
-## Diskwalificatie
+**Ze worden apart geregistreerd**, zodat hun langere doorlooptijd de gemiddelden
+van de reguliere beweging niet vervuilt. Dat is geen administratieve
+netheidskwestie: één trage deal in een kleine n verschuift een gemiddelde genoeg
+om er een verkeerde conclusie op te bouwen.
 
-Wanneer iemand géén ICP is, ook al lijkt het erop.
+**Openstaand: waar die registratie landt.** De datalaag kan dit onderscheid nu
+niet uitdrukken. `gtm_events` en `gtm_objections` hebben geen veld voor beweging,
+en een nieuwe waarde toevoegen gaat eerst via
+[`taxonomie.md`](../../../domains/gtm/playbooks/taxonomie.md) en dan de datalaag,
+in die volgorde. Dit is een echt gat: zolang het er niet is, zitten beide
+bewegingen in dezelfde cijfers en is de scheiding een belofte zonder mechaniek.
+`TODO: door Ward te beslissen`, of dit een vierde gesloten lijst wordt
+(bijvoorbeeld `motion` met `nieuw` en `vervanging`) of iets anders.
 
-- `TODO: door Ward in te vullen.` Deze sectie is nu leeg en dat is een
-  probleem: zonder diskwalificatiecriteria groeit de lijst ten koste van de
-  kwaliteit van de instroom, en is stap 2 van
-  [`kanaal-diagnose.md`](../../../domains/gtm/playbooks/kanaal-diagnose.md)
-  niet uit te voeren. Dit is het eerste veld dat gevuld moet worden, nog voor de
-  positieve criteria.
+---
 
-## Waar ze te vinden zijn
+## 2. Scoremodel
 
-`TODO: door Ward in te vullen.` Per bron noteren hoeveel partijen hij oplevert
-en hoe actueel hij is, zodat vooraf duidelijk is of de segmentdrempel van 20
+Drie assen, elk **1 tot 3**, **vermenigvuldigd**. Bereik 1 tot 27.
+
+| As | 1 | 2 | 3 |
+|---|---|---|---|
+| **Regelgevingsdruk** | geen bekende verplichting in zicht | verplichting waarschijnlijk, geen bindende datum | vaste, bindende datum |
+| **Scanmotivatie** | geen reden voor een consument om te scannen | denkbare reden, niet aangetoond | evidente reden, past bij het product |
+| **Bereikbaarheid** | beslisser niet te vinden of niet te benaderen | bereikbaar via meerdere stappen | direct te identificeren en te benaderen |
+
+**De score bepaalt de volgorde van bewerking, niet wie in aanmerking komt.** Wie
+door de diskwalificatie heen komt, is prospect. De score zegt alleen wie eerst
+aan de beurt is: een 4 wordt bewerkt, alleen later dan een 18.
+
+Vermenigvuldigen en niet optellen, omdat een 1 op één as het geheel moet
+platslaan. Een perfect passend product waarvan de beslisser onvindbaar is, is
+geen goede eerste prospect; optellen zou dat wegpoetsen.
+
+### ⚠️ Regelgevingsdruk: alleen het batterijpaspoort heeft een vaste datum
+
+Dit is een harde beperking op wat er in outbound gezegd mag worden.
+
+- **Het EU-batterijpaspoort** is de enige verplichting die als **vaste datum**
+  genoemd mag worden. Dát hij als urgentiehaak wérkt, is nog onbevestigd; zie
+  [`sectors/ebike.md`](../../../domains/gtm/memory/sectors/ebike.md).
+- **ESPR-termijnen zijn indicatief.** Ze horen bij de gedelegeerde handelingen en
+  er zijn **nog geen bindende nalevingsdata**. Ze mogen als richting worden
+  benoemd, met dat voorbehoud er expliciet bij.
+- **Niet aanscherpen in outbound.** Geen "per <datum> verplicht" waar het
+  indicatief is, en geen formulering die strakker klinkt dan de bron. Een datum
+  die verkeerd blijkt, kost meer geloofwaardigheid dan hij aan urgentie
+  oplevert, en het raakt de gevoeligheid uit [`../profiel.md`](../profiel.md):
+  Qrius helpt bij het voldoen aan verplichtingen en geeft geen juridische duiding.
+
+Praktisch voor de as: alleen een geverifieerde bindende datum geeft een **3**,
+een indicatieve ESPR-termijn geeft een **2**.
+
+### ⚠️ De speelgoedregel is niet geverifieerd
+
+Er is een aanname over een verplichting voor speelgoed. Die staat als **te
+verifiëren** en wordt **niet gebruikt** tot dat is nagegaan: niet in de score,
+niet in een lijstselectie, niet in outbound. Zie de lering in
+[`memory/learnings.md`](memory/learnings.md).
+
+---
+
+## 3. Wat hier bewust niet staat
+
+Dit staat er zodat een lezer ziet dat het ontbreken een keuze is en geen
+vergeetachtigheid.
+
+- **Rollen en functietitels.** Nul gesprekken, dus elke titel zou een gok zijn.
+  Wordt gevuld uit de eerste replies.
+- **Omvang, geografie en aantal SKU's** buiten de ondergrens van 30 modellen.
+  Criterium 3 is de enige harde grens die is vastgesteld.
+- **Triggers** anders dan regelgeving. Welke gebeurtenissen in de praktijk
+  aanzetten tot zoeken, moet uit gesprekken komen.
+- **Het segment `bureau`.** Partners kopen niet voor zichzelf maar brengen
+  klanten mee, dus de criteria hierboven passen er niet op.
+  `TODO: door Ward in te vullen`, of `bureau` een eigen profiel krijgt.
+
+---
+
+## 4. Waar ze te vinden zijn
+
+`TODO: door Ward in te vullen.` Per bron noteren hoeveel partijen hij oplevert en
+hoe actueel hij is, zodat vooraf duidelijk is of de segmentdrempel van 20
 verzonden haalbaar is.
-
-## Bewijs
-
-Geen. n=0 gesprekken, n=0 verzonden, n=0 deals.
-
-Conform de bewijslastregel in de root-`CLAUDE.md` mag er op basis van dit
-bestand geen enkele kwantitatieve uitspraak worden gedaan over wie wel of niet
-past.
-
-## Aannames
-
-| Aanname | Waarom we het vermoeden | Wat het bevestigt of weerlegt |
-|---|---|---|
-| Merken en producenten zijn de koper, niet retailers | het product legt de verantwoordelijkheid voor productinformatie bij de merkeigenaar | wie er in de gesprekken daadwerkelijk aan tafel zit |
-| Een naderende deadline is de sterkste trigger | het is de enige harde datum die bekend is | of de deadline in replies genoemd wordt, of dat `te-vroeg` domineert |
-| De blokkeerder zit bij IT of bij een bestaande leverancier | de bezwaarcode `doet-leverancier-al` bestaat niet voor niets | verdeling van bezwaarcodes na twintig replies |
-
-## Apart: het segment `bureau`
-
-Partners en bureaus zijn geen verkleinde versie van dit profiel maar een ander
-type prospect: zij kopen niet voor zichzelf maar brengen klanten mee. Dit
-bestand beschrijft ze nu niet.
-
-`TODO: door Ward in te vullen`, of `bureau` een eigen ICP-beschrijving krijgt
-of dat het kanaal voorlopig opportunistisch wordt behandeld.

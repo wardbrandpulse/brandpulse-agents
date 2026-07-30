@@ -9,7 +9,8 @@ root-`CLAUDE.md`.
 
 - **Laatst bijgewerkt:** 2026-07-30
 - **Status:** datalaag en tracking staan live op productie en er komen events
-  binnen. Twee openstaande punten, zie "Openstaand".
+  binnen. Het ICP is vastgesteld (versie 2, n=0). Zie "Openstaand" voor wat er
+  nog moet gebeuren vóór de eerste outbound.
 
 ---
 
@@ -44,8 +45,8 @@ geconfigureerde omgeving niet stilletjes in de verkeerde database schrijft.
 De bestaande `NEXT_PUBLIC_SUPABASE_*`-variabelen van QRius wijzen naar het
 Qrius-project en blijven ongemoeid. Ze worden **niet** hergebruikt voor GTM.
 
-`TODO: door Ward in te vullen`, beide variabelen zetten in het Vercel-project
-van de marketingsite voordat de tracking uit stap 3 live gaat.
+Beide staan gezet op het Vercel-project `q-rius-website`. Bevestigd op
+2026-07-30 doordat er events binnenkomen; te controleren met `GET /api/gtm`.
 
 ## Websites en analytics
 
@@ -207,20 +208,23 @@ Een selectie uit de canonieke lijst in
 
 ## Openstaand
 
-1. Eén host canoniek maken, `SITE_URL` gelijktrekken en de keuze vastleggen in
-   `docs/domains.md`. Zie de waarschuwing over hostconsistentie hierboven.
-   **Vóór de eerste outbound**, want elke link in een mail draagt die host.
-2. `seg-check.sh` tegen productie draaien voor de overige 22 routes, op
+1. Beslissen waar de beweging "al een DPP-oplossing live" geregistreerd wordt.
+   De datalaag kan dat onderscheid nu niet uitdrukken, dus de scheiding uit
+   [`icp.md`](icp.md) is een belofte zonder mechaniek. **Vóór de eerste
+   outbound**, anders zitten beide bewegingen meteen in dezelfde cijfers.
+2. De speelgoedregel aan de bron verifiëren, of hem laten staan als ongebruikt.
+   Zie [`memory/learnings.md`](memory/learnings.md).
+3. `seg-check.sh` tegen productie draaien voor de overige 22 routes, op
    `www.qrius.id`. De vier redirects plus de www-redirect zijn op 2026-07-30 op
    de edge bevestigd, de rest alleen lokaal.
-3. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
+4. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
    Artikel 5 zegt nu dat Qrius geen tracking gebruikt die surfgedrag volgt; dat
    klopt nog steeds (geen identificatie, geen derden, niet cross-site), maar
    campagne-attributie wordt er niet genoemd. Zie de aantekening hieronder.
-4. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
-5. Cal.com-eventtypes vastleggen in dit bestand.
-6. Waar de pijplijn wordt bijgehouden.
-7. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
+5. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
+6. Cal.com-eventtypes vastleggen in dit bestand.
+7. Waar de pijplijn wordt bijgehouden.
+8. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
    zetten. De component staat klaar, de pagina bestaat nog niet.
 
 ### ⚠️ Hostconsistentie, en waarom dat de attributie raakt
@@ -243,17 +247,19 @@ LinkedIn-sharelink allemaal naar de host die permanent doorstuurt. Dat werkt,
 maar elke link uit die bron kost een extra hop, en een hop is een plek waar
 parameters kunnen sneuvelen.
 
-`TODO: door Ward te beslissen`, één host canoniek maken. Aanbeveling: `SITE_URL`
-naar `https://www.qrius.id`, want www is al wat serveert en wat Cloudflare
-afdwingt; een constante wijzigen is minder riskant dan de serverende host
-omzetten. Leg de keuze vast in `docs/domains.md` in de productrepo, dat document
-noemt nu beide hosts zonder te zeggen welke canoniek is.
+**Opgelost op 2026-07-30.** `SITE_URL` staat op `https://www.qrius.id`, en de
+afhankelijkheid is vastgelegd in `docs/domains.md` in de productrepo, inclusief
+de waarschuwing en de drie stappen die bij een domeinwijziging horen. Daar is nu
+ook zichtbaar welke host canoniek is; eerder noemde dat document beide zonder
+onderscheid.
 
-**Buiten GTM-scope, wel gevonden:** zes van de veertien pagina's zetten geen
-eigen `alternates`, dus ze erven `canonical: '/'` uit de layout en verklaren
-zichzelf canoniek aan de homepage. Op productie gecontroleerd voor `/over-ons`:
-die pagina geeft `<link rel="canonical" href="https://qrius.id">`. Dat is een
-SEO-kwestie, geen trackingkwestie, maar het hoort bij dezelfde opruiming.
+In dezelfde opruiming meegenomen: **zeven pagina's** zetten geen eigen
+`alternates` en erfden `canonical: '/'` uit de layout, waardoor ze zich canoniek
+verklaarden aan de homepage. Op productie was dat zichtbaar op `/over-ons`. Alle
+zeven hebben nu hun eigen pad, inclusief de dynamische kennisbank-artikelen. De
+homepage houdt de geërfde `'/'`, want daar is die juist. Ook de hardgecodeerde
+LinkedIn-sharelink gebruikt nu `SITE_URL`, zodat er een plek minder is die kan
+gaan afwijken.
 
 **Geen risico bij Cal.com.** De boekingsmodule is een iframe op `cal.com` met een
 slug uit een omgevingsvariabele. Er wordt niet van onze origin weg genavigeerd,
