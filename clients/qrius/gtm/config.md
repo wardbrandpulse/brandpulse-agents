@@ -53,7 +53,11 @@ van de marketingsite voordat de tracking uit stap 3 live gaat.
   `wardbrandpulse/QRius`. Dit is de site die de GTM-events moet gaan leveren.
 - **Portaal en consumentenpagina:** `apps/portal` en `apps/landing` in dezelfde
   repository. Deze staan niet in scope voor GTM-tracking.
-- **Hoofddomein:** `https://qrius.id`
+- **Hoofddomein:** **`https://www.qrius.id`**. Dat is de host die serveert.
+  `qrius.id` geeft een **308 naar www**, uitgevoerd door Cloudflare vóór Vercel
+  en vóór enige JavaScript, met de querystring intact (aan de edge gecontroleerd
+  op 2026-07-30). **Gebruik www in elke outboundlink**, dan kost campagneverkeer
+  geen extra hop. Zie ook de waarschuwing over hostconsistentie onderaan.
 - **Bestaande webanalytics:** Vercel Web Analytics. Blijft staan zoals het
   staat, wordt niet gedupliceerd en niet vervangen. Er zit geen
   analytics-package in de app, dus het loopt via de Vercel-projectinstelling.
@@ -121,18 +125,27 @@ sessies. Dat is een bewuste ondergrens aan wat we willen weten.
 `sessionStorage` en telde een rij een **tabblad**, niet een sessie. Eén sessie
 gaf toen vier rijen. Die rijen blijven staan en worden niet herrekend.
 
-**Omslagmoment.** De laatste rij van de oude soort is
-`2026-07-30 09:08:35 UTC`. De fix is gemerged als `56fa65c2` en daarna naar
-productie gedeployd; tussen die laatste oude rij en de deploy is **geen enkele
-rij** binnengekomen. De grens is daarmee ondubbelzinnig zonder dat de exacte
-deployseconde nodig is:
+**Omslagmoment: `2026-07-30 09:23:35 UTC`**, het moment waarop de
+productiedeploy van `56fa65c2` klaarstond. De laatste rij van de oude soort
+staat op `09:08:35.122`, dus er is geen enkele rij in het grijze gebied.
 
 ```sql
 -- oude eenheid: tabblad-sessies, alleen als bovengrens bruikbaar
-select * from gtm_events where occurred_at <= '2026-07-30 09:08:35+00';
+select * from gtm_events where occurred_at < '2026-07-30 09:23:35+00';
 -- nieuwe eenheid: bezoekerssessies
-select * from gtm_events where occurred_at >  '2026-07-30 09:08:35+00';
+select * from gtm_events where occurred_at >= '2026-07-30 09:23:35+00';
 ```
+
+Let op de precisie van de grens: `09:08:35+00` betekent `09:08:35.000` en laat
+de laatste oude rij (`.122`) er dus dóór. Gebruik de deploytijd hierboven, die
+ligt ruim tussen de twee reeksen.
+
+**Eenmalig effect bij de omslag.** De sleutel van de sessiemarkering veranderde
+mee (`qrius-gtm-session` in `sessionStorage` werd `qrius-gtm-last-seen` in
+`localStorage`). Bezoekers die op het omslagmoment midden in een sessie zaten,
+kregen daardoor één keer een extra `site_visit`. In de data zichtbaar als een rij
+om `09:29:51` met een `first_seen_at` van vóór de omslag. Eenmalig, niet
+structureel.
 
 - Vergelijk geen periode van vóór het moment met een periode erna.
 - Rijen van vóór het moment zijn een **bovengrens** op het aantal sessies.
@@ -194,10 +207,12 @@ Een selectie uit de canonieke lijst in
 
 ## Openstaand
 
-1. Het omslagmoment van de sessiefix vastleggen in de waarschuwing hierboven,
-   zodra de deploy rond is.
-2. `seg-check.sh` tegen productie draaien voor de overige 22 routes. De vier
-   redirects zijn op 2026-07-30 op de edge bevestigd, de rest alleen lokaal.
+1. Eén host canoniek maken, `SITE_URL` gelijktrekken en de keuze vastleggen in
+   `docs/domains.md`. Zie de waarschuwing over hostconsistentie hierboven.
+   **Vóór de eerste outbound**, want elke link in een mail draagt die host.
+2. `seg-check.sh` tegen productie draaien voor de overige 22 routes, op
+   `www.qrius.id`. De vier redirects plus de www-redirect zijn op 2026-07-30 op
+   de edge bevestigd, de rest alleen lokaal.
 3. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
    Artikel 5 zegt nu dat Qrius geen tracking gebruikt die surfgedrag volgt; dat
    klopt nog steeds (geen identificatie, geen derden, niet cross-site), maar
@@ -207,6 +222,43 @@ Een selectie uit de canonieke lijst in
 6. Waar de pijplijn wordt bijgehouden.
 7. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
    zetten. De component staat klaar, de pagina bestaat nog niet.
+
+### ⚠️ Hostconsistentie, en waarom dat de attributie raakt
+
+`localStorage` is **per origin**. `qrius.id` en `www.qrius.id` zijn twee
+verschillende origins met elk hun eigen opslag. Dat de attributie vandaag
+gewoon werkt, komt volledig doordat Cloudflare al het niet-www-verkeer met een
+308 naar www stuurt, vóór er JavaScript draait. Er is dus in de praktijk één
+origin.
+
+**Die redirect is daarmee dragend voor de attributie, niet alleen voor SEO.**
+Verdwijnt hij, of wordt de richting omgedraaid, dan splitst de opslag en verliest
+iedereen die de andere host raakt zijn first touch. Stil, zonder foutmelding.
+Wie ooit aan de domeinconfiguratie werkt, moet dit weten.
+
+**Wat op 2026-07-30 niet consistent was.** De code hanteert `SITE_URL =
+'https://qrius.id'`, dus zonder www, terwijl www serveert. Daardoor wijzen de
+canonical-tags, `og:url`, de sitemap, `robots.txt` en een hardgecodeerde
+LinkedIn-sharelink allemaal naar de host die permanent doorstuurt. Dat werkt,
+maar elke link uit die bron kost een extra hop, en een hop is een plek waar
+parameters kunnen sneuvelen.
+
+`TODO: door Ward te beslissen`, één host canoniek maken. Aanbeveling: `SITE_URL`
+naar `https://www.qrius.id`, want www is al wat serveert en wat Cloudflare
+afdwingt; een constante wijzigen is minder riskant dan de serverende host
+omzetten. Leg de keuze vast in `docs/domains.md` in de productrepo, dat document
+noemt nu beide hosts zonder te zeggen welke canoniek is.
+
+**Buiten GTM-scope, wel gevonden:** zes van de veertien pagina's zetten geen
+eigen `alternates`, dus ze erven `canonical: '/'` uit de layout en verklaren
+zichzelf canoniek aan de homepage. Op productie gecontroleerd voor `/over-ons`:
+die pagina geeft `<link rel="canonical" href="https://qrius.id">`. Dat is een
+SEO-kwestie, geen trackingkwestie, maar het hoort bij dezelfde opruiming.
+
+**Geen risico bij Cal.com.** De boekingsmodule is een iframe op `cal.com` met een
+slug uit een omgevingsvariabele. Er wordt niet van onze origin weg genavigeerd,
+dus de opslag splitst daar niet. Zou er ooit een terugkeer-URL worden ingesteld,
+dan moet die op de canonieke host staan.
 
 ### Aantekening bij het cookiebeleid
 

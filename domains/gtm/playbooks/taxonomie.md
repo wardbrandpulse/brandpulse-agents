@@ -133,6 +133,22 @@ combinaties:
 - Wordt bij het eerste bezoek vastgelegd, niet pas bij conversie. Anders is hij
   bij een latere terugkeer verdwenen.
 
+### Altijd de canonieke host in de link
+
+Een link wijst naar de host die daadwerkelijk serveert, niet naar een variant die
+doorstuurt. Twee redenen, en de tweede is de zwaarste:
+
+- Elke redirect is een plek waar parameters kunnen sneuvelen. Werkt vandaag, is
+  geen garantie voor na de volgende configuratiewijziging.
+- **First-touch-opslag in de browser is per origin.** `example.com` en
+  `www.example.com` zijn twee origins met elk hun eigen opslag. Raakt de ene
+  bezoeker de ene host en de andere de andere, dan zijn dat twee gescheiden
+  geheugens en gaat de first touch verloren zodra iemand van host wisselt.
+
+Welke host canoniek is, staat per project in
+`clients/<klant>/<domein>/config.md`. Staat het daar niet, dan is dat het eerste
+dat wordt uitgezocht en niet iets om aan te nemen.
+
 Alles in kleine letters. Geen spaties, geen accenten, geen hoofdletters. Een
 verschil in hoofdlettergebruik levert twee categorieën op die er in een
 rapportage uitzien als één.
