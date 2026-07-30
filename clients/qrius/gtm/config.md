@@ -231,10 +231,10 @@ Een selectie uit de canonieke lijst in
 3. `seg-check.sh` tegen productie draaien voor de overige 22 routes, op
    `www.qrius.id`. De vier redirects plus de www-redirect zijn op 2026-07-30 op
    de edge bevestigd, de rest alleen lokaal.
-4. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.
-   Artikel 5 zegt nu dat Qrius geen tracking gebruikt die surfgedrag volgt; dat
-   klopt nog steeds (geen identificatie, geen derden, niet cross-site), maar
-   campagne-attributie wordt er niet genoemd. Zie de aantekening hieronder.
+4. Twee juridische vragen bij het cookiebeleid, door een jurist te beantwoorden
+   en niet door ons. Zie de aantekening hieronder: valt campagne-attributie
+   onder de toestemmingsvrijstelling, en is de partij die de attributie
+   uitvoert een derde ten opzichte van Qrius B.V.?
 5. Verzenddomein kiezen en opwarmen voordat er outbound vertrekt.
 6. Cal.com-eventtypes vastleggen in dit bestand.
 7. Waar de pijplijn wordt bijgehouden.
@@ -283,16 +283,35 @@ dan moet die op de canonieke host staan.
 ### Aantekening bij het cookiebeleid
 
 `/cookies` artikel 1 rekent local storage uitdrukkelijk tot "cookies", artikel 2
-kent twee categorieën (functioneel en anoniem analytisch) en artikel 5 stelt dat
-Qrius geen tracking gebruikt die surfgedrag volgt of gegevens naar derden
-stuurt.
+kent twee categorieën (functioneel en anoniem analytisch) en het artikel over
+tracking stelt dat Qrius geen technieken gebruikt die surfgedrag volgen of
+gegevens naar derden sturen.
 
 De first-touch-opslag past binnen die belofte: alleen campagnelabels, geen
-identificatie, eigen domein, geen derden, geen cross-site volgen. Ze wordt
-alleen nergens genoemd, en 90 dagen bewaartermijn is niet gedeclareerd. Er is op
-de site geen consentbanner om op aan te haken, dus die is er ook niet ingebouwd.
+identificatie, eigen domein, geen cross-site volgen.
 
-Of het beleid een zin krijgt, en of er een consentvraag voor moet komen, is een
-juridische afweging. `TODO: door Ward te beslissen.`
+**Op 2026-07-30 beschreven in het beleid**, als artikel 5 (Campagne-attributie),
+met de bewaartermijn van 90 dagen erin. Daarmee is de eerdere lacune gedicht:
+opslag die nergens werd genoemd. De artikelen 5 tot en met 10 zijn daarvoor
+opgeschoven naar 6 tot en met 11, dus een verwijzing naar een artikelnummer van
+vóór die datum wijst naar de verkeerde tekst.
+
+Twee vragen zijn daarmee **niet** beantwoord, en die zijn juridisch en niet
+technisch:
+
+1. **Toestemming.** Er is geen consentbanner op de site, dus het beleid gaat
+   ervan uit dat deze opslag onder de toestemmingsvrijstelling valt. Artikel 4
+   claimt "een geringe impact op je privacy" voor analytics en attributie erft
+   die claim nu. Of een label dat 90 dagen meegaat daaronder valt, kunnen wij
+   niet vaststellen.
+2. **Derden.** Het beleid zegt dat het label niet met derden wordt gedeeld. De
+   rijen komen terecht in een Supabase-project onder de organisatie van het
+   bureau dat de attributie uitvoert, niet onder Qrius B.V. Of dat bureau een
+   verwerker of een derde is, hangt af van de afspraak tussen beide partijen.
+   De verwerkerslijst in het beleid noemt Supabase, Vercel en Stripe en niet het
+   bureau zelf.
+
+Beide punten staan in de openstaande lijst hierboven. Een jurist beslist, niet
+een agent en niet de code.
 
 `TODO: door Ward in te vullen`
