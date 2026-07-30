@@ -217,11 +217,79 @@ toewijzing van alles ervoor.
 
 ## 6. Aanvullende waardelijsten van de datalaag
 
-Naast de drie dimensies kent de datalaag nog vier gesloten lijsten. Ze staan
+Naast de drie dimensies kent de datalaag nog vijf gesloten lijsten. Ze staan
 hier omdat er per domein **één** bron voor waardelijsten is (root-`CLAUDE.md`,
 sectie 5), niet verspreid over de plek waar ze toevallig gebruikt worden.
 Dezelfde regels gelden: eerst hier, dan de datalaag, dan pas in gebruik, en
 nooit hernoemen.
+
+### `motion`, wat voor traject het is
+
+| Waarde | Betekenis |
+|---|---|
+| `nieuw` | het account heeft nog geen oplossing in productie |
+| `vervanging` | het account heeft er al een live en zou moeten overstappen |
+
+Toegevoegd 2026-07-30.
+
+**Waarom deze lijst bestaat.** De twee bewegingen hebben een verschillende
+cyclus: bij een vervanging ligt er een bestaande keuze en meestal een contract
+onder, dus het duurt langer. Zonder dit veld zitten ze in dezelfde cijfers en
+verschuift één trage deal in een kleine n het gemiddelde genoeg om er een
+verkeerde conclusie op te bouwen.
+
+**`nieuw` is de default, en `NULL` bestaat hier niet.** Dat wijkt af van
+`segment` en `source`, waar `NULL` ongelabeld betekent. Bij een account dat nog
+niets heeft, is `nieuw` niet een gok maar de waarheid: er is niets onbekends aan.
+`NULL` zou hier dus "we weten het niet" zeggen over iets wat we wél weten.
+
+**Motion staat op accountniveau, niet per event.** Het is een eigenschap van de
+partij, niet van de aanraking. Het staat daarom één keer per account vast en
+wordt niet per rij opnieuw bepaald. Zou het per event staan, dan zou iemand het
+bij elke rij opnieuw moeten raden, en dan drijven de rijen van hetzelfde account
+uit elkaar.
+
+**Hoe motion bij een event terechtkomt.** Door te koppelen op klant plus
+account, niet door de waarde in het event te kopiëren:
+
+```sql
+select e.*,
+       case
+         when e.account is null then '(geen account)'
+         when a.motion is null then '(niet geregistreerd)'
+         else a.motion
+       end as motion
+from gtm_events e
+left join gtm_accounts a
+  on a.client = e.client
+ and lower(btrim(a.account)) = lower(btrim(e.account));
+```
+
+**Normaliseer aan beide zijden.** De uniciteit van een account is
+case-insensitief en zonder randspaties; de kolom bewaart wel de oorspronkelijke
+schrijfwijze. Een join op de ruwe waarden mist dus "Testmerk BV" tegenover
+"testmerk bv". Dat is precies het soort stille mismatch dat een vervanging als
+nieuw laat tellen.
+
+Drie dingen die daarbij horen:
+
+- **Een event zonder account heeft geen motion**, en dat is iets anders dan een
+  account dat niet geregistreerd staat. Een `site_visit` van een anonieme
+  bezoeker hoort bij niemand: de vraag is daar niet van toepassing. Houd die twee
+  in een rapportage gescheiden, zoals de `case` hierboven doet, anders lijkt een
+  registratiegat groter dan het is.
+- **Een account in de events dat niet geregistreerd staat, is een gat.** De
+  koppeling geeft dan geen motion. Dat is met opzet zichtbaar in plaats van
+  stilzwijgend `nieuw`, want anders wordt een vervanging per ongeluk als nieuw
+  geteld. Zoek ze op met de query in
+  [`../../../infra/brandpulse-gtm.md`](../../../infra/brandpulse-gtm.md).
+- **De ingest legt geen accounts aan.** Tracking mag nooit falen op een
+  ontbrekende registratie, dus er is bewust geen foreign key. Registreren is een
+  aparte, menselijke handeling.
+
+**Bij elke uitspraak over doorlooptijd of conversie wordt de motion vermeld, of
+de twee bewegingen worden apart gerapporteerd.** Een gemiddelde over beide is
+een getal waar niemand iets aan heeft.
 
 ### `event_type`, wat er gebeurde
 

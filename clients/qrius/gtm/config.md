@@ -21,6 +21,7 @@ root-`CLAUDE.md`.
 | gebeurtenissen | de GTM-events (`gtm_events`) | Supabase-project `Brandpulse GTM`, ref `syyhnsghnozaqctaavbl` | bestaat |
 | bezwaren | gecodeerde replies (`gtm_objections`) | zelfde project | bestaat |
 | aanbevelingen | voorspelling en uitkomst (`agent_recommendations`, met `domain` naast `client`) | zelfde project | bestaat |
+| accounts | motion per account (`gtm_accounts`) | zelfde project | bestaat, **nog leeg** |
 | productdata Qrius | platformdata van Qrius-klanten | Supabase-project `QRious`, ref `rylmnfaaylnnnbiuywlq` (productie) | bestaat, **buiten scope voor GTM** |
 | pijplijn | waar deals en stadia staan | `TODO` | |
 
@@ -208,10 +209,12 @@ Een selectie uit de canonieke lijst in
 
 ## Openstaand
 
-1. Beslissen waar de beweging "al een DPP-oplossing live" geregistreerd wordt.
-   De datalaag kan dat onderscheid nu niet uitdrukken, dus de scheiding uit
-   [`icp.md`](icp.md) is een belofte zonder mechaniek. **Vóór de eerste
-   outbound**, anders zitten beide bewegingen meteen in dezelfde cijfers.
+1. Accounts registreren in `gtm_accounts` zodra er gesprekken lopen. De tabel
+   staat er (2026-07-30), maar de ingest vult hem niet: registreren is een
+   menselijke handeling. Query 8 in
+   [`../../../infra/brandpulse-gtm.md`](../../../infra/brandpulse-gtm.md) laat
+   zien welke accounts in de events staan en nog niet geregistreerd zijn. Loop
+   die af vóórdat je een doorlooptijd of conversie per beweging rapporteert.
 2. De speelgoedregel aan de bron verifiëren, of hem laten staan als ongebruikt.
    Zie [`memory/learnings.md`](memory/learnings.md).
 3. `seg-check.sh` tegen productie draaien voor de overige 22 routes, op

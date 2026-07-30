@@ -39,6 +39,7 @@ niet de database.
 |---|---|---|
 | `gtm_events` | commerciële gebeurtenissen | `occurred_at`, `client`, `segment`, `source`, `asset`, `event_type` |
 | `gtm_objections` | gecodeerde replies | `occurred_at`, `client`, `segment`, `objection_code`, `verbatim` |
+| `gtm_accounts` | accounteigenschappen die niet per aanraking verschillen | `client`, `account`, `motion` |
 | `agent_recommendations` | voorspelling en uitkomst per advies | `client`, `domain`, `predicted_impact`, `status`, `actual_impact` |
 
 Alle gesloten waardelijsten worden afgedwongen met check-constraints die exact
@@ -64,6 +65,14 @@ aantoonbaar geen bron was. Ongelabelde rijen worden apart geteld en nooit
 verdeeld over de bekende waarden. `meta.labelled` geeft in één boolean aan of
 een rij gelabeld binnenkwam, zodat je daar op kunt filteren zonder drie kolommen
 op `is null` te toetsen.
+
+**`gtm_accounts.motion` mag juist NOOIT NULL zijn**, en dat is geen inconsistentie
+met het bovenstaande. Bij een account dat nog geen oplossing heeft, is `nieuw` de
+waarheid en niet een gok; `NULL` zou daar onbekendheid suggereren over iets wat
+we wel weten. De default is dus `nieuw`. Er is bewust **geen foreign key** vanuit
+`gtm_events.account`: de ingest mag nooit falen op een ontbrekende registratie.
+Een account dat wel in de events staat en niet hier, is daardoor een zichtbaar
+gat in plaats van een stille `nieuw`-telling. Query 8 zoekt ze op.
 
 ## Toegang
 
@@ -161,6 +170,33 @@ group by 1, 2, 3 order by 4 desc;
 -- 6. Vertraging tussen bron en aanlevering.
 select event_type, count(*) as n, max(ingested_at - occurred_at) as grootste_vertraging
 from gtm_events group by 1 order by 2 desc;
+
+-- 7. Verdeling over motion. "geen account" en "niet geregistreerd" blijven
+--    gescheiden: het eerste is niet van toepassing, het tweede is een gat.
+--    Normaliseer aan beide zijden, want de uniciteit van een account is
+--    case-insensitief terwijl de kolom de oorspronkelijke schrijfwijze bewaart.
+select case
+         when e.account is null then '(geen account)'
+         when a.motion is null then '(niet geregistreerd)'
+         else a.motion
+       end as motion,
+       count(*) as events
+from gtm_events e
+left join gtm_accounts a
+  on a.client = e.client
+ and lower(btrim(a.account)) = lower(btrim(e.account))
+group by 1 order by 2 desc;
+
+-- 8. Accounts die in de events voorkomen maar niet geregistreerd staan. Elke rij
+--    hier is een account waarvan de motion onbekend is, en dus een account dat
+--    in een doorlooptijdgemiddelde niet meegenomen mag worden.
+select e.client, e.account, count(*) as events, min(e.occurred_at) as eerste
+from gtm_events e
+left join gtm_accounts a
+  on a.client = e.client
+ and lower(btrim(a.account)) = lower(btrim(e.account))
+where e.account is not null and a.id is null
+group by 1, 2 order by 3 desc;
 ```
 
 Let bij query 3 op de drempel uit
