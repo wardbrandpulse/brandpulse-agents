@@ -70,7 +70,8 @@ Gebouwd in fase 1B stap 3. De code staat in `apps/website/src/lib/gtm/` en
 |---|---|
 | Bewaartermijn first touch | **90 dagen**, gerekend vanaf de eerste aanraking |
 | Opslag | `localStorage`, sleutel `qrius-gtm-first-touch` |
-| Sessiemarkering | `sessionStorage`, sleutel `qrius-gtm-session` |
+| Sessievenster | **30 minuten inactiviteit**, aflopend |
+| Sessiemarkering | `localStorage`, sleutel `qrius-gtm-last-seen` |
 | Ingest | `POST /api/gtm` op de marketingsite |
 | Diagnose | `GET /api/gtm` geeft `{"ok":true,"configured":…}` |
 
@@ -96,32 +97,38 @@ binnenkomen hebben een identiek record.
 
 | Event | Wanneer | Status |
 |---|---|---|
-| `site_visit` | eerste paginaweergave per **browsercontext**, zie waarschuwing | actief |
+| `site_visit` | eerste paginaweergave van een **sessie**, zie definitie hieronder | actief |
 | `pricing_view` | op `/get-qrius` | actief |
 | `meeting_booked` | Cal.com meldt een geslaagde boeking, op `/demo` en `/voor-partners` | actief |
 | `magazine_view` | zou op de magazinepagina komen | **niet aangesloten, die pagina bestaat niet** |
 
-**⚠️ `site_visit` is niet één per bezoekerssessie.** De bedoeling was één rij per
-sessie, omdat de drempel in
-[`significantie-drempels.md`](../../../domains/gtm/playbooks/significantie-drempels.md)
-in sessies per bron per week rekent. De sessiemarkering staat in
-`sessionStorage`, en dat is per **tabblad**, niet per bezoeker. Iemand die de
-site in drie tabbladen opent, levert drie rijen op.
+**Wat een sessie hier is.** Een reeks paginaweergaven met nooit meer dan **30
+minuten stilte** ertussen. Het venster schuift mee bij elke paginaweergave, ook
+bij de weergaven die geen event opleveren: het meet inactiviteit en geen totale
+duur. De markering staat in `localStorage`, dus **over tabbladen heen**: vijf
+tabbladen naast elkaar zijn één sessie.
 
-Vastgesteld op 2026-07-30 in de eerste productietest: één beschreven sessie gaf
-vier `site_visit`-rijen, waarvan twee op hetzelfde pad met een seconde ertussen.
-De first-touch-opslag in `localStorage` bleef in al die gevallen intact (zelfde
-`first_seen_at`), dus opslag werkte; het is het per-tabblad-karakter van
-`sessionStorage`, geen storing.
+Dertig minuten is de gangbare standaard, zodat de cijfers vergelijkbaar blijven
+met wat een klant in een andere analyticstool ziet. Het getal staat in
+`SESSION_TIMEOUT_MINUTES` in `apps/website/src/lib/gtm/attribution.ts`. Wijzig
+je het daar, wijzig het hier ook.
 
-**Gevolg voor rapportage:** een rij is op dit moment een tabblad-sessie en geen
-bezoekerssessie. Tel `site_visit` daarom als bovengrens, en toets de
-kanaaldrempel van 30 per bron per week met dat voorbehoud, tot dit is opgelost.
+Een andere browser of een ander apparaat is een eigen sessie. Er is geen
+bezoeker-identificatie, dus dezelfde persoon op laptop en telefoon levert twee
+sessies. Dat is een bewuste ondergrens aan wat we willen weten.
 
-`TODO: door Ward te beslissen`, of de sessiemarkering naar `localStorage` gaat
-met een aflopend venster (bijvoorbeeld 30 minuten inactiviteit), wat rijen per
-bezoeker in plaats van per tabblad oplevert. Dat verandert de betekenis van de
-kolom, dus het is een meetkeuze en geen bugfix.
+**⚠️ Breuk in de reeks op 2026-07-30.** Vóór die datum stond de markering in
+`sessionStorage` en telde een rij een **tabblad**, niet een sessie. Eén sessie
+gaf toen vier rijen. Die rijen blijven staan en worden niet herrekend.
+
+- **Omslagmoment:** `TODO`, het tijdstip vastleggen waarop de fix live ging.
+- Vergelijk geen periode van vóór het moment met een periode erna.
+- Rijen van vóór het moment zijn een **bovengrens** op het aantal sessies.
+- Elke analyse die over het moment heen kijkt, benoemt de breuk in "Wat ik niet
+  kon vaststellen".
+
+De onderbouwing staat in
+[`../../../memory/decisions.md`](../../../memory/decisions.md) (2026-07-30).
 
 Paginaweergaven worden al door Vercel geteld en worden hier niet gedupliceerd.
 
@@ -172,8 +179,8 @@ Een selectie uit de canonieke lijst in
 
 ## Openstaand
 
-1. Beslissen of `site_visit` per bezoeker gaat tellen in plaats van per
-   tabblad. Zie de waarschuwing hierboven; dit raakt de kanaaldrempel.
+1. Het omslagmoment van de sessiefix vastleggen in de waarschuwing hierboven,
+   zodra de deploy rond is.
 2. `seg-check.sh` tegen productie draaien voor de overige 22 routes. De vier
    redirects zijn op 2026-07-30 op de edge bevestigd, de rest alleen lokaal.
 3. Beslissen of het cookiebeleid een regel krijgt over first-touch-attributie.

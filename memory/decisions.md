@@ -16,6 +16,61 @@ Format per besluit:
 
 ---
 
+## 2026-07-30, `site_visit` telt sessies vanaf een aflopend venster van 30 minuten, met een breuk in de reeks
+
+**Context.** `site_visit` was bedoeld als één rij per sessie, omdat de
+kanaaldrempel in `significantie-drempels.md` in sessies per bron per week
+rekent. De markering stond in `sessionStorage`, en dat is per tabblad. De eerste
+productiemeting gaf vier rijen voor één sessie.
+
+**Waarom dit een fix werd en geen voorbehoud.** De fout is niet uniform. Hij
+groeit met hoe grondig iemand kijkt: wie na één pagina wegklikt levert één rij,
+wie in vijf tabbladen rondkijkt levert vijf. De vertekening zit daarmee precies
+op de betrokken bezoekers die je wilt onderscheiden, en dat is de groep waar de
+hele meting om gaat. Een voetnoot bij een systematisch scheve meting is geen
+oplossing, want elke afgeleide uitspraak blijft scheef.
+
+**Besluit.** De sessiemarkering staat in `localStorage`, dus over tabbladen
+heen, met een aflopend venster van **30 minuten inactiviteit**. Het venster
+schuift mee bij elke paginaweergave, ook bij weergaven die geen event opleveren:
+het meet stilte en geen totale duur. Dertig minuten omdat dat de gangbare
+standaard is, zodat de cijfers vergelijkbaar blijven met wat een klant in een
+andere analyticstool ziet.
+
+**Alternatieven.** Een vaste sessieduur in plaats van een aflopend venster:
+afgevallen, want dan wordt een bezoeker die drie kwartier doorleest op minuut 30
+een tweede sessie. Een eigen bezoeker-identificatie: afgevallen, dat zou het
+enige moment zijn waarop deze opzet een persistente identifier krijgt, en dat is
+precies wat we niet doen.
+
+**⚠️ Gevolg: er zit een breuk in de reeks.** De rijen van vóór dit besluit tellen
+tabblad-sessies, de rijen erna tellen bezoekerssessies. De oude rijen worden
+**niet** weggegooid en **niet** herrekend: herrekenen zou een getal opleveren dat
+nooit gemeten is, en weggooien maakt het onmogelijk om later te zien wat er
+gebeurd is.
+
+**Elke analyse die over het omslagmoment heen kijkt, moet de breuk benoemen.**
+Niet als voetnoot maar in de sectie "Wat ik niet kon vaststellen" van de output.
+Dat volgt rechtstreeks uit de bewijslastregel: een reeks waarvan de eenheid
+halverwege verandert, draagt geen conclusie over de hele reeks. Concreet:
+
+- Vergelijk geen week van vóór het omslagmoment met een week erna.
+- Reken geen trend over een periode die het moment omvat.
+- Toets de kanaaldrempel van 30 sessies per bron per week alleen binnen een
+  periode die geheel aan één kant van het moment valt.
+- De rijen van vóór het moment zijn een **bovengrens** op het aantal sessies,
+  nooit een ondergrens.
+
+Het omslagmoment is te bepalen uit de data: de vier tabblad-rijen van
+2026-07-30 zijn de laatste van de oude soort. De precieze grens is het moment
+waarop de fix op productie live ging; leg dat vast in
+`clients/qrius/gtm/config.md` zodra de deploy rond is.
+
+**Herzien wanneer.** Als de 30 minuten niet meer aansluiten bij hoe de doelgroep
+de site gebruikt, of als er ooit een reden komt om sessies met een
+bezoeker-identificatie te tellen. Dat tweede vraagt dan eerst een besluit over
+persoonsgegevens.
+
 ## 2026-07-29, de GTM-datalaag krijgt een eigen Supabase-project: `Brandpulse GTM`
 
 **Context.** `gtm_events`, `gtm_objections` en `agent_recommendations` moesten

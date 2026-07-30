@@ -31,6 +31,16 @@ variant haalt hem niet, dus de vergelijking mag niet.
   dat in de output benoemd.
 - **De drempel wordt vóór het kijken vastgesteld**, niet erna. Achteraf de
   drempel kiezen die net gehaald wordt, is de drempel omzeilen.
+- **De eenheid moet ergens gedefinieerd staan.** "30 sessies" betekent niets
+  zolang niet vastligt wat een sessie is. Elk project legt die definitie vast in
+  `clients/<klant>/<domein>/config.md`, met het getal erbij. Een drempel in een
+  ongedefinieerde eenheid is geen drempel.
+- **Verandert die definitie, dan zit er een breuk in de reeks.** Vergelijk geen
+  periode van voor het omslagmoment met een periode erna, reken geen trend over
+  dat moment heen, en toets de drempel alleen binnen een periode die geheel aan
+  één kant valt. De breuk hoort in "Wat ik niet kon vaststellen", niet in een
+  voetnoot. Rijen van vóór een omslag zijn vaak alleen bruikbaar als boven- of
+  ondergrens; noteer welke van de twee.
 - **Harde conversies halen deze drempels vrijwel nooit.** Geboekte afspraken en
   gewonnen deals komen in aantallen voor waar geen percentage over te berekenen
   valt. Rapporteer ze als absolute aantallen met de context erbij. Een
