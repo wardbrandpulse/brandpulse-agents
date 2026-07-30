@@ -98,6 +98,42 @@ De begrenzing staat als regel bij Cloudflare, dat al vóór de site staat. Zie
 [`../memory/decisions.md`](../memory/decisions.md) (2026-07-30). **Bouw hem niet
 alsnog in de route handler in.**
 
+#### De aanbevolen regel
+
+Cloudflare-dashboard, zone `qrius.id`, Security rules (oudere dashboards:
+Security → WAF → tab Rate limiting rules) → Create rule → Rate limiting rule.
+
+| Veld | Waarde |
+|---|---|
+| Naam | `gtm-ingest` |
+| Als (expressie) | `http.request.uri.path eq "/api/gtm" and http.request.method eq "POST"` |
+| Tellen op | IP-adres (Business en hoger: *IP with NAT support*) |
+| Aantal verzoeken | 20 |
+| Periode | 1 minuut |
+| Actie | Block |
+| Duur | 10 minuten, of de kortste die het plan aanbiedt |
+
+Waarom 20 per minuut: een echte bezoeker levert één `site_visit` per sessie van
+dertig minuten, plus af en toe een `pricing_view` of `magazine_view` per pagina.
+Ook wie snel doorklikt komt niet boven een handvol per minuut. De drempel ligt
+dus ver boven normaal gebruik en de regel raakt alleen wie stapelt.
+
+Alleen POST, zodat `GET /api/gtm` open blijft. Dat is de diagnose-endpoint die
+`seg-check.sh` en een handmatige controle gebruiken.
+
+**Geen Managed Challenge op deze regel.** Een `fetch()` uit een pagina kan geen
+challenge oplossen, dus het werkt als een blokkade maar leest in de logs als iets
+anders. Block is hetzelfde effect en wel navolgbaar.
+
+**Voorwaarde:** de regel geldt alleen voor verkeer dat Cloudflare proxyt. Staat
+het DNS-record voor `www` op DNS only, dan doet de regel niets. Controleer dat
+eerst, want dat is een stille faalvorm.
+
+Wat een treffer kost: een geweigerd verzoek is een verloren meetrij, geen stukke
+pagina. De client-fetch is afgeschermd, dus de bezoeker merkt er niets van. Dat
+maakt een valse treffer goedkoop, maar ook onzichtbaar. Wie wil weten of de
+regel ooit vuurt, kijkt in Security → Events en filtert op service `ratelimit`.
+
 Wat de applicatie wél doet, en wat je daar niet mee moet verwarren: een
 same-origin-filter op de POST, uitdrukkelijk een drempel en geen muur, en
 `verification` op `meeting_booked`, wat de eigenlijke bescherming van het enige
