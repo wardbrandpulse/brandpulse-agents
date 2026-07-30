@@ -217,7 +217,7 @@ toewijzing van alles ervoor.
 
 ## 6. Aanvullende waardelijsten van de datalaag
 
-Naast de drie dimensies kent de datalaag nog vijf gesloten lijsten. Ze staan
+Naast de drie dimensies kent de datalaag nog zes gesloten lijsten. Ze staan
 hier omdat er per domein **één** bron voor waardelijsten is (root-`CLAUDE.md`,
 sectie 5), niet verspreid over de plek waar ze toevallig gebruikt worden.
 Dezelfde regels gelden: eerst hier, dan de datalaag, dan pas in gebruik, en
@@ -310,6 +310,45 @@ een getal waar niemand iets aan heeft.
 
 `meeting_booked` is de enige harde conversie. Alle andere zijn tussenstappen en
 worden nooit als conversie gerapporteerd.
+
+**En een `meeting_booked` telt pas als conversie nadat hij is bevestigd.** Zie
+`verification` hieronder.
+
+### `verification`, of een gemelde conversie is nagetrokken
+
+| Waarde | Betekenis |
+|---|---|
+| `onbevestigd` | door de browser gemeld, niet nagetrokken bij de bron |
+| `bevestigd` | bij de bron teruggevonden |
+| `afgewezen` | bij de bron **niet** teruggevonden, dus vermoedelijk onjuist |
+
+Toegevoegd 2026-07-30. Geldt alleen voor `meeting_booked`; bij elk ander
+event-type is de kolom leeg, want daar is de vraag niet van toepassing.
+
+**Waarom dit bestaat.** De harde conversie wordt gemeld door de browser van de
+bezoeker, en een browser is een publieke, aanpasbare omgeving. Iedereen die de
+ingest-URL kent, kan een boeking melden die niet bestaat. Bij een metriek waar de
+n klein is, is dat schadelijker dan het klinkt: twintig verzonnen boekingen zijn
+genoeg om een verkeerde beslissing op te bouwen, en ze zijn achteraf niet van
+echte te onderscheiden.
+
+**`onbevestigd` is de begintoestand, niet een foutmelding.** Een echte boeking
+komt óók als `onbevestigd` binnen. Het zegt alleen: dit is nog niet nagetrokken.
+
+**`afgewezen` wordt niet verwijderd.** Een melding die niet klopt, blijft staan
+met die status. Verwijderen maakt onzichtbaar dat er iets gemeld is, en juist het
+patroon van afgewezen meldingen is het signaal dat er iemand aan het rommelen is.
+
+**De regel voor rapportage:** alleen `bevestigd` telt mee in een
+conversiecijfer. Zie
+[`significantie-drempels.md`](significantie-drempels.md). `onbevestigd` mag wel
+genoemd worden als "gemeld, nog niet nagetrokken", nooit als conversie.
+
+**De verificatie zelf is een aparte stap** en zit bewust niet in de ingest. Zou
+de ingest willen verifiëren, dan hangt het vastleggen van een boeking af van de
+beschikbaarheid van de boekingsdienst, en dan verlies je de melding als die
+dienst even niet antwoordt. Hoe er wordt nagetrokken, staat per project in
+`clients/<klant>/<domein>/config.md`.
 
 ### `objection_code`, waar de reply op vastliep
 

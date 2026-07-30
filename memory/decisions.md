@@ -16,6 +16,87 @@ Format per besluit:
 
 ---
 
+## 2026-07-30, rate limiting hoort aan de edge, niet in de applicatie
+
+**Context.** De ingest-endpoint van de tracking is publiek en schrijft naar de
+database. Er zat geen enkele begrenzing op. Gemeten vanaf één machine: 200
+verzoeken in 0,73 seconde, alle 200 geaccepteerd, dus circa 275 per seconde
+zonder tegenwerking. Een rij is ongeveer 600 bytes inclusief indexen, dus grofweg
+600 MB per miljoen rijen; met 8 GB schijf is dat rond de dertien uur werk voor
+één laptop.
+
+**Besluit.** Rate limiting ligt bij Cloudflare, dat al vóór de site staat. **Niet
+in de route handler en niet met een extra dienst erbij.**
+
+**Alternatieven, en waarom ze afvielen.**
+
+- **Een limiter in de route handler.** Afgevallen op mechaniek, niet op smaak: de
+  state zit per serverless-instantie, verdwijnt bij een koude start en wordt niet
+  gedeeld tussen instanties. Dat is geen strenge limiet maar een limiet die
+  meeschaalt met het aantal instanties, dus precies het tegenovergestelde van wat
+  je wil onder druk. Het ziet eruit als bescherming en is het niet, en dat is
+  erger dan niets, want er wordt op vertrouwd.
+- **Een gedeelde teller in een externe sleutelwaardedienst.** Werkt technisch,
+  maar voegt een dienst, een dependency en een faalpad toe aan een pad dat nooit
+  mag falen. Bij dit volume is dat overengineering.
+
+**Gevolg.** Er staat in de applicatie bewust géén limiter, en dat is een keuze en
+geen omissie. **Bouw hem daar niet alsnog in.** Loopt de limiet niet goed, dan is
+de knop bij Cloudflare de plek, niet de code.
+
+**Wat de applicatie wél doet**, en wat je niet met rate limiting moet verwarren:
+
+- **`verification` op `meeting_booked`.** Dit is de eigenlijke bescherming van het
+  enige getal dat telt. Rate limiting maakt vervuiling lastiger; verificatie maakt
+  het cijfer betrouwbaar. Zie het besluit hieronder.
+- **Een same-origin-filter.** Uitdrukkelijk een **drempel en geen muur**: `Origin`
+  en `Sec-Fetch-Site` zijn met elke HTTP-client te vervalsen. Het weert het losse
+  scriptje dat de endpoint vindt, niet iemand die het probeert. Zo staat het ook
+  in de code gedocumenteerd, zodat er later niet op vertrouwd wordt.
+
+**Herzien wanneer.** Als de Cloudflare-regel structureel echt verkeer raakt, of
+als de site ooit achter iets anders dan Cloudflare komt te staan. In dat tweede
+geval verhuist de limiet mee naar die laag, niet naar de applicatie.
+
+## 2026-07-30, een door de browser gemelde boeking is geen bevestigde conversie
+
+**Context.** `meeting_booked` is de enige harde conversie en wordt gemeld door de
+browser van de bezoeker. Die browser is een publieke, aanpasbare omgeving:
+iedereen die de ingest-URL kent kan een boeking melden die niet bestaat. Bij een
+metriek waar de n klein is, is dat schadelijker dan een volle database. Twintig
+verzonnen meldingen zijn genoeg om een verkeerde beslissing op te bouwen, en
+achteraf zijn ze niet van echte te onderscheiden.
+
+**Besluit.** `gtm_events.verification` met `onbevestigd`, `bevestigd` en
+`afgewezen`. Elke boeking komt binnen als `onbevestigd`. Alleen `bevestigd` telt
+mee in een conversiecijfer; dat staat in
+`domains/gtm/playbooks/significantie-drempels.md`, zodat het een rekenregel is en
+geen goede bedoeling.
+
+**Het mechanisme dat vergeten onmogelijk maakt.** Een check-constraint eist dat
+een `meeting_booked` een status heeft en dat elk ander event-type er géén heeft.
+Zonder die constraint zou een rij zonder status stilzwijgend als conversie
+meegeteld kunnen worden, en dat is precies het gat.
+
+**Verificatie is een aparte stap, en zit bewust niet in de ingest.** Zou de
+ingest natrekken, dan hangt het vastleggen van een boeking af van de
+beschikbaarheid van de boekingsdienst, en verlies je een echte melding als die
+dienst even niet antwoordt. Vastleggen en natrekken zijn twee dingen. De
+koppeling met de boekingsdienst is daarmee geen blokkade voor deze scheiding.
+
+**Alternatieven.** Onbevestigde meldingen weigeren bij ingest: afgevallen, dan
+verlies je ook de echte. Ze verwijderen na afwijzing: afgevallen, want juist het
+patroon van afgewezen meldingen is het signaal dat iemand aan het rommelen is.
+
+**Gevolg.** Zolang er niets natrekt, staat elke boeking op `onbevestigd` en is het
+conversiecijfer per definitie nul. Dat is de bedoeling: een leeg cijfer met een
+wachtrij ernaast is eerlijker dan een cijfer dat niemand kan vertrouwen. In elke
+rapportage hoort het aantal onbevestigde meldingen naast het conversiecijfer.
+
+**Herzien wanneer.** Als er een koppeling is die automatisch natrekt, dan de
+vraag of `onbevestigd` nog een zichtbare toestand hoeft te zijn of alleen een
+tussenstand van seconden.
+
 ## 2026-07-30, `site_visit` telt sessies vanaf een aflopend venster van 30 minuten, met een breuk in de reeks
 
 **Context.** `site_visit` was bedoeld als één rij per sessie, omdat de

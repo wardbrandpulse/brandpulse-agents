@@ -87,6 +87,22 @@ Alle toegang loopt via de service role:
 - **lezen:** analyse via het dashboard of via een agent met de service-role
   sleutel.
 
+### Rate limiting ligt bij Cloudflare, niet hier
+
+De ingest-endpoint is publiek en er zit **geen limiter in de applicatie**. Dat is
+een keuze en geen omissie: een limiter in een serverless route handler houdt zijn
+state per instantie, verliest hem bij een koude start en schaalt mee met het
+aantal instanties, dus hij lijkt op bescherming zonder het te zijn.
+
+De begrenzing staat als regel bij Cloudflare, dat al vóór de site staat. Zie
+[`../memory/decisions.md`](../memory/decisions.md) (2026-07-30). **Bouw hem niet
+alsnog in de route handler in.**
+
+Wat de applicatie wél doet, en wat je daar niet mee moet verwarren: een
+same-origin-filter op de POST, uitdrukkelijk een drempel en geen muur, en
+`verification` op `meeting_booked`, wat de eigenlijke bescherming van het enige
+getal is dat telt.
+
 Er zijn geen eindgebruikers op dit project en er is geen inlog. Komt die er ooit
 wel, dan zijn policies vanaf dat moment verplicht en is deny-by-default niet
 langer voldoende.
@@ -150,13 +166,35 @@ from gtm_events
 where occurred_at > now() - interval '7 days'
 group by 1, 2 order by 3 desc;
 
--- 4. Harde conversies, met de first touch die ze meekregen.
-select occurred_at, segment, source, asset,
+-- 4. Harde conversies. LET OP: alleen 'bevestigd' telt als conversie. Een rij op
+--    'onbevestigd' is een melding uit een browser die nog niet is nagetrokken.
+select occurred_at, verification, segment, source, asset,
        meta->'detail'->>'surface' as vlak,
        meta->>'first_seen_at' as eerste_aanraking
 from gtm_events
 where event_type = 'meeting_booked'
 order by occurred_at desc;
+
+-- 4b. Het conversiecijfer met de wachtrij ernaast. Rapporteer deze twee altijd
+--     samen: een cijfer zonder de wachtrij leest als een compleet beeld.
+select count(*) filter (where verification = 'bevestigd')   as bevestigd,
+       count(*) filter (where verification = 'onbevestigd') as wacht_op_natrekken,
+       count(*) filter (where verification = 'afgewezen')   as afgewezen
+from gtm_events where event_type = 'meeting_booked';
+
+-- 4c. Wat er nagetrokken moet worden. Werk deze lijst af tegen de agenda van de
+--     boekingsdienst, en zet daarna verification plus verified_at.
+select id, occurred_at, segment, source, account, contact,
+       meta->'detail'->>'surface' as vlak
+from gtm_events
+where event_type = 'meeting_booked' and verification = 'onbevestigd'
+order by occurred_at;
+
+--     Bevestigen:  update gtm_events set verification = 'bevestigd',
+--                    verified_at = now() where id = '...';
+--     Afwijzen:    zelfde, met 'afgewezen'. Nooit verwijderen: het patroon van
+--                  afgewezen meldingen is het signaal dat iemand aan het
+--                  rommelen is.
 
 -- 5. Waar wijkt de laatste bron af van de first touch? Toont of de
 --    first-touch-regel daadwerkelijk iets doet.

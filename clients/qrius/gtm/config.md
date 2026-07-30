@@ -78,8 +78,10 @@ Gebouwd in fase 1B stap 3. De code staat in `apps/website/src/lib/gtm/` en
 | Opslag | `localStorage`, sleutel `qrius-gtm-first-touch` |
 | Sessievenster | **30 minuten inactiviteit**, aflopend |
 | Sessiemarkering | `localStorage`, sleutel `qrius-gtm-last-seen` |
-| Ingest | `POST /api/gtm` op de marketingsite |
-| Diagnose | `GET /api/gtm` geeft `{"ok":true,"configured":…}` |
+| Ingest | `POST /api/gtm` op de marketingsite, alleen same-origin |
+| Diagnose | `GET /api/gtm` geeft `{"ok":true,"configured":…}`, blijft open |
+| Rate limiting | **bij Cloudflare**, niet in de applicatie |
+| Harde conversie | komt binnen als `onbevestigd`, moet worden nagetrokken |
 
 **De bewaartermijn van 90 dagen** is gekozen op de lengte van de
 oriëntatieperiode hier: een outboundmail, weken later een magazine, daarna pas
@@ -186,6 +188,15 @@ Zonder een ingevuld verzenddomein wordt er geen outbound verstuurd.
 
 - **Harde conversie:** een geboekte afspraak via Cal.com. Dit is de **enige**
   harde conversie. Alle andere events zijn tussenstappen.
+- **⚠️ Een gemelde boeking is nog geen conversie.** De site meldt de boeking uit
+  de browser, en die komt binnen als `verification = 'onbevestigd'`. Alleen
+  `bevestigd` telt mee in een conversiecijfer. Natrekken is een handmatige stap
+  tegen de Cal.com-agenda; query 4c in
+  [`../../../infra/brandpulse-gtm.md`](../../../infra/brandpulse-gtm.md) geeft de
+  werklijst. `TODO`, afspreken hoe vaak die lijst wordt afgewerkt, want zolang
+  er niets natrekt is het conversiecijfer per definitie nul.
+  Een automatische koppeling met Cal.com zou dit kunnen overnemen, maar die is
+  bewust geen voorwaarde: vastleggen en natrekken zijn twee stappen.
 - **Dragen de boekingen de taxonomie?** In onze eigen rapportage wel. De site
   luistert op `bookingSuccessful` van de Cal-embed en schrijft een
   `meeting_booked`-event weg met de first-touch-attributie uit de browser, plus

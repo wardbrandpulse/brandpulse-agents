@@ -41,6 +41,16 @@ variant haalt hem niet, dus de vergelijking mag niet.
   één kant valt. De breuk hoort in "Wat ik niet kon vaststellen", niet in een
   voetnoot. Rijen van vóór een omslag zijn vaak alleen bruikbaar als boven- of
   ondergrens; noteer welke van de twee.
+- **Alleen bevestigde conversies tellen.** Een harde conversie die door een
+  browser is gemeld en niet bij de bron is nagetrokken, staat op `onbevestigd`
+  (zie [`taxonomie.md`](taxonomie.md)) en gaat **niet** in een conversiecijfer.
+  De reden is niet netheid maar rekenkunde: de melding komt uit een publieke,
+  aanpasbare omgeving, en bij een kleine n zijn een paar verzonnen meldingen
+  genoeg om de uitkomst te bepalen. Onbevestigde meldingen mogen wel genoemd
+  worden, als "gemeld, nog niet nagetrokken", met hun eigen aantal ernaast.
+  Staat er een conversiecijfer in de output, dan hoort daarbij hoeveel meldingen
+  nog onbevestigd zijn; anders leest een lezer een compleet beeld waar er een
+  wachtrij achter zit.
 - **Harde conversies halen deze drempels vrijwel nooit.** Geboekte afspraken en
   gewonnen deals komen in aantallen voor waar geen percentage over te berekenen
   valt. Rapporteer ze als absolute aantallen met de context erbij. Een
