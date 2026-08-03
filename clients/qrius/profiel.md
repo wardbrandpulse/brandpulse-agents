@@ -4,7 +4,7 @@ Domeinonafhankelijk. Wat hier staat blijft staan als er later een tweede domein
 bij komt.
 
 - **Aangemaakt:** 2026-07-29
-- **Laatst bijgewerkt:** 2026-07-29
+- **Laatst bijgewerkt:** 2026-08-03
 - **Actieve domeinen:** `gtm`
 - **Relatie tot Brandpulse:** eigen SaaS-product van het bureau, geen externe
   opdrachtgever. Dat maakt Qrius de eerste klantcontext in deze repo, met
@@ -68,8 +68,8 @@ Vastgelegd in het Qrius-brandbook 1.0. Twee duidelijk verschillende registers,
 en dat onderscheid is geen detail maar een regel in het product:
 
 - **Zakelijk, richting merken en producenten.** Sober, wit-dominant, geen
-  gradients, één huisletter. Dit is het register van het portaal en van
-  vrijwel alle GTM-communicatie richting merken.
+  gradients, één huisletter (Poppins). Dit is het register van het portaal en
+  van vrijwel alle GTM-communicatie richting merken.
 - **Levendiger, richting consumenten.** Meer kleur en beeld toegestaan. Dit
   register is voor de pagina na een QR-scan en niet voor outbound.
 
@@ -81,6 +81,22 @@ Verder:
 - **Geen lange streepjes** (em dash, en dash) in enige tekst. Dat is een harde
   afspraak in de productrepository en geldt ook voor GTM-teksten. Gebruik een
   komma, een punt, een dubbele punt of haakjes.
+- **Één uitzondering op de huisletter, vastgesteld 2026-08-03.** Het
+  GTIN-bijschrift onder een geëxporteerde QR-code staat in Roboto Mono 400.
+  Reden: dat is een functioneel label op de verpakking van een klant en geen
+  Qrius-communicatie, en het moet leesbaar blijven op circa 1 mm cijferhoogte,
+  waar een proportionele letter dichtloopt. Dit is de enige plek waar een tweede
+  letter mag. Het is geen vrijbrief voor Roboto Mono in enige andere uiting, en
+  dus ook niet in GTM-materiaal. Vastgelegd in `CLAUDE.md` van de
+  productrepository; het brandbook zelf staat buiten die repo en heeft dezelfde
+  regel nog nodig.
+
+Wat er onder een QR-code komt te staan, is de **EAN/GTIN zoals opgeslagen, niet
+meer en niet minder** (vastgesteld 2026-08-03). Geen `(01)`-prefix zoals de GS1
+HRI-notatie voorschrijft, geen opvulling naar 14 cijfers, geen label ervoor. Dat
+de QR-inhoud de op 14 gepadde variant bevat en het bijschrift niet, is bedoeld.
+Relevant voor GTM zodra er beeldmateriaal met een QR-code in outbound of op de
+site gebruikt wordt.
 
 `TODO: door Ward in te vullen`, of er woorden zijn die Qrius bewust wel of niet
 gebruikt in commerciële teksten. Het brandbook regelt de vorm, niet de
