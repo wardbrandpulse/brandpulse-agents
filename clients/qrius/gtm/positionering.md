@@ -3,7 +3,7 @@
 Wat Qrius is, voor wie, en waartegen. Dit bestand voedt elke outboundtekst, elke
 landingspagina en elke reactie op een bezwaar.
 
-- **Laatst bijgewerkt:** 2026-07-29
+- **Laatst bijgewerkt:** 2026-08-03
 - **Status:** skelet. De categorie en de alternatieven zijn afgeleid uit het
   product en uit de vastgestelde bezwaarcodes. De belofte, het bewijs en de
   antwoorden op bezwaren zijn **niet** ingevuld, want die zijn niet af te leiden
@@ -98,9 +98,17 @@ alleen als hij aan de bron geverifieerd is.
 
 ## Woorden
 
-- **Wel gebruiken:** `TODO`
-- **Niet gebruiken:** `TODO`
+- **Wel gebruiken:** `scanbezoeker` voor de persoon die een QR-code scant, `scan`
+  voor de gebeurtenis.
+- **Niet gebruiken:** `scanner` voor een persoon. Dat woord betekent in het
+  Nederlands een apparaat, wat in retail, logistiek en GS1 juist de dagelijkse
+  betekenis is.
 - **Vaststaand:** geen lange streepjes in enige tekst. Zie
   [`../profiel.md`](../profiel.md).
 
-`TODO: door Ward in te vullen`
+De volledige afspraak, inclusief de gebruiksregels en wat er met bestaande veld-
+en eventnamen gebeurt, staat onder "Woordkeuze" in
+[`../profiel.md`](../profiel.md). Die is domeinonafhankelijk en geldt dus ook in
+het product, niet alleen in GTM-teksten.
+
+`TODO: door Ward in te vullen`, de overige wel- en niet-woorden.

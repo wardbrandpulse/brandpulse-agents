@@ -98,9 +98,45 @@ de QR-inhoud de op 14 gepadde variant bevat en het bijschrift niet, is bedoeld.
 Relevant voor GTM zodra er beeldmateriaal met een QR-code in outbound of op de
 site gebruikt wordt.
 
-`TODO: door Ward in te vullen`, of er woorden zijn die Qrius bewust wel of niet
-gebruikt in commerciële teksten. Het brandbook regelt de vorm, niet de
-woordkeuze.
+## Woordkeuze
+
+Het brandbook regelt de vorm, niet de woordkeuze. Wat hieronder staat is dus een
+aparte afspraak, en hij geldt in het product én in GTM-teksten.
+
+**Wie een QR-code scant heet een `scanbezoeker`** (vastgesteld 2026-08-03 door
+Ward). "Scanner" wordt niet meer gebruikt voor een persoon: in het Nederlands is
+dat primair een apparaat, en juist in retail, logistiek en GS1 is dat de
+dagelijkse betekenis. Het woord verwart bovendien de persoon met de
+gebeurtenis.
+
+| Woord | Wat het is | Wat het niet is | Status |
+|---|---|---|---|
+| `scan` | de gebeurtenis, één keer een code lezen | geen persoon, één persoon levert meerdere scans | vastgesteld |
+| `scanbezoeker` | de persoon achter de scans, uniek geteld | geen portaalgebruiker, dat is de merkzijde | vastgesteld |
+| `contact` | een scanbezoeker die toestemming gaf om benaderd te worden | geen scanbezoeker zonder toestemming | **voorstel**, nog niet bevestigd |
+
+De kop uit het portaal wordt daarmee: "Hoeveel scanbezoekers gaven toestemming om
+benaderd te worden?"
+
+Bij het gebruik:
+
+- **Niet verder samenstellen.** "Scanbezoekersoverzicht" en
+  "scanbezoekersdetail" lopen vast. Schrijf "overzicht van scanbezoekers".
+- **Niet afkorten tot "scanner" of "bezoeker"** als het krap is. Is er geen
+  ruimte, herschrijf de zin dan zonder het woord ("Toestemming na een scan").
+  Een afkorting die op één scherm ontstaat, wordt elders overgenomen en dan is
+  "scanner" terug.
+- **"Gebruiker" blijft van de merkzijde.** Wie in het portaal inlogt is een
+  gebruiker, wie een code scant nooit.
+- **Alleen de labellaag wijzigt.** Veld- en eventnamen die `scanner` heten
+  blijven staan tot ze bewust gemigreerd worden. Hernoemen breekt de historie,
+  zie regel 5 in de root-`CLAUDE.md`.
+
+Nog niet doorgevoerd in het product: dit is de vastgestelde term, de plekken in
+de portaal-app zijn nog niet geïnventariseerd.
+
+`TODO: door Ward in te vullen`, of er verder woorden zijn die Qrius bewust wel of
+niet gebruikt in commerciële teksten.
 
 ## Gevoeligheden
 
