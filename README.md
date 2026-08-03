@@ -12,6 +12,7 @@ waaronder de klantisolatieregel en de promotieregel voor leringen.
 ```
 CLAUDE.md                       universele regels, domeinonafhankelijk
 README.md
+TODO.md                         openstaande punten per eigenaar, geen onderbouwing
 memory/
   decisions.md                  architectuur- en methodiekbesluiten met datum
 domains/
