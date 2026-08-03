@@ -7,7 +7,7 @@ root-`CLAUDE.md`.
 
 **Geen sleutels, tokens of wachtwoorden in dit bestand.**
 
-- **Laatst bijgewerkt:** 2026-07-30
+- **Laatst bijgewerkt:** 2026-08-03
 - **Status:** datalaag en tracking staan live op productie en er komen events
   binnen. Het ICP is vastgesteld (versie 2, n=0). Zie "Openstaand" voor wat er
   nog moet gebeuren vóór de eerste outbound.
@@ -240,6 +240,10 @@ Een selectie uit de canonieke lijst in
 7. Waar de pijplijn wordt bijgehouden.
 8. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
    zetten. De component staat klaar, de pagina bestaat nog niet.
+9. PR #1115 in de productrepo mergen of sluiten. Die PR voegt artikel 5
+   (Campagne-attributie) aan `/cookies` toe en staat sinds 2026-07-30 open, dus
+   het gepubliceerde beleid beschrijft de opslag nog niet. Zie de aantekening
+   onderaan.
 
 ### ⚠️ Hostconsistentie, en waarom dat de attributie raakt
 
@@ -290,11 +294,15 @@ gegevens naar derden sturen.
 De first-touch-opslag past binnen die belofte: alleen campagnelabels, geen
 identificatie, eigen domein, geen cross-site volgen.
 
-**Op 2026-07-30 beschreven in het beleid**, als artikel 5 (Campagne-attributie),
-met de bewaartermijn van 90 dagen erin. Daarmee is de eerdere lacune gedicht:
-opslag die nergens werd genoemd. De artikelen 5 tot en met 10 zijn daarvoor
-opgeschoven naar 6 tot en met 11, dus een verwijzing naar een artikelnummer van
-vóór die datum wijst naar de verkeerde tekst.
+**Voorgesteld op 2026-07-30, nog niet live** (gecontroleerd op 2026-08-03). De
+tekst staat in PR #1115 in de productrepo, als artikel 5 (Campagne-attributie)
+met de bewaartermijn van 90 dagen erin, en die PR staat nog open. Op `main` heeft
+`/cookies` nog tien artikelen en komt attributie er niet in voor. De lacune,
+opslag die nergens wordt genoemd, is dus nog niet gedicht.
+
+Bij merge schuiven de artikelen 5 tot en met 10 op naar 6 tot en met 11, en wijst
+een verwijzing naar een artikelnummer van vóór dat moment naar de verkeerde
+tekst. Nu nog niet: de nummering op de site is ongewijzigd.
 
 Twee vragen zijn daarmee **niet** beantwoord, en die zijn juridisch en niet
 technisch:

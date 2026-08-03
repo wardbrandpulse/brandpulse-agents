@@ -16,6 +16,10 @@ stil toegevoegd.
       ([`infra/brandpulse-gtm.md`](infra/brandpulse-gtm.md))
 - [ ] Naamkwestie `qrius.id` vs `qrius.io`: besluit nemen vóór het eerste
       drukwerk bij een klant
+- [ ] PR #1115 in de productrepo (cookiebeleid, artikel 5 Campagne-attributie)
+      mergen of sluiten. Zolang hij openstaat, beschrijft het gepubliceerde
+      beleid de attributie niet
+      ([`clients/qrius/gtm/config.md`](clients/qrius/gtm/config.md))
 
 ## Dennis
 
@@ -40,5 +44,21 @@ stil toegevoegd.
       ([`infra/brandpulse-gtm.md`](infra/brandpulse-gtm.md))
 - [ ] Speelgoedregel verifiëren voordat M1 voor die sector gebruikt wordt
       ([`clients/qrius/gtm/memory/learnings.md`](clients/qrius/gtm/memory/learnings.md))
-- [ ] Regex-fix inhoudsopgave op `/cookies` en `/privacy`, indien nog niet
-      gedaan (onderbouwing staat niet in deze repo, zie de productrepo)
+- [ ] Regex-fix inhoudsopgave op `/cookies` en `/privacy`: de zijbalk strippet
+      het artikelnummer met `/^Artikel \d+, /` (komma) terwijl de titels een
+      dubbele punt gebruiken, dus hij matcht nooit. Staat nog open op `main`,
+      raakt de GTM-tracking niet (productrepo, twee bestanden)
+
+## Nog geen eigenaar
+
+Deze staan in [`clients/qrius/gtm/config.md`](clients/qrius/gtm/config.md) onder
+"Openstaand" zonder eigenaar. Toewijzen is een beslissing van Ward, dus ze staan
+hier zonder naam in plaats van bij iemand die ze niet heeft aangenomen.
+
+- [ ] Accounts registreren in `gtm_accounts` zodra er gesprekken lopen; de
+      ingest vult die tabel niet
+- [ ] Verzenddomein kiezen en opwarmen voordat er outbound vertrekt
+- [ ] Cal.com-eventtypes vastleggen in `config.md`
+- [ ] Vastleggen waar de pijplijn wordt bijgehouden
+- [ ] `magazine_view` op de magazinepagina zetten zodra die pagina bestaat; de
+      component staat klaar
