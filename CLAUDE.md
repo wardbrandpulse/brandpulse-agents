@@ -69,6 +69,9 @@ Dit is de enige regel in dit bestand zonder uitzonderingen.
   om over klant B te adviseren.
 - Wordt er halverwege een sessie naar een andere klant gevraagd, dan is het
   antwoord: dat vraagt een nieuwe sessie. Niet alsnog beide inlezen.
+- `clients/_template/` is structuur en geen klantcontext: het bevat lege
+  sjablonen zonder klantdata en mag naast één klantmap gelezen worden. Komt er
+  ooit voorbeelddata in, dan is het wél klantcontext.
 
 Kennis die over klanten heen mag reizen, reist uitsluitend via de geanonimiseerde
 sector- en playbooklagen, en uitsluitend via de promotieregel hieronder. Dat is
