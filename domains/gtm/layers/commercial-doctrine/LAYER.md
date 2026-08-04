@@ -251,6 +251,16 @@ laag en die beperking verdwijnt terwijl hij zou moeten blijven. De twee alternat
 zijn slechter: een bron aanwijzen die de beperking niet werkelijk oplegt maakt de
 projectieregel decoratief, en de regel weglaten laat de beperking vallen.
 
+**Categorie 1 en 2 sluiten elkaar niet uit; categorie 3 wel.** Een regel kan
+laag-eigen zijn **en** een bron buiten de laag hebben. Dan worden beide genoteerd, want
+ze zeggen verschillende dingen: laag-eigen zegt dat verwijderen niets versoepelt, en
+de externe bron zegt dat het gedekt blijft mocht dezelfde tactiek ooit langs een andere
+route binnenkomen. Uitsluiting 2 is daar het duidelijkste geval.
+
+Categorie 3 is de enige die iets over verwijderbaarheid **ontkent**, en daarom de
+enige die exclusief is: een regel met een bron buiten de laag kan nooit categorie 3
+zijn.
+
 **Waar elke regel valt, staat in de twee auditlijsten:**
 [`99-grenzen.md`](99-grenzen.md) sectie "Herkomst per grens" en
 [`90-uitsluitingen.md`](90-uitsluitingen.md) sectie "Herkomst per uitsluiting".

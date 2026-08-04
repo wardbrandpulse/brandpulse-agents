@@ -16,6 +16,86 @@ Format per besluit:
 
 ---
 
+## 2026-08-04, een voorspelling die niet te weerleggen is, wordt niet weggeschreven
+
+**Context.** De laag wordt afgerekend op voorspelkwaliteit, met een verdict van drie
+waarden waarvan `niet-vast-te-stellen` er een is. Bij het uitwerken bleek dat die
+derde waarde geen restcategorie is maar de waarschijnlijkste faalvorm: niet dat de
+doctrine ernaast zit, maar dat ze te vaag voorspelt om ernaast te kunnen zitten. Zonder
+tegenmaatregel kan de laag op onweerlegbaarheid overleven, en dat is precies wat de
+maatstaf moest uitsluiten.
+
+De eerste voorspelling die werd opgeschreven liet het probleem meteen zien. "`wat-is-dpp`
+wordt de meest voorkomende bezwaarcode" is een rangordeclaim over zeven categorieën, en
+die is bij lage aantallen niet te beslechten.
+
+**Besluit.** Twee dingen.
+
+1. **Een voorspelling die bij het verwachte volume niet te weerleggen is, hoort niet
+   weggeschreven te worden.** Dan is het geen voorspelling maar een mening met een
+   tijdstempel. Getoetst vóór het wegschrijven: bij welk aantal waarnemingen is dit te
+   beslechten, en halen we dat binnen de evaluatietermijn.
+2. **Het aandeel `niet-vast-te-stellen` wordt bijgehouden en is zelf een bevinding.**
+   Loopt het op, dan is de eerste bevinding niet de kwaliteit van de voorspellingen
+   maar de formulering ervan. Blijft het oplopen ná herformulering, dan is het de laag.
+
+Praktisch bij kleine aantallen: paarsgewijze vergelijkingen in plaats van
+rangordeclaims. "A komt vaker voor dan B" is met tien waarnemingen zinvol, "A is de
+meest voorkomende van zeven" niet. De eerste voorspelling is daarop herschreven naar
+`wat-is-dpp` tegen `geen-budget`, de twee codes die staan voor de twee verklaringen die
+tegen elkaar in gaan.
+
+**Alternatieven.** Een drempel zetten voor een rangordeclaim over zeven categorieën:
+afgevallen. Om die drempel te kiezen moet je weten welke n volstaat, en dat weten we bij
+n=0 niet. Een getal nu vastleggen is gokken, en dat is wat de bewijslastregel moet
+voorkomen. De drempel wordt later gezet, mét informatie in plaats van ervoor. Tot die
+tijd: absolute aantallen, expliciet gelabeld als anekdotisch.
+
+**Gevolg.** Er komt geen nieuwe drempel in `significantie-drempels.md`.
+
+**Kandidaat voor promotie, niet gepromoveerd.** De onderliggende regel is niet
+laagspecifiek en niet GTM-specifiek: hij geldt voor elke voorspelling in de
+aanbevelingentabel, in elk domein. Hij staat nu in
+`domains/gtm/layers/commercial-doctrine/80-meetkoppeling.md`, dus op de smalste plek.
+Met één domein en één laag is er geen tweede onafhankelijke context, dus de
+promotieregel uit de root-`CLAUDE.md` is niet gehaald. Dezelfde behandeling als het
+diagnoseprincipe (2026-07-29) en de breuk-in-de-reeksregel (2026-07-30).
+
+**Herzien wanneer.** Bij een tweede laag of een tweede domein dat voorspellingen
+wegschrijft. Blijkt de regel daar ook te gelden, dan is dát de tweede context.
+
+## 2026-08-04, `domeinbreed` als expliciete segmentwaarde, alleen in de aanbevelingentabel
+
+**Context.** Een advies kan over alle segmenten gaan. De eerste opzet gebruikte
+daarvoor `segment = NULL` in `agent_recommendations`. Maar in `gtm_events` en
+`gtm_objections` betekent `NULL` **ongelabeld**, dus "we weten het niet". Dezelfde
+`NULL` met twee betekenissen over twee tabellen is de ambiguïteit die over een jaar
+bijt, en documenteren lost dat alleen op voor wie de documentatie leest.
+
+**Besluit.** `agent_recommendations.segment` wordt `not null`, met één extra waarde
+`domeinbreed`, vastgelegd in `domains/gtm/playbooks/taxonomie.md`, sectie 6. Dat is het
+bronbestand; de datalaag volgt daarachteraan.
+
+**⚠️ De waarde geldt uitsluitend in de aanbevelingentabel.** Niet in `gtm_events` en
+niet in `gtm_objections`. Een aanraking heeft een segment of hij is ongelabeld;
+"domeinbreed" bestaat daar niet. Zou de waarde in de eventlijst belanden, dan
+verschijnt hij in elke segmentrapportage naast de echte segmenten alsof hij er een van
+is, en dat verbiedt sectie 5 van de root-`CLAUDE.md`.
+
+**Alternatieven.** `NULL` met een gedocumenteerde afwijking, zoals bij
+`gtm_accounts.motion`: afgevallen. Dat precedent gaat over een waarde die juist géén
+`NULL` mag zijn; hier zou het gaan over `NULL` met een tweede betekenis, en dat is het
+omgekeerde. Een expliciete waarde legt zichzelf uit en wordt bij ingest afgedwongen.
+
+**Gevolg.** Bij een advies is geen meetgat mogelijk: het wordt geschreven door iemand
+die zijn eigen scope kent, dus er is geen derde toestand "ongelabeld advies". De
+migratie zet de kolom defensief: kolom erbij, bestaande rijen vullen, dan `not null`.
+Bij het schrijven van het voorstel stonden er nul rijen en schreef geen enkele
+applicatie naar de tabel.
+
+**Herzien wanneer.** Als een tweede domein adviezen wegschrijft met een andere
+segmentindeling. Dan is de vraag of `segment` daar dezelfde lijst kan gebruiken.
+
 ## 2026-08-04, de toets voor een laag-eigen beperking is of de agent hem ook zonder de laag zou voorstellen
 
 **Vervangt punt 2 en punt 3 van het besluit hieronder over de projectieregel. Dat
@@ -37,6 +117,13 @@ uitsluitingen door elkaar.
 | 1, projectie | gedrag dat er zonder de laag ook is | ja, en die is er | neutraal |
 | 2, laag-eigen en removal-neutraal | alleen wat de laag introduceert | nee | neutraal |
 | 3, laag-eigen en niet removal-neutraal | gedrag dat er zonder de laag ook is | ja, maar die is er niet | **versoepelt iets** |
+
+**Categorie 1 en 2 sluiten elkaar niet uit; categorie 3 wel.** Een regel kan laag-eigen
+zijn én een bron buiten de laag hebben, en dan worden beide genoteerd. Dat is strikt
+informatiever: laag-eigen zegt dat verwijderen niets versoepelt, de externe bron zegt
+dat het gedekt blijft mocht dezelfde tactiek langs een andere route binnenkomen.
+Uitsluiting 2 en 6 zijn beide. Categorie 3 is de enige die iets over verwijderbaarheid
+ontkent en dus de enige die exclusief is.
 
 **Gevolg, en dat is de kern van deze correctie.** Categorie 3 ontbrak, en daar valt
 precies één regel in: het verbod op geconstrueerde schaarste en tijdsdruk. Dat staat

@@ -33,6 +33,38 @@ De drempels in
 [`significantie-drempels.md`](../../playbooks/significantie-drempels.md) blijven
 ongewijzigd. Voorspelkwaliteit is een maatstaf **ernaast**, geen versoepeling.
 
+### Het aandeel `niet-vast-te-stellen` is zelf een bevinding
+
+Dit is niet een restcategorie die je wegstreept. **Een hoog aandeel
+`niet-vast-te-stellen` betekent dat de laag voorspellingen produceert die niet te
+weerleggen zijn, en dat is een gebrek in de laag.**
+
+Het is ook de faalvorm die hier het meest waarschijnlijk optreedt. Niet dat de
+doctrine ernaast zit, maar dat ze te vaag voorspelt om ernaast te kunnen zitten. Zou
+die verhouding niet worden bijgehouden, dan kan de laag op onweerlegbaarheid
+overleven, en dat is precies wat deze maatstaf moet uitsluiten.
+
+Daarom hoort bij elke rapportage over de voorspelkwaliteit de verhouding erbij: hoeveel
+beoordeeld, en hoeveel daarvan niet vast te stellen. Loopt dat aandeel op, dan is de
+eerste bevinding niet de kwaliteit van de voorspellingen maar de formulering ervan.
+
+### Een voorspelling die niet te weerleggen is, wordt niet weggeschreven
+
+De regel die daaruit volgt, en hij geldt vooraf en niet achteraf:
+
+> **Een voorspelling die bij het verwachte volume niet te weerleggen is, hoort niet
+> weggeschreven te worden. Dan is het geen voorspelling maar een mening met een
+> tijdstempel.**
+
+Toets vóór het wegschrijven: bij welk aantal waarnemingen is deze uitspraak te
+beslechten, en halen we dat aantal binnen de termijn waarop we hem willen evalueren?
+Nee, dan wordt de uitspraak herformuleerd tot iets dat wél te beslechten is, of hij
+gaat niet de tabel in.
+
+Praktisch betekent dat bij kleine aantallen: **paarsgewijze vergelijkingen in plaats
+van rangordeclaims.** "A komt vaker voor dan B" is met tien waarnemingen al zinvol;
+"A is de meest voorkomende van zeven" niet.
+
 ## 2. Waarom een blokkade geen advies is, en dus een eigen tabel krijgt
 
 Een geblokkeerd doctrinevoorstel moet worden vastgelegd (zie
@@ -98,7 +130,7 @@ principiële beperking, precies zoals daar.
 | `source_layer` | text, nullable | welke laag het advies voortbracht. `NULL` = geen laag, dus een gewoon agentadvies |
 | `source_layer_version` | integer, nullable | verplicht zodra `source_layer` gezet is. Een advies van versie 1 is niet hetzelfde advies als van versie 2 |
 | `layer_intensity` | text, nullable | `licht`, `standaard` of `scherp`. Verplicht zodra `source_layer` gezet is. Niet `off`: op die stand produceert de laag niets |
-| `segment` | text, nullable | zodat een voorspelling tegen de segmentdrempel van twintig verzonden te leggen is. Nu niet mogelijk |
+| `segment` | text, **not null** | zodat een voorspelling tegen de segmentdrempel van twintig verzonden te leggen is. Nu niet mogelijk. Vier taxonomiewaarden plus `domeinbreed` |
 | `prediction_verdict` | text, nullable | `gehouden`, `niet-gehouden` of `niet-vast-te-stellen`. Verplicht zodra `evaluated_at` gezet is |
 
 **Waarom `prediction_verdict` geen boolean is.** Er zijn drie eerlijke uitkomsten, niet
@@ -110,15 +142,27 @@ die als zodanig gerapporteerd kan worden en niet als nul. Zelfde vorm als
 nuance vast, het verdict maakt tellen mogelijk. Dezelfde verhouding als tussen
 `objection_code` en `verbatim` in `gtm_objections`.
 
-**Eén afwijking die ik expliciet ter beoordeling voorleg.** In `gtm_events` betekent
-`segment = NULL` **ongelabeld**, dus "we weten het niet". Hier zou `NULL` betekenen
-**niet segmentspecifiek**, en dat is iets anders. Dat mag alleen als het net zo
-uitgelegd wordt als bij `gtm_accounts.motion`, waar de afwijking van de
-`NULL`-conventie een eigen onderbouwing heeft: een advies wordt geschreven door een
-agent die zijn eigen scope kent, dus er is geen meetgat. Er is geen derde toestand
-"ongelabeld advies". Wil je die uitleg niet, dan is het alternatief een `NOT NULL`
-met een expliciete waarde voor domeinbreed, en dan moet die waarde in
-[`taxonomie.md`](../../playbooks/taxonomie.md) staan.
+**Waarom `segment` niet nullable is, met een expliciete waarde erbij.** In
+`gtm_events` betekent `segment = NULL` **ongelabeld**, dus "we weten het niet". Zou
+`NULL` hier "niet segmentspecifiek" betekenen, dan heeft dezelfde `NULL` twee
+betekenissen over twee tabellen, en dat is het soort ambiguïteit dat over een jaar
+bijt. Documenteren lost dat alleen op voor wie de documentatie leest.
+
+Daarom `not null`, met de waarde `domeinbreed` voor een advies dat over alle
+segmenten gaat. Die waarde staat sinds 2026-08-04 in
+[`taxonomie.md`](../../playbooks/taxonomie.md), sectie 6, dus in het bronbestand en
+niet hier: `agent_recommendations` is domeinoverstijgend en die waarde bestaat dus
+los van deze laag.
+
+Er is bij een advies ook geen meetgat mogelijk, want het wordt geschreven door iemand
+die zijn eigen scope kent. Er is geen derde toestand "ongelabeld advies". Zelfde
+onderbouwing als bij `gtm_accounts.motion`, waar `NULL` om dezelfde reden niet
+bestaat.
+
+**⚠️ `domeinbreed` mag nooit in `gtm_events` of `gtm_objections` terechtkomen.** Een
+aanraking heeft een segment of hij is ongelabeld. Zou de waarde in de eventlijst
+belanden, dan verschijnt hij in elke segmentrapportage naast de echte segmenten alsof
+hij er een van is. Dat staat als waarschuwing bij de waarde in `taxonomie.md`.
 
 ### `agent_blocked_proposals`, nieuwe tabel
 
@@ -127,7 +171,7 @@ met een expliciete waarde voor domeinbreed, en dan moet die waarde in
 | `id`, `created_at` | uuid, timestamptz | zoals elders |
 | `client`, `domain` | text, not null | zoals `agent_recommendations` |
 | `source_layer`, `source_layer_version`, `layer_intensity` | text/integer/text, not null | een blokkade komt per definitie uit een laag, dus hier niet nullable |
-| `segment` | text, nullable | zelfde betekenis en zelfde afweging als hierboven |
+| `segment` | text, **not null** | zelfde regel als hierboven: vier taxonomiewaarden plus `domeinbreed` |
 | `proposal` | text, not null | wat de doctrine voorstelde |
 | `blocked_by` | text, not null | welke grens of uitsluiting het tegenhield, als `grens-9` of `uitsluiting-4` |
 | `alternative` | text, not null | wat er in plaats daarvan is gedaan. Verplicht, ook als het antwoord "niets" is |
@@ -169,13 +213,25 @@ kleine letters, koppelteken, `<soort>-<nummer>`.
 Uit fase B volgt een toetsbare voorspelling met een herkomst, en die is het waard om
 als eerste weg te schrijven.
 
-**De voorspelling.** `wat-is-dpp` wordt de meest voorkomende bezwaarcode.
-
 **Waar hij uit volgt.** De positionering van de klant stelt dat onbekendheid met de
 categorie het dominante probleem is. De doctrine stelt vast dat het
 viercategorieënmodel uit de bron daar geen vakje voor heeft, omdat het de bekendheid
 van de categorie als aanname heeft. Beide wijzen dezelfde kant op, en dat maakt het
 een voorspelling in plaats van een observatie.
+
+**De voorspelling, paarsgewijs geformuleerd:** `wat-is-dpp` komt vaker voor dan
+`geen-budget`.
+
+**Waarom niet "de meest voorkomende code".** Dat was de eerste formulering en hij is
+onbruikbaar: een rangordeclaim over zeven categorieën is bij lage aantallen niet te
+beslechten, dus hij zou in `niet-vast-te-stellen` landen en niets opleveren. Dat is
+exact de faalvorm uit sectie 1. Een paarsgewijze vergelijking is met tien replies al
+zinvol.
+
+De keuze voor `geen-budget` als tegenhanger is niet willekeurig: dat is de code die je
+zou verwachten als het probleem prijs was in plaats van begrip. De twee codes staan
+dus voor de twee verklaringen die tegen elkaar in gaan, en dat maakt de vergelijking
+informatief in beide richtingen.
 
 Als rij, zodra de kolommen bestaan:
 
@@ -185,26 +241,27 @@ Als rij, zodra de kolommen bestaan:
 | `domain` | `gtm` |
 | `subject` | verdeling van bezwaarcodes bij de eerste gecodeerde replies |
 | `recommendation` | eerst de categorie uitleggen, dan differentiëren. Een eerste bericht dat met onderscheid begint, praat langs de meeste ontvangers heen |
-| `predicted_impact` | `wat-is-dpp` is de meest voorkomende code bij de eerste twintig gecodeerde replies in dit segment |
+| `predicted_impact` | `wat-is-dpp` komt vaker voor dan `geen-budget` in de gecodeerde replies van dit segment |
 | `source_layer` | `commercial-doctrine` |
 | `source_layer_version` | `1` |
 | `layer_intensity` | `standaard` |
-| `segment` | het eerst bewerkte segment |
+| `segment` | het eerst bewerkte segment, dus een taxonomiewaarde en niet `domeinbreed` |
 | `status` | `voorgesteld` |
 
-**Wat hem weerlegt:** een andere code die vaker voorkomt. En één voorbehoud dat
-vooraf vastligt: groeit `anders` boven een tiende van de replies, dan ontbreekt er een
-code en is de hele verdeling onbruikbaar. Dat gaat dan vóór de voorspelling, conform
+**Wat hem weerlegt:** `geen-budget` komt even vaak of vaker voor. Eén voorbehoud ligt
+vooraf vast: groeit `anders` boven een tiende van de replies, dan ontbreekt er een code
+en is de hele verdeling onbruikbaar. Dat gaat dan vóór de voorspelling, conform
 [`taxonomie.md`](../../playbooks/taxonomie.md), sectie 6.
 
-**⚠️ Er is geen drempel voor een verdeling over bezwaarcodes.**
-[`significantie-drempels.md`](../../playbooks/significantie-drempels.md) kent er drie
-(A/B, kanaal, outbound per segment) en geen daarvan gaat over replyverdeling. Twintig
-gecodeerde replies is dus een **voorgesteld** evaluatiemoment en geen bestaande
-drempel. Twee eerlijke uitwegen, en dit is een keuze voor Ward: registreer het als
-nieuw evaluatiemoment via `memory/decisions.md` conform sectie 4 van dat playbook, of
-rapporteer de verdeling in absolute aantallen en expliciet als anekdotisch. Zonder een
-van beide is "meest voorkomend" een percentage-uitspraak zonder drempel.
+**Geen nieuwe drempel.**
+[`significantie-drempels.md`](../../playbooks/significantie-drempels.md) kent drie
+drempels en geen daarvan gaat over een verdeling over bezwaarcodes. Er komt er ook
+geen bij: om een drempel te zetten voor zo'n vergelijking moet je weten welke n
+volstaat, en dat weten we bij n=0 niet. Een getal nu vastleggen is gokken, en dat is
+precies wat de bewijslastregel moet voorkomen.
+
+**Dus: absolute aantallen, expliciet gelabeld als anekdotisch**, met beide codes en hun
+aantal ernaast. De drempel wordt later gezet, mét informatie in plaats van ervoor.
 
 ## 5. De evaluatiedrempel van de laag
 
@@ -220,13 +277,22 @@ van beide is "meest voorkomend" een percentage-uitspraak zonder drempel.
   blokkades en door welke grens.
 - **Het oordeel is van Ward.** De laag levert de cijfers, niet de conclusie.
 
-**Twee signalen die eruit halen rechtvaardigen:**
+**Drie signalen die eruit halen rechtvaardigen:**
 
 1. De voorspelde richting hield niet vaker stand dan hij faalde. Dan produceert de
    laag geen bruikbare voorspellingen.
-2. Het blokkadepatroon laat zien dat de laag structureel voorstelt wat onze grenzen
+2. **Het aandeel `niet-vast-te-stellen` loopt op.** Dan produceert de laag
+   voorspellingen die niet te weerleggen zijn, en dat is geen neutrale uitkomst maar
+   een gebrek. Dit is de faalvorm die hier het meest waarschijnlijk optreedt, en zonder
+   dit signaal zou de laag op onweerlegbaarheid kunnen overleven. Zie sectie 1.
+3. Het blokkadepatroon laat zien dat de laag structureel voorstelt wat onze grenzen
    verbieden. Dan past de doctrine niet op deze markt, en dat is een uitkomst en geen
    storing.
+
+**Signaal 2 wordt eerst als formuleringsprobleem behandeld, niet meteen als grond om
+te verwijderen.** Een voorspelling die niet te beslechten was, kan herformuleerd
+worden. Blijft het aandeel oplopen ná herformulering, dan is het de laag en niet de
+formulering.
 
 **Wat deze drempel niet zegt:** of de laag geld heeft opgeleverd. Die vraag blijft
 open, en de drempels waarmee hij te beantwoorden zou zijn, blijven staan zoals ze
@@ -265,9 +331,30 @@ alter table public.agent_recommendations
 comment on column public.agent_recommendations.source_layer is
   'Welke methodieklaag dit advies voortbracht. NULL = geen laag.';
 comment on column public.agent_recommendations.segment is
-  'Taxonomiewaarde of NULL. NULL = niet segmentspecifiek. LET OP: wijkt af van gtm_events, waar NULL ongelabeld betekent.';
+  'Taxonomiewaarde of domeinbreed. Nooit NULL: bij een advies is er geen meetgat, want de schrijver kent zijn eigen scope. domeinbreed hoort NOOIT in gtm_events.';
 comment on column public.agent_recommendations.prediction_verdict is
-  'Hield de voorspelde richting stand: gehouden, niet-gehouden of niet-vast-te-stellen. Alleen de eerste twee tellen mee in de n.';
+  'Hield de voorspelde richting stand: gehouden, niet-gehouden of niet-vast-te-stellen. Alleen de eerste twee tellen mee in de n. Een oplopend aandeel niet-vast-te-stellen is zelf een bevinding: dan voorspelt de laag te vaag om weerlegbaar te zijn.';
+
+-- segment is not null met een expliciete waarde voor domeinbreed. Dezelfde NULL met
+-- twee betekenissen over twee tabellen is de ambiguiteit die later bijt. Zie
+-- domains/gtm/playbooks/taxonomie.md, sectie 6.
+--
+-- Defensief in deze volgorde: kolom erbij, bestaande rijen vullen, dan not null. Bij
+-- het schrijven van dit voorstel stonden er nul rijen en schreef geen enkele
+-- applicatie naar deze tabel, dus de backfill raakt niets. Hij staat er voor het
+-- geval dat bij toepassen anders is.
+update public.agent_recommendations set segment = 'domeinbreed' where segment is null;
+
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'agent_recommendations'
+      and column_name = 'segment' and is_nullable = 'YES'
+  ) then
+    alter table public.agent_recommendations alter column segment set not null;
+  end if;
+end $$;
 
 do $$
 begin
@@ -296,9 +383,10 @@ begin
       check (source_layer_version is null or source_layer_version > 0);
   end if;
 
+  -- Vier taxonomiewaarden plus domeinbreed. Die laatste bestaat ALLEEN hier.
   if not exists (select 1 from pg_constraint where conname = 'agent_recommendations_segment_check') then
     alter table public.agent_recommendations add constraint agent_recommendations_segment_check
-      check (segment is null or segment in ('ebike', 'retail', 'food', 'bureau'));
+      check (segment in ('ebike', 'retail', 'food', 'bureau', 'domeinbreed'));
   end if;
 
   -- Beoordeeld betekent: er is een verdict. Zonder deze constraint kan een advies
@@ -343,7 +431,9 @@ create table if not exists public.agent_blocked_proposals (
   source_layer_version integer not null,
   layer_intensity      text not null,
 
-  segment              text,
+  -- Zelfde regel als in agent_recommendations: not null, met domeinbreed als
+  -- expliciete waarde. Een blokkade heeft altijd een scope.
+  segment              text not null,
 
   proposal             text not null,
   -- Vrij veld met formatregel, als grens-9 of uitsluiting-4. Bewust GEEN gesloten
@@ -359,7 +449,7 @@ create table if not exists public.agent_blocked_proposals (
   constraint agent_blocked_proposals_intensity_check check (layer_intensity in ('licht', 'standaard', 'scherp')),
   constraint agent_blocked_proposals_versie_positief check (source_layer_version > 0),
   constraint agent_blocked_proposals_segment_check check (
-    segment is null or segment in ('ebike', 'retail', 'food', 'bureau')
+    segment in ('ebike', 'retail', 'food', 'bureau', 'domeinbreed')
   ),
   constraint agent_blocked_proposals_client_niet_leeg check (length(btrim(client)) > 0),
   constraint agent_blocked_proposals_blocked_by_niet_leeg check (length(btrim(blocked_by)) > 0)

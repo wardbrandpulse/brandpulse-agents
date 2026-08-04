@@ -32,6 +32,16 @@ die regel geldt.
 Van de negen grenzen zijn er zeven categorie 1, één categorie 2 (grens 5) en één
 categorie 3 (grens 9).
 
+**Categorie 1 en 2 sluiten elkaar niet uit.** Een regel kan laag-eigen zijn én een
+bron buiten de laag hebben, en dan worden beide genoteerd. Ze zeggen verschillende
+dingen: laag-eigen zegt dat verwijderen niets versoepelt, de externe bron zegt dat het
+gedekt blijft mocht dezelfde tactiek langs een andere route binnenkomen. Bij de
+grenzen komt die combinatie nu niet voor; bij de uitsluitingen wel, zie
+[`90-uitsluitingen.md`](90-uitsluitingen.md), punt 2 en punt 6.
+
+**Categorie 3 is wél exclusief.** Hij is de enige die iets over verwijderbaarheid
+ontkent, dus een regel met een bron buiten de laag kan nooit categorie 3 zijn.
+
 **Categorie 3 is geen restcategorie en geen nette oplossing.** Het is een gat, en
 het staat als gat gelabeld omdat de andere twee uitwegen slechter zijn: een bron
 aanwijzen die de beperking niet werkelijk oplegt maakt de projectieregel

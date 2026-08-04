@@ -45,6 +45,13 @@ géén bron, dan is het geen uitsluiting maar een gat, en dan hoort het bij de
 grenzen met dat label. Dat was het geval bij geconstrueerde schaarste: zie punt 3
 hieronder, dat daarom is verplaatst.
 
+**Laag-eigen en een bron hebben sluiten elkaar niet uit, en dan noteren we beide.**
+Punt 2 is daar het duidelijkste geval: de constructie komt alleen via de doctrine
+binnen, én prijsbepaling valt al buiten dit domein. Dat is strikt informatiever dan
+één label. Laag-eigen zegt dat verwijderen niets versoepelt; de externe bron zegt dat
+het gedekt blijft mocht dezelfde tactiek langs een andere route binnenkomen,
+bijvoorbeeld omdat iemand hem zelf bedenkt.
+
 De volledige beoordeling staat onderaan in "Herkomst per uitsluiting".
 
 ---
@@ -190,18 +197,28 @@ reden bovenaan dit bestand, maar hij is niet de enige.
 | # | Uitsluiting | Zou de agent dit ook zonder de laag doen? | Bron buiten de laag | Categorie |
 |---|---|---|---|---|
 | 1 | loterijen en weggeefacties als instapaanbod | **ja**, plausibel zonder enige doctrine | de Wet op de kansspelen, met corroboratie in de productdocumentatie van de eerste klant | 1, projectie |
-| 2 | facturatie per 28 dagen voor dertien cycli | nee, de constructie komt met de doctrine | geen, en geen nodig | 2, laag-eigen en removal-neutraal |
+| 2 | facturatie per 28 dagen voor dertien cycli | nee, de constructie komt met de doctrine | `domains/gtm/CLAUDE.md` sectie 1: een factuurcyclus kiezen om een extra cyclus te maken is prijsbepaling, en die valt buiten dit domein | **2 en 1 samen** |
 | 3 | gefabriceerde schaarste en tijdsdruk | ja | geen | **verplaatst naar grens 9, categorie 3** |
-| 4 | de anti-garantie | nee | geen, en geen nodig | 2, laag-eigen en removal-neutraal |
+| 4 | de anti-garantie | nee | geen, en geen nodig. Het toonplafond (grens 4) dekt de formulering, niet het mechanisme | 2, laag-eigen en removal-neutraal |
 | 5 | proefperiode met boeteclausule | ja, een proefvorm is een gewoon voorstel | `domains/gtm/CLAUDE.md` sectie 1: juridische afweging valt buiten dit domein, dus de agent mag de boetevariant niet zelf beoordelen | 1, projectie van een bevoegdheidsgrens |
-| 6 | de volumenorm van honderd acties per dag | nee, niet die norm. "Meer versturen" wel | `outbound-principes.md` principe 6 dekt het aangrenzende gedrag onafhankelijk | 2 voor de norm, en het aangrenzende gedrag is categorie 1 |
+| 6 | de volumenorm van honderd acties per dag | nee, niet die norm. "Meer versturen" wel | `outbound-principes.md` principe 6 dekt het aangrenzende gedrag onafhankelijk | **2 en 1 samen** |
 | 7 | schaarste of limiet op datavergaring | ja, plausibel bij een opdracht om upgradedruk te maken | de vastgelegde propositiekeuze van de klant, vindplaats bij het activeringsblok | 1, projectie |
 
 **Wat categorie 2 hier betekent.** Verwijder de laag en er verandert geen gedrag,
 want de mechanica die het punt verwerpt bestaat dan niet meer.
 
-**Bij de punten 1, 5, 6 en 7 blijft er ook zonder de laag een beperking staan.** De
-wet, de domeinscope, principe 6 en de propositiekeuze van de klant hangen niet van
-deze laag af en golden al voordat hij bestond. Dat is de reden dat ze een bron
-hebben en nodig hebben: zonder die bron zouden ze categorie 3 zijn geweest, en dan
-zou verwijderen iets versoepelen.
+**Punt 2 en punt 6 zijn beide categorieën tegelijk**, en die combinatie is
+informatiever dan één label. Laag-eigen zegt: verwijderen versoepelt niets. De
+externe bron zegt: mocht iemand dezelfde tactiek zelf bedenken, dan is hij nog
+steeds gedekt. Bij punt 6 loopt dat via principe 6, dat op elke volumeafspraak
+geldt, of die uit een doctrine komt of niet.
+
+**Bij de punten 1, 2, 5, 6 en 7 blijft er ook zonder de laag een beperking staan.**
+De wet, de domeinscope, principe 6 en de propositiekeuze van de klant hangen niet van
+deze laag af en golden al voordat hij bestond. Dat is de reden dat de punten met
+mechanica die ook zonder de laag bestaat een bron nodig hebben: zonder die bron
+zouden ze categorie 3 zijn geweest, en dan zou verwijderen iets versoepelen.
+
+**Alleen punt 4 is uitsluitend categorie 2.** Het toonplafond uit grens 4 dekt hoe je
+iets formuleert, niet of je het mechanisme inzet, dus daar is geen externe bron voor
+en is er ook geen nodig.

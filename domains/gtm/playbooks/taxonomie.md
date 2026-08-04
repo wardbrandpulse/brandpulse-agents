@@ -217,7 +217,7 @@ toewijzing van alles ervoor.
 
 ## 6. Aanvullende waardelijsten van de datalaag
 
-Naast de drie dimensies kent de datalaag nog zes gesloten lijsten. Ze staan
+Naast de drie dimensies kent de datalaag nog zeven gesloten lijsten. Ze staan
 hier omdat er per domein **één** bron voor waardelijsten is (root-`CLAUDE.md`,
 sectie 5), niet verspreid over de plek waar ze toevallig gebruikt worden.
 Dezelfde regels gelden: eerst hier, dan de datalaag, dan pas in gebruik, en
@@ -365,6 +365,37 @@ dienst even niet antwoordt. Hoe er wordt nagetrokken, staat per project in
 Groeit `anders` boven een tiende van de replies, dan ontbreekt er een code. Dat
 gaat vóór het beantwoorden van de bezwaren: een restcategorie die groeit,
 verbergt precies het patroon dat je zoekt.
+
+### `segment` in de aanbevelingentabel: één waarde extra, en alleen daar
+
+In de aanbevelingentabel geldt naast de vier `segment`-waarden uit sectie 1 één
+extra waarde:
+
+| Waarde | Betekenis |
+|---|---|
+| `domeinbreed` | het advies geldt niet voor één segment maar voor het hele domein |
+
+Toegevoegd 2026-08-04.
+
+**Waarom deze waarde bestaat, en waarom niet als `NULL`.** Een advies dat over
+alle segmenten gaat, is een echte categorie en geen ontbrekend label. `NULL`
+betekent in `gtm_events` en `gtm_objections` **ongelabeld**, dus "we weten het
+niet". Dezelfde `NULL` in twee tabellen met twee betekenissen is precies de
+ambiguïteit die over een jaar bijt, en documenteren lost dat alleen op voor wie de
+documentatie leest. Een expliciete waarde legt zichzelf uit en wordt bij ingest
+afgedwongen.
+
+Er is bij een advies ook geen meetgat mogelijk: het wordt geschreven door iemand
+die zijn eigen scope kent. Er bestaat dus geen derde toestand "ongelabeld advies",
+en daarom is de kolom daar `not null`. Dezelfde soort onderbouwing als bij `motion`
+hierboven, waar `NULL` om dezelfde reden niet bestaat.
+
+**⚠️ Deze waarde geldt uitsluitend in de aanbevelingentabel.** Voeg hem **niet** toe
+aan `gtm_events` of `gtm_objections`. Een aanraking heeft altijd een segment of hij
+is ongelabeld; "domeinbreed" bestaat daar niet. Zou de waarde toch in de
+eventlijst terechtkomen, dan verschijnt hij in elke segmentrapportage naast de echte
+segmenten alsof hij er een van is, en dat is precies wat sectie 5 van de
+root-`CLAUDE.md` verbiedt.
 
 ### `status`, waar een aanbeveling staat
 
