@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+#
+# Controleert of de laag `commercial-doctrine` echt verwijderbaar is.
+#
+# Verwijderbaarheid is een belofte zolang niemand hem test. Dit script maakt er
+# een controle van. Het test twee beweringen, en het faalt op elke andere
+# verwijzing dan de twee die bij ontwerp zijn toegestaan.
+#
+#   ./infra/laag-check.sh
+#
+# BEWERING 1, onvoorwaardelijk
+#   Geen enkel bestand onder domains/ buiten de laag verwijst naar de laag.
+#   Alleen de laag verwijst naar buiten, nooit omgekeerd. Dit is de bewering die
+#   de methodiek verwijderbaar houdt.
+#
+# BEWERING 2
+#   De enige verwijzing van buiten is het activeringsblok in
+#   clients/qrius/gtm/config.md. Precies een treffer. Nul treffers is ook fout,
+#   want dan is de laag niet geactiveerd te krijgen. Een tweede treffer in dat
+#   zelfde bestand is fout, want dan is er een verwijzing bijgekomen die de
+#   verwijderprocedure niet opruimt.
+#
+# DRIE UITZONDERINGEN, bij ontwerp en niet verborgen
+#   memory/decisions.md      Besluiten worden nooit verwijderd, ze vervallen met
+#                            datum. Deze verwijzing blijft dus per definitie
+#                            achter na verwijdering, en dat is de bedoeling.
+#   supabase/migrations/     Een toegepast migratiebestand wordt NOOIT aangepast
+#                            en nooit verwijderd (migratie-proces.md, sectie 1 en
+#                            6). De check-constraints op source_layer noemen de
+#                            laag bij naam, dus die verwijzing blijft ook staan.
+#                            Verwijderen gebeurt met een NIEUWE migratie die de
+#                            constraint dropt, niet door de oude te wissen.
+#   infra/laag-check.sh      Dit script zelf. Het bestaat uitsluitend om deze
+#                            laag te controleren en wordt bij verwijdering
+#                            meeverwijderd (stap 3 van de verwijderprocedure).
+#
+#   Alle drie staan hieronder in de uitvoer, zodat ze zichtbaar zijn in plaats
+#   van stil weggefilterd. Een uitzondering die je niet ziet, is een gat.
+#
+# PLAFOND: DRIE UITZONDERINGEN, PLUS HET ACTIVERINGSBLOK. VIER TOTAAL.
+#   Er komt geen vijfde bij. Is er een vijfde nodig, dan is dat het signaal en
+#   niet de oplossing: dan is de laag minder geisoleerd dan geclaimd, en volgt er
+#   een herbeoordeling van de plaatsing met een besluit in memory/decisions.md.
+#   Niet een vierde uitzondering erbij en deze check groen houden.
+#
+#   Deze check bewaakt het plafond NIET zelf. De handhaving is de diff op dit
+#   bestand: een categorie toevoegen kan alleen door de lijst hieronder te
+#   wijzigen, en dat is zichtbaar in review. Dat is een beperking en die staat
+#   hier zodat niemand aanneemt dat het automatisch gaat.
+#
+# Exitcode 0 = beide beweringen gehaald, 1 = minstens een probleem.
+
+set -u
+
+# Vanuit de repo-root werken, zodat het script ook uit een andere map werkt.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT" || exit 1
+
+LAAG_DIR="domains/gtm/layers/commercial-doctrine"
+ACTIVERING="clients/qrius/gtm/config.md"
+BESLUITEN="memory/decisions.md"
+MIGRATIES="supabase/migrations"
+DIT_SCRIPT="infra/laag-check.sh"
+
+# Waaraan je een verwijzing naar deze laag herkent: de slug en de Nederlandse
+# naam, met en zonder trema. Bewust NIET op "layers/" alleen: dat is een
+# verwijzing naar het laagmechanisme en niet naar deze laag, en die mag blijven
+# staan als er ooit een tweede laag komt.
+PATROON='commercial-doctrine|commerci(ë|e)le doctrine'
+
+# Aantal toegestane uitzonderingscategorieen, en het plafond daarop. Zie de
+# toelichting bovenaan: het plafond wordt gehandhaafd door de diff op dit bestand,
+# niet door deze teller. De teller maakt hem alleen zichtbaar in de uitvoer.
+UITZONDERINGEN=3
+PLAFOND=3
+
+echo "Laagcheck: commercial-doctrine"
+echo "Repo-root: $ROOT"
+echo "UITZONDERINGEN: ${UITZONDERINGEN} van maximaal ${PLAFOND}, plus het activeringsblok"
+echo
+
+# Alle treffers ophalen, buiten de laag zelf en buiten .git.
+TREFFERS="$(grep -rInE "$PATROON" . \
+  --exclude-dir=.git \
+  | grep -v "^\./${LAAG_DIR}/" \
+  || true)"
+
+fail=0
+
+toon() {
+  # $1 = label, $2 = treffers (mag leeg zijn)
+  printf '%s\n' "$1"
+  if [ -z "$2" ]; then
+    printf '  geen\n'
+  else
+    printf '%s\n' "$2" | sed 's|^\./|  |'
+  fi
+  printf '\n'
+}
+
+# ── Bewering 1 ────────────────────────────────────────────────────────────
+DOMEIN="$(printf '%s\n' "$TREFFERS" | grep "^\./domains/" || true)"
+toon "BEWERING 1  verwijzingen onder domains/ buiten de laag (verwacht: geen)" "$DOMEIN"
+if [ -n "$DOMEIN" ]; then
+  echo "  FOUT: een domeinbestand verwijst naar de laag. De laag is dan niet"
+  echo "        te verwijderen zonder dat bestand aan te passen."
+  echo
+  fail=1
+fi
+
+# ── Bewering 2 ────────────────────────────────────────────────────────────
+ACT="$(printf '%s\n' "$TREFFERS" | grep "^\./${ACTIVERING}:" || true)"
+ACT_N="$(printf '%s' "$ACT" | grep -c . || true)"
+toon "BEWERING 2  verwijzingen in ${ACTIVERING} (verwacht: precies 1)" "$ACT"
+if [ "$ACT_N" -eq 0 ]; then
+  echo "  FOUT: geen activeringsblok gevonden. Zonder die regel is de laag niet"
+  echo "        aan te zetten en is de standtabel niet vindbaar."
+  echo
+  fail=1
+elif [ "$ACT_N" -gt 1 ]; then
+  echo "  FOUT: ${ACT_N} treffers in plaats van 1. Elke extra verwijzing is een"
+  echo "        plek die de verwijderprocedure niet opruimt."
+  echo
+  fail=1
+fi
+
+# ── Uitzonderingen, zichtbaar en niet weggefilterd ────────────────────────
+BESL="$(printf '%s\n' "$TREFFERS" | grep "^\./${BESLUITEN}:" || true)"
+toon "TOEGESTAAN  ${BESLUITEN} (besluiten worden nooit verwijderd)" "$BESL"
+
+MIGR="$(printf '%s\n' "$TREFFERS" | grep "^\./${MIGRATIES}/" || true)"
+MIGR_N="$(printf '%s' "$MIGR" | grep -c . || true)"
+printf 'TOEGESTAAN  %s/ (%s treffers, een toegepaste migratie wordt nooit gewist)\n' \
+  "$MIGRATIES" "$MIGR_N"
+if [ -n "$MIGR" ]; then
+  printf '%s\n' "$MIGR" | sed 's|^\./|  |' | cut -c1-100
+fi
+printf '\n'
+
+ZELF="$(printf '%s\n' "$TREFFERS" | grep "^\./${DIT_SCRIPT}:" || true)"
+ZELF_N="$(printf '%s' "$ZELF" | grep -c . || true)"
+printf 'TOEGESTAAN  %s (dit script, %s treffers, wordt meeverwijderd)\n\n' \
+  "$DIT_SCRIPT" "$ZELF_N"
+
+# ── Alles wat hierbuiten valt ─────────────────────────────────────────────
+REST="$(printf '%s\n' "$TREFFERS" \
+  | grep -v "^\./domains/" \
+  | grep -v "^\./${ACTIVERING}:" \
+  | grep -v "^\./${BESLUITEN}:" \
+  | grep -v "^\./${MIGRATIES}/" \
+  | grep -v "^\./${DIT_SCRIPT}:" \
+  | grep -v '^$' \
+  || true)"
+toon "OVERIG      verwijzingen elders (verwacht: geen)" "$REST"
+if [ -n "$REST" ]; then
+  echo "  FOUT: verwijzing op een plek die de verwijderprocedure niet kent."
+  echo "        Voeg hem toe aan de procedure of haal hem weg."
+  echo
+  fail=1
+fi
+
+# ── Bestaat de laag nog wel ───────────────────────────────────────────────
+if [ ! -d "$LAAG_DIR" ]; then
+  echo "OPMERKING: ${LAAG_DIR} bestaat niet. Is de laag verwijderd, dan hoort"
+  echo "           alleen ${BESLUITEN} nog een treffer te geven."
+  echo
+fi
+
+if [ "$UITZONDERINGEN" -gt "$PLAFOND" ]; then
+  echo "WAARSCHUWING: ${UITZONDERINGEN} uitzonderingen tegen een plafond van ${PLAFOND}."
+  echo "              Dat is het signaal om de plaatsing van de laag te herbeoordelen,"
+  echo "              niet om het plafond te verhogen. Zie de toelichting bovenaan."
+  echo
+  fail=1
+fi
+
+if [ "$fail" -eq 0 ]; then
+  echo "RESULTAAT: beide beweringen gehaald. De laag is verwijderbaar met de"
+  echo "           zes stappen uit ${LAAG_DIR}/LAYER.md, sectie 7."
+else
+  echo "RESULTAAT: minstens een probleem, zie hierboven. Zolang dit faalt is"
+  echo "           verwijderbaarheid een belofte en geen eigenschap."
+fi
+exit "$fail"

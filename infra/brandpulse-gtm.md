@@ -40,7 +40,8 @@ niet de database.
 | `gtm_events` | commerciële gebeurtenissen | `occurred_at`, `client`, `segment`, `source`, `asset`, `event_type` |
 | `gtm_objections` | gecodeerde replies | `occurred_at`, `client`, `segment`, `objection_code`, `verbatim` |
 | `gtm_accounts` | accounteigenschappen die niet per aanraking verschillen | `client`, `account`, `motion` |
-| `agent_recommendations` | voorspelling en uitkomst per advies | `client`, `domain`, `predicted_impact`, `status`, `actual_impact` |
+| `agent_recommendations` | voorspelling en uitkomst per advies | `client`, `domain`, `segment`, `predicted_impact`, `status`, `actual_impact`, `prediction_verdict`, `source_layer` |
+| `agent_blocked_proposals` | doctrinevoorstellen die door een grens zijn tegengehouden | `client`, `domain`, `proposal`, `blocked_by`, `alternative` |
 
 Alle gesloten waardelijsten worden afgedwongen met check-constraints die exact
 overeenkomen met [`taxonomie.md`](../domains/gtm/playbooks/taxonomie.md). Wijkt
@@ -59,7 +60,16 @@ structuur domeinoverstijgend. De check-constraint staat voorlopig op alleen
 stille rij met een typefout. Dat is typefoutbescherming en geen principiële
 domeinbeperking; zie `memory/decisions.md`.
 
-**`segment` en `source` mogen NULL zijn.** `NULL` betekent **ongelabeld**: we
+**`agent_recommendations.segment` mag juist NOOIT NULL zijn**, en dat is geen
+inconsistentie met de regel hieronder. Bij een advies is er geen meetgat: de schrijver
+kent zijn eigen scope. Voor een advies dat over alle segmenten gaat is er de expliciete
+waarde `domeinbreed`, vastgelegd in
+[`taxonomie.md`](../domains/gtm/playbooks/taxonomie.md), sectie 6. **Die waarde hoort
+nooit in `gtm_events` of `gtm_objections`:** een aanraking heeft een segment of hij is
+ongelabeld, en zou `domeinbreed` daar belanden, dan staat hij in elke
+segmentrapportage naast de echte segmenten alsof hij er een van is.
+
+**`segment` en `source` in `gtm_events` mogen NULL zijn.** `NULL` betekent **ongelabeld**: we
 weten het niet. Dat is iets anders dan `source = 'direct'`, wat betekent dat er
 aantoonbaar geen bron was. Ongelabelde rijen worden apart geteld en nooit
 verdeeld over de bekende waarden. `meta.labelled` geeft in één boolean aan of
@@ -73,6 +83,52 @@ we wel weten. De default is dus `nieuw`. Er is bewust **geen foreign key** vanui
 `gtm_events.account`: de ingest mag nooit falen op een ontbrekende registratie.
 Een account dat wel in de events staat en niet hier, is daardoor een zichtbaar
 gat in plaats van een stille `nieuw`-telling. Query 8 zoekt ze op.
+
+## Is de historie nog vanaf nul te repliceren
+
+De regel in [`migratie-proces.md`](migratie-proces.md), sectie 2, eist dat elke
+migratie idempotent is, en sectie 1 dat de repo de bron is. In de Qrius-repo wordt dat
+door CI afgedwongen; hier door niemand. **Een regel die je nooit toetst is decoratief**,
+dus hij wordt getoetst en de uitkomst staat hier met een datum.
+
+| Laatst geverifieerd | Tot en met versie | Uitkomst |
+|---|---|---|
+| **2026-08-04** | `20260804105505_doctrinelaag_meetkoppeling` (vijf migraties) | geslaagd |
+
+**⚠️ Wat er precies geverifieerd is: "repliceerbaar op een Supabase-equivalente
+PostgreSQL", niet op willekeurige PostgreSQL.** De rollen `anon` en `authenticated`
+zijn omgevingsbootstrap en moeten bestaan voordat de eerste migratie draait. Op een
+kale PostgreSQL faalt de reeks zonder die twee rollen, en dat is geen fout in de
+migraties maar de grens van deze claim.
+
+**Wat er precies is getoetst**, op een tijdelijke lokale PostgreSQL 16 die daarna is
+verwijderd:
+
+- **Afspelen vanaf nul.** Alle vijf migraties in volgorde op een verse database, met
+  afbreken bij de eerste fout. Alle vijf geslaagd.
+- **Idempotentie van de hele historie.** Alle vijf een tweede keer, op dezelfde
+  database. Alle vijf geslaagd, en het schema bleef identiek.
+- **Gelijkheid met productie.** Kolommen, constraints en indexen op de drie
+  betrokken tabellen kwamen getalsmatig overeen (44, 33, 18), en over alle vijf de
+  tabellen kwamen **alle 41 constraintnamen exact overeen**. Tellingen kunnen toevallig
+  kloppen; namen niet.
+- **Idempotentie op productie zelf.** De laatste migratie is daarnaast een tweede keer
+  tegen dit project gedraaid, met `execute_sql` en niet als migratie, zodat de historie
+  niet vervuild raakt. Schema en rijaantallen bleven identiek en de historie bleef op
+  vijf regels.
+
+**Eén afhankelijkheid die bij afspelen bovenkomt.** De migraties doen
+`revoke ... from anon, authenticated`, en die rollen levert Supabase. Op een vanilla
+PostgreSQL moeten ze eerst worden aangemaakt. Dat is bootstrap van de omgeving en geen
+onderdeel van een migratie, maar wie dit naspeelt moet het weten.
+
+**Wanneer opnieuw:** bij elke nieuwe migratie. Het kost lokaal een paar minuten en
+niets aan geld, dus er is geen reden om het te laten wachten tot iemand het zich
+afvraagt. De werkwijze staat in [`migratie-proces.md`](migratie-proces.md), sectie 4.
+
+Zonder deze datum is de vraag over een jaar weer "hebben we dit ooit getoetst", en dan
+is het antwoord opnieuw nee. Mét die datum is de vraag "hoe oud is onze garantie", en
+die is te beantwoorden.
 
 ## Toegang
 
@@ -143,8 +199,9 @@ Er zijn geen eindgebruikers op dit project en er is geen inlog. Komt die er ooit
 wel, dan zijn policies vanaf dat moment verplicht en is deny-by-default niet
 langer voldoende.
 
-De beveiligingscontrole meldt hierover drie regels `rls_enabled_no_policy` op
-niveau INFO. Dat is de bedoelde toestand, geen openstaand punt.
+De beveiligingscontrole meldt hierover **vijf** regels `rls_enabled_no_policy` op
+niveau INFO, één per tabel. Dat is de bedoelde toestand, geen openstaand punt. Het
+aantal loopt mee met het aantal tabellen; bij drie tabellen waren het er drie.
 
 ### Een schema is geen vertrouwensgrens
 
