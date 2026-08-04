@@ -214,6 +214,12 @@ standen niet later bijgebogen worden.
 **Op elke stand, ook op `scherp`:** de laag stelt geen bedragen vast, en grenzen
 en uitsluitingen gelden onverkort.
 
+**Drie bestanden staan buiten de schijf** en gelden zodra de laag aan staat:
+[`99-grenzen.md`](99-grenzen.md), [`90-uitsluitingen.md`](90-uitsluitingen.md) en
+[`80-meetkoppeling.md`](80-meetkoppeling.md). De eerste twee begrenzen, de derde
+registreert. Geen van de drie beïnvloedt een besluit, dus ze horen niet in een stand
+thuis.
+
 ### Waarom `off` echt inert is, en niet "inert op papier"
 
 [`99-grenzen.md`](99-grenzen.md) en [`90-uitsluitingen.md`](90-uitsluitingen.md)
@@ -299,13 +305,20 @@ vier redenen die alle vier machinaal of per inspectie te controleren zijn:
 4. De laag heeft nooit een bedrag, een taxonomiewaarde, een ICP-criterium of een
    drempel vastgesteld. Die staan allemaal buiten de laag en blijven staan.
 
-**Waar de garantie ophoudt.** Fase C voegt kolommen toe aan de aanbevelingentabel
-om de laag te kunnen evalueren. Een toegepaste migratie wordt nooit
+**Waar de garantie ophoudt.** Fase C voegt kolommen toe aan de aanbevelingentabel en
+een tabel voor geblokkeerde voorstellen; zie
+[`80-meetkoppeling.md`](80-meetkoppeling.md). Een toegepaste migratie wordt nooit
 teruggedraaid ([`infra/migratie-proces.md`](../../../../infra/migratie-proces.md),
 sectie 6). Na fase C blijven die kolommen dus staan als de laag verdwijnt. Dat is
 het enige onomkeerbare residu, het bestaat uit lege kolommen, en het verandert
 geen gedrag. Het staat hier zodat niemand het later als een gebroken belofte
 leest.
+
+**Eén zesde stap komt erbij zodra fase C gebouwd is.** De check-constraints op
+`source_layer` noemen de laag bij naam in de database. Die zijn dan de enige
+verwijzing buiten de repo, en ze worden opgeruimd met een migratie van één regel.
+Verwijderen van de constraint, niet van de kolom: een kolom laten staan is
+gedragsneutraal, een constraint die naar een verdwenen laag verwijst is dat niet.
 
 ## 8. Bestanden in deze laag
 
@@ -323,7 +336,7 @@ leest.
 | [`50-betaalstructuur.md`](50-betaalstructuur.md) | betaalsplitsing, factuurritme, ankeren als techniek | B |
 | [`60-acquisitiemath.md`](60-acquisitiemath.md) | levensduurmarge tegen acquisitiekosten, terugverdientijd | B |
 | [`70-gespreksstructuur.md`](70-gespreksstructuur.md) | zes stappen, bezwaren op de canonieke codes | B |
-| meetkoppeling | voorspelling en uitkomst per doctrineregel | C, nog niet gebouwd |
+| [`80-meetkoppeling.md`](80-meetkoppeling.md) | voorspelling, verdict en blokkades. **Voorstel, nog niet gebouwd** | C |
 
 Genummerd per tiental zodat er tussengevoegd kan worden zonder te hernummeren.
 Hernummeren breekt de verwijzingen in de intensiteitsschijf.
