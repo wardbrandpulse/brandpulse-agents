@@ -7,7 +7,7 @@ root-`CLAUDE.md`.
 
 **Geen sleutels, tokens of wachtwoorden in dit bestand.**
 
-- **Laatst bijgewerkt:** 2026-07-30
+- **Laatst bijgewerkt:** 2026-08-04
 - **Status:** datalaag en tracking staan live op productie en er komen events
   binnen. Het ICP is vastgesteld (versie 2, n=0). Zie "Openstaand" voor wat er
   nog moet gebeuren vóór de eerste outbound.
@@ -217,6 +217,41 @@ Een selectie uit de canonieke lijst in
 - **asset:** `magazine`, `demo`, `pricing`, `landing`. `TODO`, bevestigen of er
   op de site een prijspagina en een magazine bestaan; zo niet, dan blijven die
   waarden ongebruikt tot ze er zijn.
+
+## Lagen
+
+Optionele methodieklagen uit `domains/gtm/layers/`, per laag aan of uit voor dit
+klantproject. Dit is de enige plek waar dat vastligt: een laag die hier niet
+staat, staat uit. Uit is de veilige stand en de default.
+
+| Laag | `version` | `enabled` | `intensity` |
+|---|---|---|---|
+| `commercial-doctrine` | 1 | `false` | `standaard` |
+
+**Bij oplevering staat de laag uit.** `intensity` is de stand die geldt zodra
+`enabled` op `true` gaat, en heeft zolang `enabled` op `false` staat geen effect.
+De standen zelf staan beschreven in het manifest van de laag.
+
+**Een gevulde laag opent de verzendpoort niet.** Zie principe 2 in
+[`outbound-principes.md`](../../../domains/gtm/playbooks/outbound-principes.md):
+zonder ingevuld verzenddomein vertrekt er geen outbound. Verzenddomein,
+opwarmdatum en verzendplatform staan in dit bestand onder "Verzenden" alle drie
+op `TODO`.
+
+### Klantspecifieke aanscherpingen bij deze laag
+
+De laag zelf is klantonafhankelijk en bevat daarom geen Qrius-specifieke eisen of
+vindplaatsen. Die staan hier, op de klantas. Bij een tegenstrijdigheid wint de
+specifiekere laag en wordt de tegenstrijdigheid gemeld, conform de
+root-[`CLAUDE.md`](../../../CLAUDE.md), regels 55 tot 58.
+
+| Onderwerp | De eis of vindplaats voor dit project |
+|---|---|
+| Deadlines | "Deadlines alleen noemen als ze aan de bron geverifieerd zijn", [`../profiel.md`](../profiel.md), sectie "Gevoeligheden". Strenger dan de grens in de laag, en gaat dus voor |
+| Toon | Het volledige toonkader staat in [`../profiel.md`](../profiel.md), secties "Tone of voice" en "Woordkeuze". De laag verhoogt de toon nooit daarboven |
+| Datavergaring ongelimiteerd | `docs/pricing-and-plans-blueprint.md` in de productrepository `wardbrandpulse/QRius`, kernregel dat klanten niet worden afgestraft op datavergaring: scans, consumentenprofielen en resolver-calls zijn ongelimiteerd op elk pakket |
+| Kansspelwetgeving bij win-acties | `docs/activatie-systeem.md` in dezelfde repository, sectie "Win-actie & kansspelwetgeving" |
+| Bestaande prijsstructuur | `apps/website/src/lib/plans.ts` en `apps/portal/src/lib/plans/config.ts` in dezelfde repository. De code is de bron, `docs/pricing-and-plans-blueprint.md` loopt erachteraan. Niet wijzigen vanuit dit domein |
 
 ## Openstaand
 
