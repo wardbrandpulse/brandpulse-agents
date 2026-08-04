@@ -4,7 +4,7 @@ Domeinonafhankelijk. Wat hier staat blijft staan als er later een tweede domein
 bij komt.
 
 - **Aangemaakt:** 2026-07-29
-- **Laatst bijgewerkt:** 2026-08-03
+- **Laatst bijgewerkt:** 2026-08-04
 - **Actieve domeinen:** `gtm`
 - **Relatie tot Brandpulse:** eigen SaaS-product van het bureau, geen externe
   opdrachtgever. Dat maakt Qrius de eerste klantcontext in deze repo, met
@@ -76,6 +76,15 @@ en dat onderscheid is geen detail maar een regel in het product:
 Verder:
 
 - Nederlands in klantcommunicatie.
+- **Taalniveau B1** in commerciële teksten: korte zinnen, geen vaktaal, geen
+  uitroeptekens, geen woorden in hoofdletters, geen emoji, en geen overtreffende
+  trappen over het eigen product. Aanspreekvorm `je` en `jullie`, en **`u`
+  alleen in juridische tekst**.
+  Bron: het Qrius-huisstijlhandboek, hier vastgelegd op 2026-08-04. Dit stond nog
+  niet in deze repo: het brandbook regelt de vorm, dit is de tekstregel ernaast.
+  De uitzondering voor `u` staat er omdat outbound juridische onderdelen bevat
+  (afmeldtekst, voorwaarden, verwerkersinformatie), en zonder die uitzondering
+  staat de regel daar in de weg.
 - Primaire kleur is Qrius Paars (`#3f1e32`) op wit, met signaalkleuren als
   accent, nooit als grote vlakken.
 - **Geen lange streepjes** (em dash, en dash) in enige tekst. Dat is een harde
