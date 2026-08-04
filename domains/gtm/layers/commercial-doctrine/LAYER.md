@@ -292,15 +292,15 @@ leest.
 | [`99-grenzen.md`](99-grenzen.md) | harde grenzen, gelden op elke stand | A |
 | [`90-uitsluitingen.md`](90-uitsluitingen.md) | mechanieken die de bron voorschrijft en wij bewust niet gebruiken | A |
 | [`SOURCES.md`](SOURCES.md) | herkomst en eigen termenlijst | A |
-| `00-principes.md` | vijf principes | B |
-| `10-aanbodarchitectuur.md` | waardeformule, probleemontleding, risico-omkering | B |
-| `20-aanbodsequentie.md` | instap, uitbreiding, verlaging na een nee, doorlopend | B |
-| `30-weggever.md` | negen stappen plus kwaliteitstoets | B |
-| `40-kanaaldoctrine.md` | de vier kanalen en dekkingsdiscipline | B |
-| `50-betaalstructuur.md` | betaalsplitsing, factuurritme, ankeren als techniek | B |
-| `60-acquisitiemath.md` | levensduurmarge tegen acquisitiekosten, terugverdientijd | B |
-| `70-gespreksstructuur.md` | zes stappen, bezwaren op de canonieke codes | B |
-| meetkoppeling | voorspelling en uitkomst per doctrineregel | C |
+| [`00-principes.md`](00-principes.md) | vijf principes | B |
+| [`10-aanbodarchitectuur.md`](10-aanbodarchitectuur.md) | waardeformule, probleemontleding, risico-omkering | B |
+| [`20-aanbodsequentie.md`](20-aanbodsequentie.md) | instap, uitbreiding, verlaging na een nee, doorlopend | B |
+| [`30-weggever.md`](30-weggever.md) | negen stappen plus kwaliteitstoets | B |
+| [`40-kanaaldoctrine.md`](40-kanaaldoctrine.md) | de vier kanalen en dekkingsdiscipline | B |
+| [`50-betaalstructuur.md`](50-betaalstructuur.md) | betaalsplitsing, factuurritme, ankeren als techniek | B |
+| [`60-acquisitiemath.md`](60-acquisitiemath.md) | levensduurmarge tegen acquisitiekosten, terugverdientijd | B |
+| [`70-gespreksstructuur.md`](70-gespreksstructuur.md) | zes stappen, bezwaren op de canonieke codes | B |
+| meetkoppeling | voorspelling en uitkomst per doctrineregel | C, nog niet gebouwd |
 
 Genummerd per tiental zodat er tussengevoegd kan worden zonder te hernummeren.
 Hernummeren breekt de verwijzingen in de intensiteitsschijf.
