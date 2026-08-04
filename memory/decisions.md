@@ -16,6 +16,247 @@ Format per besluit:
 
 ---
 
+## 2026-08-04, de commerciële doctrine is een laag in het domein, de bedragen staan bij de klant
+
+**Context.** Er kwam externe commerciële mechanica beschikbaar (aanbodontwerp,
+sequentie, weggevers, kanaalkeuze, betaalstructuur, acquisitierekenwerk,
+gespreksstructuur) die het besluitgedrag van de GTM-agent moet beïnvloeden. De
+vraag was waar dat landt. Twee dingen liepen erin door elkaar: de methodiek, die
+bij elke klant gelijk is, en de bedragen, kortingen en capaciteitsgrenzen, die
+per klant verschillen en menselijke besluiten zijn.
+
+**Besluit.** De doctrine staat in `domains/gtm/layers/commercial-doctrine/`, dus
+op de domeinas, klantonafhankelijk. De activering, de aanbodcatalogus en alle
+bedragen staan op de klantas, onder `clients/<klant>/`. Een nieuwe map `layers/`
+naast `playbooks/`, `memory/` en `agents/`.
+
+**Alternatieven, en waarom ze afvielen.**
+
+- **In `playbooks/`.** Afgevallen op drie eigenschappen tegelijk. Een playbook
+  geldt altijd, bij elke klant, en verandert zelden. Deze laag is extern van
+  herkomst, ongetoetst met n=0, en per klant aan of uit. Erin zetten zou de laag
+  bovendien de promotieregel laten overslaan: playbookniveau is het eindpunt van
+  een promotie over twee sectoren, geen startpositie.
+- **Volledig bij de klant.** Afgevallen, dan divergeert de methodiek per klant en
+  is er geen gedeelde leercurve, precies wat het twee-assenbesluit van
+  2026-07-29 voorkomt.
+- **Methodiek en bedragen in één bestand.** Afgevallen. Dan is de laag niet los te
+  trekken en niet herbruikbaar, en verlies je beide beloftes in één keer.
+
+**Gevolg.** De laag is verwijderbaar in vijf stappen (`LAYER.md`, sectie 7) en de
+methodiek is herbruikbaar voor een volgend klantproject zonder de bedragen mee te
+nemen. Prijs is daarbij een scherpe grens en geen detail: het ICP van de eerste
+klant leidt zijn ondergrens voor het aantal modellen af uit de eigen instapprijs,
+dus een laag die aan de prijs raakt, raakt langs een omweg aan een
+diskwalificatiecriterium.
+
+**Herzien wanneer.** Als een tweede laag in dit domein ontstaat, dan de vraag of
+`layers/` een eigen conventie of registratie nodig heeft. Met één laag is dat een
+gok op hoe de tweede eruitziet, dezelfde redenering als bij het
+orchestratorbesluit van 2026-07-29.
+
+## 2026-08-04, verwijderbaarheid van een laag is een test en geen belofte, met twee benoemde uitzonderingen
+
+**Context.** "Deze laag is verwijderbaar" is niet controleerbaar zolang niemand
+kijkt of er verwijzingen naar binnen bestaan. Eén verwijzing uit een
+domeinbestand maakt verwijderen tot een aanpassing van dat bestand, en dan is de
+laag niet meer los te trekken.
+
+**Besluit.** `infra/laag-check.sh`, met exitcode, in de stijl van
+`seg-check.sh`. Twee beweringen:
+
+1. **Onvoorwaardelijk:** geen enkel bestand onder `domains/` buiten de laag
+   verwijst naar de laag.
+2. **Precies één van buiten:** het activeringsblok in
+   `clients/qrius/gtm/config.md`. Nul treffers faalt ook, want dan is de laag
+   niet aan te zetten. Een tweede treffer in datzelfde bestand faalt, want dat is
+   een plek die de verwijderprocedure niet opruimt.
+
+**Twee uitzonderingen, en die staan in de uitvoer in plaats van weggefilterd.**
+`memory/decisions.md`, want besluiten worden nooit verwijderd maar vervallen met
+datum, dus deze verwijzing blijft per definitie achter. En het script zelf, dat
+uitsluitend bestaat om deze laag te controleren en bij verwijdering meegaat (stap
+3 van de procedure).
+
+**Alternatieven.** De uitzonderingen stil wegfilteren: afgevallen. Een
+uitzondering die je niet ziet, is een gat, en over een half jaar leest een
+geslaagde check dan als een bewijs dat hij niet levert. Ze niet toestaan:
+afgevallen, want de besluitenlog vastleggen is zelf een eis en die eis maakt de
+verwijzing onvermijdelijk.
+
+**Gevolg.** De check draait in twee negatieve tests aantoonbaar rood (een
+verwijzing in een domeinbestand, en een tweede verwijzing in het
+activeringsbestand) en groen op de opgeleverde toestand. Wie een verwijzing
+toevoegt, moet hem in de verwijderprocedure opnemen of weghalen.
+
+**Herzien wanneer.** Bij een tweede laag: dan wordt het patroon van de check
+gedeeld en is de vraag of hij per laag of over lagen heen werkt.
+
+## 2026-08-04, prijs wordt gesplitst: de techniek in het domein, elk bedrag bij de klant
+
+**Context.** Het oorspronkelijke plan was één bestand over prijspresentatie in de
+laag, met de scheiding "presenteren mag, bepalen niet". Bij het uitwerken hield
+die scheiding geen stand. Een bedrag boven het doelbedrag ankeren is een
+prijsbesluit. Een vooruitbetaalkorting is een prijsbesluit. Een aangekondigde
+verhoging is een prijsbesluit. Alleen de betaalvorm is dat niet.
+
+**Besluit.** Splitsen. In het domein komt `50-betaalstructuur.md` met de
+techniek: betaalsplitsing, factuurritme afstemmen op het betaalritme van de
+klant, en ankeren beschreven als mechanisme. Zonder bedragen, percentages of
+looptijden. Naar `clients/<klant>/` gaan het ankerbedrag, de
+vooruitbetaalkorting, de splitsingsverhouding, en de vraag of er een
+prijsverhoging wordt aangekondigd.
+
+De laag mag signaleren **dát** er geen anker of vooruitbetaalprikkel in de
+structuur zit. Dat signaal gaat terug naar Ward. De laag zet er nooit zelf een.
+
+**Alternatieven.** Eén bestand met een scopezin die prijsbepaling uitsluit:
+afgevallen, te licht voor wat het moest tegenhouden. Prijspresentatie helemaal
+weglaten: afgevallen, dan verdwijnt ook de betaalvorm, en dat is het enige deel
+dat evident geen prijsbesluit is.
+
+**Gevolg.** `domains/gtm/CLAUDE.md` sectie 1 blijft ongewijzigd gelden:
+prijsbepaling hoort niet in dit domein. En het gat langs de omweg is dicht: het
+ICP van de eerste klant leidt de ondergrens van dertig modellen af uit de
+instapprijs, dus zonder deze splitsing kon de laag via de prijs een
+diskwalificatiecriterium verschuiven. Dat kan nu niet meer.
+
+**Herzien wanneer.** Als blijkt dat de betaalstructuur zonder enig bedrag
+onbruikbaar abstract is. Dan is de vraag niet of de laag bedragen mag vaststellen,
+maar of de klantcatalogus vollediger moet.
+
+## 2026-08-04, dagvolume wordt vervangen door dekkingsdiscipline
+
+**Context.** De bron achter de doctrine schrijft honderd primaire acties per dag
+voor, als vaste dagelijkse norm. Die norm is gebouwd voor een markt die
+praktisch oneindig is.
+
+**Besluit.** Niet overnemen. In plaats daarvan dekkingsdiscipline: elk account
+krijgt een volledige reeks contactmomenten (vijf op stand `standaard`, zeven op
+`scherp`), en we meten dekking en reekscompletering in plaats van dagvolume.
+Vastgelegd als uitsluiting 6 in `90-uitsluitingen.md`, expliciet als afwijking van
+de bron en niet als interpretatie.
+
+**Alternatieven.** De norm overnemen en naar beneden schalen: afgevallen. Dan
+blijft dagvolume de eenheid, en dan is de vraag alleen nog welk getal, terwijl het
+probleem de eenheid zelf is.
+
+**Gevolg.** De doelgroep in het eerste segment is eindig, in de duizenden. Bij
+honderd acties per dag is die markt in een kwartaal aangeraakt en daarna
+onbruikbaar, en dat is niet terug te draaien: een verbrande lijst blijft verbrand
+en de domeinreputatie gaat mee. Met dekking als eenheid is de vraag hoe compleet
+een reeks is, niet hoe snel de lijst leegloopt.
+
+**Dekking is geen route om principe 6 heen.**
+`domains/gtm/playbooks/outbound-principes.md`, principe 6, blijft onverkort
+gelden: volume verhogen is een aparte beslissing. Zodra de lijst groeit, wordt
+"vijf tot zeven contactmomenten per account" zelf een volumeafspraak, en dan
+geldt principe 6 daarop.
+
+**Herzien wanneer.** Als de doelgroep aantoonbaar veel groter blijkt dan de
+huidige orde van grootte, of als reekscompletering meetbaar niets voorspelt.
+
+## 2026-08-04, zeven mechanieken uit de bron worden bewust niet gebruikt
+
+**Context.** De bron reikt mechanieken aan die in hun eigen context werken en in
+onze context schade doen, juridisch of aan geloofwaardigheid. Zonder vastgelegde
+reden komen die terug, want ze zien uit als een gat in de doctrine.
+
+**Besluit.** Zeven uitsluitingen, vastgelegd in `90-uitsluitingen.md` met per
+punt de volledige reden. In het kort:
+
+| # | Uitsluiting | Reden in één regel |
+|---|---|---|
+| 1 | loterijen, verlotingen en weggeefacties als instapaanbod | raakt de Wet op de kansspelen; hetzelfde aandachtspunt staat al in de productdocumentatie van de eerste klant bij win-acties |
+| 2 | facturatie per 28 dagen voor dertien cycli per jaar | rekenkundig waar, en het kost je geloofwaardigheid bij de eerste factuurcontrole van een inkoopafdeling |
+| 3 | gefabriceerde schaarste en tijdsdruk | schaarste mag alleen als hij feitelijk waar is; staat ook als grens, en hier omdat de bron het als techniek aanreikt |
+| 4 | de anti-garantie | werkt bij individuele consumentenverkoop, niet in een inkoopproces met meerdere beslissers die juist om zekerheid vragen |
+| 5 | proefperiode met boeteclausule | bevoegdheidsgrens: vereist juridische toetsing en een menselijk besluit, en dat kader bestaat nog niet |
+| 6 | de volumenorm van honderd acties per dag | onze doelgroep is eindig; zie het besluit hierboven |
+| 7 | schaarste of een limiet op datavergaring | waar een klant datavergaring bewust ongelimiteerd houdt, is dat een propositiekeuze en geen omissie om dicht te zetten |
+
+**Alternatieven.** Ze gewoon niet opschrijven: afgevallen. Een uitsluiting zonder
+reden is niet te onderscheiden van vergeten, en wordt dan "hersteld".
+
+**Gevolg.** Verwerpen is omkeerbaar, maar alleen via een besluit hier. Punt 3 en
+punt 7 hebben ook een grens in `99-grenzen.md`; die twee blijven staan als de
+uitsluiting ooit vervalt, want een grens en een uitsluiting doen verschillend
+werk.
+
+**Herzien wanneer.** Per punt apart, en niet als set. Punt 5 wordt beoordeelbaar
+zodra het juridisch kader voor outbound bestaat.
+
+## 2026-08-04, de laag wordt afgerekend op voorspelkwaliteit en niet op commerciële uitkomst
+
+**Context.** De verantwoording dat deze laag eerlijk verwijderbaar is, hing op
+meetbaarheid: als hij niet werkt, moet dat blijken. Maar
+`significantie-drempels.md` verbiedt een conversiepercentage onder twintig
+waarnemingen en stelt vast dat harde conversies die drempels vrijwel nooit halen.
+Bij een eindige doelgroep en n=0 is "verhoogt deze laag de conversie" daarmee
+jaren onbeantwoordbaar, en tot die tijd zou de laag onweerlegbaar blijven staan.
+
+**Besluit.** De vraag verschuift, de drempel niet. Gemeten wordt de
+voorspelkwaliteit: per advies dat uit de laag komt, hield de voorspelde richting
+stand. Na twintig beoordeelde adviezen is er n=20 op "produceert deze laag
+voorspellingen die kloppen", en dat is in maanden haalbaar in plaats van jaren.
+
+Drie harde voorwaarden:
+
+1. **Dit vervangt en versoepelt de bestaande drempels niet.** Het is een nieuwe
+   maatstaf ernaast. De drempels in `significantie-drempels.md` blijven
+   ongewijzigd; dit besluit is de registratie die sectie 4 van dat playbook
+   vereist, met datum en reden.
+2. **Het is een zwakkere claim, en dat staat er letterlijk bij.** Voorspelkwaliteit
+   zegt niets over opbrengst. Die vraag blijft bij het huidige volume
+   onbeantwoordbaar, en doen alsof van niet zou de bewijslastregel schenden.
+3. **Bij twintig beoordeelde adviezen volgt een kwalitatief oordeel, geen
+   percentage.**
+
+**Alternatieven.** De drempel verlagen zodat de conversievraag wel beantwoordbaar
+wordt: afgevallen, en dit is de belangrijkste afweging in dit besluit. Die regel
+is goed, en een drempel die wordt bijgesteld om een gewenste vraag te kunnen
+beantwoorden, is geen drempel. De laag ongemeten laten: afgevallen, dan is
+verwijderen nooit ergens op te baseren en blijft hij staan omdat hij er staat.
+
+**Gevolg.** Uit te werken in fase C. Daarvoor moet de aanbevelingentabel
+herkomst (laag en laagversie), intensiteit, segment en een veld voor het
+standhouden van de voorspelling kunnen vastleggen. Die kolommen bestaan nog niet;
+de tabel heeft ook geen `meta`-kolom, dus er is geen sluiproute. Gesloten lijsten
+komen in kolommen met een check-constraint en worden bij ingest afgedwongen, niet
+in jsonb.
+
+**Herzien wanneer.** Zodra de outboundvolumes de segmentdrempel van twintig
+verzonden structureel halen. Dan wordt de conversievraag beantwoordbaar en is
+voorspelkwaliteit een aanvulling in plaats van een vervanging.
+
+## 2026-08-04, `clients/_template/` is structuur en geen klantcontext
+
+**Context.** De klantisolatieregel verbiedt het inlezen van twee mappen onder
+`clients/` in één sessie, en staat er als de enige regel zonder uitzonderingen.
+`clients/_template/` valt onder `clients/`, maar bevat geen klantdata: het zijn
+lege sjablonen met placeholders. Bij de audit voor deze laag is de vraag
+praktisch geworden, want een sjabloon opleveren vraagt om de bestaande
+sjabloonconventie te kennen.
+
+**Besluit.** `clients/_template/` is structuur en geen klantcontext. Het mag naast
+één klantmap gelezen worden. Er kan niets lekken, want er staat niets in dat bij
+een klant hoort.
+
+**Alternatieven.** De regel letterlijk aanhouden en het sjabloon nooit lezen:
+afgevallen, dan is de sjabloonconventie niet te volgen en divergeert elk nieuw
+klantproject. Een algemene uitzonderingsclausule in de isolatieregel:
+afgevallen, dat opent de regel voor interpretatie en juist de afwezigheid van
+interpretatieruimte is de waarde ervan.
+
+**Gevolg.** De regel houdt nul uitzonderingen op klantdata en krijgt één
+verduidelijking over wat een klantmap is. Voorstel voor de formulering in
+`CLAUDE.md` sectie 2 gaat apart ter beoordeling en wordt niet ongezien
+toegevoegd.
+
+**Herzien wanneer.** Als er ooit voorbeelddata in het sjabloon komt te staan. Op
+dat moment wordt het wél klantcontext, ook als de klant verzonnen is, want dan
+gaat iemand ernaar verwijzen als bewijs.
+
 ## 2026-07-30, rate limiting hoort aan de edge, niet in de applicatie
 
 **Context.** De ingest-endpoint van de tracking is publiek en schrijft naar de
