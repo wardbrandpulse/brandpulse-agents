@@ -37,6 +37,17 @@
 #   Alle drie staan hieronder in de uitvoer, zodat ze zichtbaar zijn in plaats
 #   van stil weggefilterd. Een uitzondering die je niet ziet, is een gat.
 #
+# PLAFOND: DRIE UITZONDERINGEN, PLUS HET ACTIVERINGSBLOK. VIER TOTAAL.
+#   Er komt geen vijfde bij. Is er een vijfde nodig, dan is dat het signaal en
+#   niet de oplossing: dan is de laag minder geisoleerd dan geclaimd, en volgt er
+#   een herbeoordeling van de plaatsing met een besluit in memory/decisions.md.
+#   Niet een vierde uitzondering erbij en deze check groen houden.
+#
+#   Deze check bewaakt het plafond NIET zelf. De handhaving is de diff op dit
+#   bestand: een categorie toevoegen kan alleen door de lijst hieronder te
+#   wijzigen, en dat is zichtbaar in review. Dat is een beperking en die staat
+#   hier zodat niemand aanneemt dat het automatisch gaat.
+#
 # Exitcode 0 = beide beweringen gehaald, 1 = minstens een probleem.
 
 set -u
@@ -57,8 +68,15 @@ DIT_SCRIPT="infra/laag-check.sh"
 # staan als er ooit een tweede laag komt.
 PATROON='commercial-doctrine|commerci(ë|e)le doctrine'
 
+# Aantal toegestane uitzonderingscategorieen, en het plafond daarop. Zie de
+# toelichting bovenaan: het plafond wordt gehandhaafd door de diff op dit bestand,
+# niet door deze teller. De teller maakt hem alleen zichtbaar in de uitvoer.
+UITZONDERINGEN=3
+PLAFOND=3
+
 echo "Laagcheck: commercial-doctrine"
 echo "Repo-root: $ROOT"
+echo "UITZONDERINGEN: ${UITZONDERINGEN} van maximaal ${PLAFOND}, plus het activeringsblok"
 echo
 
 # Alle treffers ophalen, buiten de laag zelf en buiten .git.
@@ -146,6 +164,14 @@ if [ ! -d "$LAAG_DIR" ]; then
   echo "OPMERKING: ${LAAG_DIR} bestaat niet. Is de laag verwijderd, dan hoort"
   echo "           alleen ${BESLUITEN} nog een treffer te geven."
   echo
+fi
+
+if [ "$UITZONDERINGEN" -gt "$PLAFOND" ]; then
+  echo "WAARSCHUWING: ${UITZONDERINGEN} uitzonderingen tegen een plafond van ${PLAFOND}."
+  echo "              Dat is het signaal om de plaatsing van de laag te herbeoordelen,"
+  echo "              niet om het plafond te verhogen. Zie de toelichting bovenaan."
+  echo
+  fail=1
 fi
 
 if [ "$fail" -eq 0 ]; then

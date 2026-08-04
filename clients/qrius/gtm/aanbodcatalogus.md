@@ -23,22 +23,41 @@ Verdwijnt die laag, dan blijft dit bestand geldig en nodig.
 
 ---
 
+## 0. Bestaande stand: beschrijving, geen besluit
+
+> **Alles in deze sectie is een feit over wat er nu is.** Het is hier niet
+> vastgesteld en het is geen uitkomst van een besluit uit dit bestand. Elk getal
+> heeft een bron in de productrepository, en **de code is de bron**: de blueprint
+> `docs/pricing-and-plans-blueprint.md` loopt erachteraan.
+>
+> **Niet wijzigen vanuit dit domein**, en niet lezen als een keuze die al gemaakt is
+> voor de velden verderop.
+
+| Feit | Stand | Bron |
+|---|---|---|
+| Vorm van het doorlopende aanbod | maandabonnement, of jaarabonnement | `apps/website/src/lib/plans.ts` |
+| Jaarvoordeel | **20 procent** op twaalf maandtermijnen | `plans.ts`, `ANNUAL_DISCOUNT_LABEL` en de jaartarieven |
+| Tiers | vier: drie self-service plus één op maat | `plans.ts` en `apps/portal/src/lib/plans/config.ts` |
+| Enige bestaande kortingsvorm | het jaarvoordeel. Verder geen | idem |
+| Zichtbare ondergrens bij de op-maat-tier | **8.500 per maand, 81.600 per jaar**, getoond als "vanaf" met een contactknop. De website toont voor die tier geen prijs en de blueprint noemt geen bedrag | `apps/portal/src/lib/plans/config.ts` |
+
+**Waarom die twee getallen hier wél staan.** Wie de vooruitbetaalkorting vaststelt,
+moet weten dat er al een jaarvoordeel van 20 procent bestaat, anders komt er een
+korting naast een korting. En wie het ankerbedrag vaststelt, moet weten dat er al een
+zichtbare ondergrens is. Een bekend feit weglaten uit een besluitdocument ruilt het
+risico op een verzonnen getal voor het risico op een onwetend besluit, en dat tweede is
+hier groter.
+
+**Waarom ze in een eigen sectie staan.** Zodat niemand over een half jaar een
+beschrijving voor een vastgesteld besluit aanziet. Alles hieronder met een `TODO` is
+open; alles hierboven is stand van zaken.
+
+---
+
 ## 1. Doorlopend aanbod
 
-**Dit is de enige positie in de aanbodsequentie die bezet is.** Vastgelegd in de
-productrepository `wardbrandpulse/QRius`, in `apps/website/src/lib/plans.ts` en
-`apps/portal/src/lib/plans/config.ts`. **De code is de bron**, de blueprint in
-`docs/pricing-and-plans-blueprint.md` loopt erachteraan.
-
-**Niet wijzigen vanuit dit domein.** Hier staat wat er is, niet wat het zou moeten
-zijn.
-
-| Wat | Stand |
-|---|---|
-| Vorm | maandabonnement, of jaarabonnement met een vast voordeel op twaalf maandtermijnen |
-| Tiers | vier, waarvan drie self-service en één op maat |
-| Kortingsvorm | één: het jaarvoordeel |
-| Overige kortingsvormen | geen |
+**Dit is de enige positie in de aanbodsequentie die bezet is.** Wat er is, staat in
+sectie 0. Hieronder staat alleen wat er nog niet benut is.
 
 **Wat er in deze positie nog niet benut is**, methodiek in
 `domains/gtm/layers/`, bedragen hier:
@@ -88,23 +107,24 @@ juridisch kader is. De gewone proefvorm niet. Zie de uitsluitingen in de laag.
 
 ## 5. Ankeren en vooruitbetaling
 
-**Let op: er bestaat al een de facto ankerbedrag, en dat verandert de vraag.**
-
-Het portaal draagt voor de op-maat-tier een concreet tarief (8.500 per maand, 81.600
-per jaar) en toont dat als "vanaf" met een contactknop. De website toont voor die tier
-geen prijs en de blueprint noemt geen bedrag. Dezelfde contactroute aan beide kanten,
-het getal aan één kant zichtbaar. Vindplaats:
-`apps/portal/src/lib/plans/config.ts` in de productrepository.
+**Let op: er bestaat al een de facto ankerbedrag, en dat verandert de vraag.** Zie
+sectie 0 voor het bedrag en de bron; het staat daar één keer, zodat de twee plekken
+niet uit elkaar kunnen lopen.
 
 **De vraag is daarmee niet "welk ankerbedrag" maar "welk ankerbedrag naast het bedrag
 dat er al staat".** Een tweede anker dat lager is dan het zichtbare, ondermijnt het
 zichtbare. Een tweede anker dat hoger is, vraagt uitleg waarom het portaal iets anders
 zegt.
 
+**En hetzelfde geldt voor de korting.** Er bestaat al een jaarvoordeel (sectie 0). Een
+vooruitbetaalkorting komt daar naast te staan, niet in plaats daarvan, en de twee samen
+bepalen wat er werkelijk van de lijstprijs af gaat. Het percentage staat één keer, in
+sectie 0: twee getallen die uit elkaar lopen zijn erger dan één verkeerd getal.
+
 | Veld | Vraag | Eigenaar |
 |---|---|---|
-| Ankerbedrag | welk bedrag, en hoe verhoudt het zich tot de zichtbare ondergrens hierboven | `TODO`, Ward en Robbert |
-| Vooruitbetaalkorting | welk percentage of bedrag, en waarop | `TODO`, Ward en Robbert |
+| Ankerbedrag | welk bedrag, en hoe verhoudt het zich tot de zichtbare ondergrens uit sectie 0 | `TODO`, Ward en Robbert |
+| Vooruitbetaalkorting | welk percentage of bedrag, waarop, en hoe het samenvalt met het bestaande jaarvoordeel uit sectie 0 | `TODO`, Ward en Robbert |
 | Splitsingsverhouding | hoeveel vooraf en hoeveel gespreid, en waarom die verhouding | `TODO`, Ward en Robbert |
 | Korting bij afkoop van een lopend betaalplan | welk percentage | `TODO`, Ward en Robbert |
 | Wordt er een prijsverhoging aangekondigd | ja of nee, en per wanneer. **Alleen aankondigen als hij werkelijk doorgaat** | `TODO`, Ward |
@@ -157,7 +177,7 @@ agent beslist worden.**
 |---|---|---|---|
 | 1 | **Komt er een betaald instapaanbod, en zo ja welke vorm en welk bedrag?** | De eerste transactie is nu direct een doorlopende verplichting, koud verkocht. Dat vraagt van een vreemde in één stap het grootste commitment dat er is, zonder tussenstap waarop hij zich kan laten zien. Dit is het grootste gat in de sequentie | Ward, bedrag met Robbert |
 | 2 | **Welke verlagingsvormen zijn toegestaan bij een nee, en tot welke grens?** | Zonder vastgestelde vormen wordt er ter plekke iets verzonnen, en dat is bijna altijd korting op hetzelfde. Blokkeert ook een kolom in de datalaag: de gesloten lijst kan niet worden vastgelegd voordat dit besluit er is | Ward, grens met Robbert |
-| 3 | **Wat is het ankerbedrag en welke vooruitbetaalkorting hoort erbij?** | Er staat al een zichtbare ondergrens van 8.500 per maand in het portaal. Elk anker verhoudt zich daartoe, of het bedoeld is of niet | Ward en Robbert |
+| 3 | **Wat is het ankerbedrag en welke vooruitbetaalkorting hoort erbij?** | Er staat al een zichtbare ondergrens in het portaal en er bestaat al een jaarvoordeel, beide in sectie 0. Elk anker en elke korting verhoudt zich daartoe, of dat bedoeld is of niet | Ward en Robbert |
 | 4 | **Welke garantie kan levering werkelijk nakomen, op welk proceskenmerk?** | Een garantie die levering niet kan nakomen is geen commercieel instrument maar een schuld. En zonder vastgestelde garantie is er geen risico-omkering mogelijk, wat de zwaarste hefboom is bij een onbekende categorie | Ward, getoetst bij levering |
 | 5 | **Wat is de echte capaciteitsgrens, in nieuwe klanten per maand?** | Zonder dit getal is elke uitspraak over beschikbaarheid een verzonnen grens en dus uitgesloten. Het is ook de invoer voor de vraag hoeveel accounts er per periode in een contactreeks kunnen | Ward, getoetst bij levering |
 

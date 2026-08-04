@@ -124,6 +124,36 @@ domeinoverstijgend, want elke laag in elk domein kan een voorstel blokkeren. De
 check-constraint op `domain` staat op alleen `gtm`, als typefoutbescherming en niet als
 principiële beperking, precies zoals daar.
 
+## 2b. Waarom `source_layer` wél een constraint krijgt en `blocked_by` niet
+
+Dit lijkt een tegenspraak en is het niet, maar het verschil moet opgeschreven staan,
+anders leest het als één regel die twee kanten op wordt gebruikt.
+
+**Veranderingssnelheid.** Grensnummers veranderen met elke herziening van de
+laaginhoud: grens 9 kwam er bij, uitsluiting 3 verhuisde. Een constraint daarop maakt
+van elke doctrinewijziging een migratie. Laagnamen veranderen alleen als er een laag bij
+komt of weggaat, en dat is een besluit met een eigen regel in
+[`memory/decisions.md`](../../../../memory/decisions.md).
+
+**Waar de lijst gedefinieerd is, en dat is het zwaarste verschil.** De verzameling
+grenzen is gedefinieerd **binnen** de verwijderbare eenheid: haal de laag weg en de
+waardenruimte is leeg, zonder zinnige vervangende waarde. De verzameling lagen is
+gedefinieerd **één niveau erboven**, door `domains/gtm/layers/` als geheel: haal één
+laag weg en de lijst bestaat nog, één waarde korter. Dat is een structureel verschil en
+geen gradatie.
+
+**Gevolg.** Een constraint op `blocked_by` zou onherstelbaar naar niets verwijzen. Een
+constraint op `source_layer` verwijst na verwijdering naar een lijst die nog bestaat, en
+het opruimen is één regel in een nieuwe migratie. Dat is **stap 5** van de
+verwijderprocedure in [`LAYER.md`](LAYER.md), en die staat er niet omdat het achteraf
+bleek maar omdat de kosten van deze keuze bekend zijn.
+
+**De afruil is in deze repo al bewust aanvaard**, bij `domain in ('gtm')`: dat is
+typefoutbescherming en geen principiële beperking, want een verkeerd gespelde waarde
+levert een onvindbare rij op in plaats van een foute. Zie
+[`memory/decisions.md`](../../../../memory/decisions.md) (2026-07-29). `source_layer`
+staat op exact dezelfde grond.
+
 ## 3. Wat er per kolom bij moet, en waarom
 
 ### `agent_recommendations`, vijf kolommen erbij
@@ -180,11 +210,15 @@ hij er een van is. Dat staat als waarschuwing bij de waarde in `taxonomie.md`.
 | `alternative` | text, not null | wat er in plaats daarvan is gedaan. Verplicht, ook als het antwoord "niets" is |
 
 **Waarom `blocked_by` een vrij veld is en geen gesloten lijst.** Dit is de enige plek
-waar ik van de afdwingregel afwijk, en met reden. De lijst met grenzen en
+waar van de afdwingregel wordt afgeweken, en met reden. De lijst met grenzen en
 uitsluitingen staat **binnen de laag**, en de laag is verwijderbaar. Een
 check-constraint op die lijst zou een constraint achterlaten waarvan het bronbestand
 verdwenen is, en dat is een nieuwe manier om de verwijderbelofte te breken.
 Bovendien zou grens 10 dan een migratie vragen.
+
+**Waarom `source_layer` wél een constraint krijgt terwijl deze regel dat verbiedt:** zie
+sectie 2b. Kort: die waardenruimte is één niveau boven de laag gedefinieerd en
+verandert alleen als er een laag bij komt of weggaat.
 
 Precedent voor een vrij veld met een formatregel: `utm_campaign` in
 [`taxonomie.md`](../../playbooks/taxonomie.md) is bewust vrij. Formatregel hier:
@@ -300,6 +334,55 @@ formulering.
 **Wat deze drempel niet zegt:** of de laag geld heeft opgeleverd. Die vraag blijft
 open, en de drempels waarmee hij te beantwoorden zou zijn, blijven staan zoals ze
 staan.
+
+## 5b. Welke bestanden zijn eigenlijk meetbaar, en waarop wordt de rest afgerekend
+
+Dit staat hier omdat de evaluatiedrempel uit sectie 5 anders meer belooft dan hij
+levert. **Wat nooit een voorspelling oplevert, is per constructie onmeetbaar.** Twintig
+beoordeelde voorspellingen beoordelen dan alleen de meetbare fractie, en de rest blijft
+staan op gezag in plaats van op bewijs.
+
+De laag heeft dertien bestanden. Verdeeld naar wat ze opleveren:
+
+| Bestand | Levert op | Landt in | Nu al meetbaar |
+|---|---|---|---|
+| `40-kanaaldoctrine.md` | voorspelling: reekscompletering hangt samen met reply | `agent_recommendations`, met `sequence_position` op de events | **ja**, zodra er outbound loopt. Dit is het enige bestand waarvoor bewust een kolom is aangelegd |
+| `70-gespreksstructuur.md` | voorspelling over de verdeling van bezwaarcodes | `agent_recommendations` plus `gtm_objections` | **ja**, en de eerste voorspelling staat klaar in sectie 4 |
+| `00-principes.md` | principe 3 is een voorspelling (warm boven koud, factor vijf tot tien). Principe 1 en 5 zijn ordeningsregels, geen voorspellingen | deels `agent_recommendations` | deels. Principe 3 pas als beide kanalen lopen |
+| `10-aanbodarchitectuur.md` | voorspelling: de variabele die als knelpunt is aangewezen beweegt de uitkomst als je hem verbetert | `agent_recommendations` | nee, vraagt twee aanbodvarianten en dus de A/B-drempel van honderd clicks per variant |
+| `20-aanbodsequentie.md` | voorspelling: een instapaanbod verhoogt de conversie van de eerste transactie | `agent_recommendations` | **nee, geblokkeerd op besluit 1** in de aanbodcatalogus. Er is geen instapaanbod om te meten |
+| `30-weggever.md` | voorspelling: een betrokken lead converteert beter dan een niet-betrokken lead | `agent_recommendations` | **nee, geblokkeerd**: er is geen weggever |
+| `50-betaalstructuur.md` | voorspelling: ankeren en vooruitbetaling bewegen het geaccepteerde bedrag | `agent_recommendations` | **nee, geblokkeerd op besluit 3**. Zonder bedragen is er niets te ankeren |
+| `60-acquisitiemath.md` | richtpunten (verhouding, terugverdientijd) expliciet als te toetsen voorspelling | `agent_recommendations` | **nee**, vraagt gewonnen deals en dus jaren |
+| `99-grenzen.md` | **geen voorspellingen, wel blokkades** | `agent_blocked_proposals` | **ja**, en dit is een eigen maat: het aantal blokkades meet de aansluiting van de laag |
+| `90-uitsluitingen.md` | idem, blokkades | `agent_blocked_proposals` | **ja**, zelfde route |
+| `LAYER.md` | niets van beide. Het is het contract | nergens | wordt afgerekend op `infra/laag-check.sh`: de verwijderbaarheidsclaim is machinaal getoetst |
+| `SOURCES.md` | niets van beide | nergens | wordt afgerekend op de lekcontrole: de bronnaam mag in de hele repo alleen hier staan, machinaal te grepen |
+| `80-meetkoppeling.md` | niets van beide. Het is de meting zelf | nergens | wordt afgerekend op of de andere twaalf beoordeelbaar zijn |
+
+### Wat daar eerlijk uit volgt
+
+**Twee bestanden zijn nu meetbaar via voorspellingen** (40 en 70), één deels (00), en
+**twee via blokkades** (99 en 90). Vier bestanden zijn geblokkeerd op een menselijk
+besluit of op het ontbreken van een aanbod, en één op volume dat jaren weg is.
+
+**Dus: bij de eerste twintig beoordeelde voorspellingen gaat de evaluatie vrijwel
+alleen over 40 en 70.** De rest blijft tot die tijd staan zonder bewijs, en dat is de
+stand en geen tekortkoming die met deze meetkoppeling op te lossen is: je kunt niets
+meten wat nog niet bestaat.
+
+**Drie dingen die daarom bij de evaluatie horen**, en die anders stil wegvallen:
+
+1. **Rapporteer welke bestanden de twintig voorspellingen hebben voortgebracht.** Een
+   uitspraak over "de laag" op basis van twee bestanden is een uitspraak over die twee
+   bestanden. Dat is de bewijslastregel toegepast op onszelf.
+2. **De blokkademaat is voor 99 en 90 de enige maat**, en hij werkt andersom dan de
+   voorspelkwaliteit: veel blokkades is daar niet een gebrek in de grens maar een
+   signaal over de doctrine.
+3. **Een bestand dat na een jaar nog nul voorspellingen heeft voortgebracht, is een
+   kandidaat om te schrappen**, niet omdat het fout is maar omdat het niet weerlegbaar
+   is. Dat is dezelfde regel als in sectie 1, één niveau hoger toegepast: op het
+   bestand in plaats van op de losse voorspelling.
 
 ## 6. De migratie
 

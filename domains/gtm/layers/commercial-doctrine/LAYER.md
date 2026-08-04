@@ -255,7 +255,8 @@ projectieregel decoratief, en de regel weglaten laat de beperking vallen.
 laag-eigen zijn **en** een bron buiten de laag hebben. Dan worden beide genoteerd, want
 ze zeggen verschillende dingen: laag-eigen zegt dat verwijderen niets versoepelt, en
 de externe bron zegt dat het gedekt blijft mocht dezelfde tactiek ooit langs een andere
-route binnenkomen. Uitsluiting 2 is daar het duidelijkste geval.
+route binnenkomen. Uitsluiting 2 en uitsluiting 6 zijn beide, en punt 2 is het
+duidelijkste geval.
 
 Categorie 3 is de enige die iets over verwijderbaarheid **ontkent**, en daarom de
 enige die exclusief is: een regel met een bron buiten de laag kan nooit categorie 3
@@ -304,10 +305,32 @@ Zes stappen. Daarna houdt de agent identiek gedrag.
    `supabase/migrations/`. Beide blijven bij ontwerp staan, want een besluit en een
    toegepaste migratie worden nooit gewist. Elke andere treffer is een restant.
 
-### De garantie, en waar hij ophoudt
+### Wat verwijderen kost, en wat de garantie waard is
 
-Na deze zes stappen is het gedrag identiek aan het gedrag van vóór de laag, om
-vier redenen die alle vier machinaal of per inspectie te controleren zijn:
+**Eerst de kosten, dan de garantie.** In die volgorde, omdat de kosten gegroeid zijn
+en een bestand dat zijn eigen drift laat zien meer waard is dan een bestand dat klopt.
+
+| Stap | Handeling | Waar |
+|---|---|---|
+| 1 | één tabelregel weg, en de sectie als hij leegvalt | `clients/<klant>/gtm/config.md` |
+| 2 | één map weg, en `layers/` als die leegvalt | `domains/gtm/layers/commercial-doctrine/` |
+| 3 | één script weg | `infra/laag-check.sh` |
+| 4 | statusnotitie bij elf besluiten, die blijven staan | `memory/decisions.md` |
+| 5 | **een nieuwe migratie schrijven en toepassen** die twee constraints dropt | `supabase/migrations/` |
+| 6 | verifiëren met een grep | hele repo |
+
+**Wat permanent achterblijft:** vijf lege kolommen op `agent_recommendations`, vier op
+`gtm_events`, één lege tabel, en het migratiebestand.
+
+**Bij oplevering van fase A waren dit twee handelingen: één map en één configregel.**
+De groei zit volledig in fase C, die de meetkoppeling toevoegde. Dat is een bewuste
+ruil, want zonder meting is de laag niet te evalueren en dus niet eerlijk te
+verwijderen, maar het is wel een ruil en niet gratis. Wie deze tabel over een jaar
+leest, moet kunnen zien dat de belofte is opgeschoven.
+
+**En wat de garantie dan waard is.** Na deze zes stappen is het gedrag identiek aan het
+gedrag van vóór de laag, om vier redenen die alle vier machinaal of per inspectie te
+controleren zijn:
 
 1. Geen enkel bestand onder `domains/` verwijst naar de laag. Dit wordt getest,
    zie `infra/laag-check.sh`.
@@ -315,7 +338,20 @@ vier redenen die alle vier machinaal of per inspectie te controleren zijn:
    vier af.** Het activeringsblok verdwijnt (stap 1), het checkscript verdwijnt
    (stap 3), de besluiten blijven staan met een statusnotitie (stap 4), en het
    migratiebestand blijft staan terwijl de constraints die de laag bij naam noemen
-   worden gedropt (stap 5). Geen vijfde: dat is wat de check afdwingt.
+   worden gedropt (stap 5).
+
+   **Vier is het plafond en niet de stand.** Het activeringsblok plus drie
+   uitzonderingscategorieën in `infra/laag-check.sh`. Er komt geen vijfde bij. Is er
+   een vijfde nodig, dan is dat het signaal en niet de oplossing: dan is deze laag
+   minder geïsoleerd dan hier geclaimd wordt, en volgt er een herbeoordeling van de
+   plaatsing met een besluit in
+   [`memory/decisions.md`](../../../../memory/decisions.md). Niet een vierde
+   uitzondering erbij en de check groen houden.
+
+   **De handhaving is de diff op dat script en niet iets automatisch.** Een categorie
+   toevoegen kan alleen door de lijst erin te wijzigen, en dat is zichtbaar in review.
+   Dat is een beperking, en hij staat hier zodat niemand denkt dat de check het
+   plafond zelf bewaakt.
 3. Geen grens die als projectie is gemarkeerd ontstaat hier, dus verwijderen
    heft die beperking niet op. Voor de twee laag-eigen grenzen geldt dat niet, en
    dat staat per grens in [`99-grenzen.md`](99-grenzen.md). Uitsluitingen zijn

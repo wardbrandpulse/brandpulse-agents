@@ -84,6 +84,46 @@ we wel weten. De default is dus `nieuw`. Er is bewust **geen foreign key** vanui
 Een account dat wel in de events staat en niet hier, is daardoor een zichtbaar
 gat in plaats van een stille `nieuw`-telling. Query 8 zoekt ze op.
 
+## Is de historie nog vanaf nul te repliceren
+
+De regel in [`migratie-proces.md`](migratie-proces.md), sectie 2, eist dat elke
+migratie idempotent is, en sectie 1 dat de repo de bron is. In de Qrius-repo wordt dat
+door CI afgedwongen; hier door niemand. **Een regel die je nooit toetst is decoratief**,
+dus hij wordt getoetst en de uitkomst staat hier met een datum.
+
+| Laatst geverifieerd | Tot en met versie | Uitkomst |
+|---|---|---|
+| **2026-08-04** | `20260804105505_doctrinelaag_meetkoppeling` (vijf migraties) | geslaagd |
+
+**Wat er precies is getoetst**, op een tijdelijke lokale PostgreSQL 16 die daarna is
+verwijderd:
+
+- **Afspelen vanaf nul.** Alle vijf migraties in volgorde op een verse database, met
+  afbreken bij de eerste fout. Alle vijf geslaagd.
+- **Idempotentie van de hele historie.** Alle vijf een tweede keer, op dezelfde
+  database. Alle vijf geslaagd, en het schema bleef identiek.
+- **Gelijkheid met productie.** Kolommen, constraints en indexen op de drie
+  betrokken tabellen kwamen getalsmatig overeen (44, 33, 18), en over alle vijf de
+  tabellen kwamen **alle 41 constraintnamen exact overeen**. Tellingen kunnen toevallig
+  kloppen; namen niet.
+- **Idempotentie op productie zelf.** De laatste migratie is daarnaast een tweede keer
+  tegen dit project gedraaid, met `execute_sql` en niet als migratie, zodat de historie
+  niet vervuild raakt. Schema en rijaantallen bleven identiek en de historie bleef op
+  vijf regels.
+
+**Eén afhankelijkheid die bij afspelen bovenkomt.** De migraties doen
+`revoke ... from anon, authenticated`, en die rollen levert Supabase. Op een vanilla
+PostgreSQL moeten ze eerst worden aangemaakt. Dat is bootstrap van de omgeving en geen
+onderdeel van een migratie, maar wie dit naspeelt moet het weten.
+
+**Wanneer opnieuw:** bij elke nieuwe migratie. Het kost lokaal een paar minuten en
+niets aan geld, dus er is geen reden om het te laten wachten tot iemand het zich
+afvraagt. De werkwijze staat in [`migratie-proces.md`](migratie-proces.md), sectie 4.
+
+Zonder deze datum is de vraag over een jaar weer "hebben we dit ooit getoetst", en dan
+is het antwoord opnieuw nee. Mét die datum is de vraag "hoe oud is onze garantie", en
+die is te beantwoorden.
+
 ## Toegang
 
 **RLS staat aan op alle drie de tabellen, zonder policies.** Dat is
