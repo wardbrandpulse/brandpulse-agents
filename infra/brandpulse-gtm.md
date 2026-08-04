@@ -95,6 +95,12 @@ dus hij wordt getoetst en de uitkomst staat hier met een datum.
 |---|---|---|
 | **2026-08-04** | `20260804105505_doctrinelaag_meetkoppeling` (vijf migraties) | geslaagd |
 
+**⚠️ Wat er precies geverifieerd is: "repliceerbaar op een Supabase-equivalente
+PostgreSQL", niet op willekeurige PostgreSQL.** De rollen `anon` en `authenticated`
+zijn omgevingsbootstrap en moeten bestaan voordat de eerste migratie draait. Op een
+kale PostgreSQL faalt de reeks zonder die twee rollen, en dat is geen fout in de
+migraties maar de grens van deze claim.
+
 **Wat er precies is getoetst**, op een tijdelijke lokale PostgreSQL 16 die daarna is
 verwijderd:
 
