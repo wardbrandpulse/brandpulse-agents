@@ -21,6 +21,26 @@ een keuze en kan later herzien worden, met een besluit in
 [`memory/decisions.md`](../../../../memory/decisions.md). Stilzwijgend
 terugbouwen kan niet.
 
+## Uitsluitingen zijn laag-eigen, en dat is geen tekort
+
+De projectieregel in [`99-grenzen.md`](99-grenzen.md) eist dat elke grens een
+bron buiten de laag heeft. **Voor uitsluitingen geldt die eis niet, en het zou
+misleidend zijn er bronnen bij te zoeken.**
+
+De reden is dat een uitsluiting een mechanisme verwerpt dat zonder deze laag niet
+bestaat. Er is in deze repo niets dat een verloting als instapaanbod voorstelt, of
+facturatie per 28 dagen, of een anti-garantie. Die mechanica komt binnen met de
+doctrine en gaat eruit met de doctrine.
+
+**Daarmee is elke uitsluiting removal-neutraal.** Verwijder de laag en je haalt de
+doctrineregel én de verwerping in één keer weg. Netto nul, dus de
+verwijderbelofte blijft heel zonder dat er ergens een externe bron nodig is.
+
+Twee uitsluitingen hebben er alsnog een, en dat is toeval en geen eis: punt 1
+(kansspelwetgeving) berust op de wet en punt 7 op een vastgelegde propositiekeuze
+van de klant. Bij die twee gaat de beperking dus verder dan deze laag. De volledige
+lijst staat onderaan in "Herkomst per uitsluiting".
+
 ---
 
 ## 1. Loterijen, verlotingen en weggeefacties als instapaanbod
@@ -55,15 +75,28 @@ inkoopproces met meerdere beslissers is dat een dure ruil voor één extra cyclu
 **Wat de bron voorschrijft.** Een deadline of een oplopende prijs als
 standaardonderdeel van elk aanbod, ongeacht of er een echte grens onder zit.
 
-**Waarom niet.** Zie [`99-grenzen.md`](99-grenzen.md), grens 1. Schaarste mag
-alleen als hij feitelijk waar is: een echte capaciteitsgrens of een echte datum.
-Er is op dit moment geen bruikbare vaste datum, want de enige kandidaat is
-geblokkeerd tot verificatie aan de bron.
+**Waarom niet.** Schaarste mag alleen genoemd worden als hij feitelijk waar is: een
+capaciteitsgrens die echt bestaat, of een datum die echt vaststaat. Een
+geconstrueerde deadline en een verzonnen capaciteitsgrens zijn beide uitgesloten,
+ook als ze werken, en ook op stand `scherp`.
 
-Deze staat hier ook als uitsluiting en niet alleen als grens, omdat de bron hem
-als **techniek** aanreikt. Wie alleen de grens leest, kan denken dat de techniek
-bruikbaar is zodra er ooit een datum is. Dat is dan waar voor die datum, en niet
-voor het construeren.
+**Deze uitsluiting draagt het hele verbod, en dat is met opzet.** In de eerste
+opzet stond het in grens 1. Bij het narekenen van de projectieregel bleek dat het
+in deze repo geen voorganger had: er staat nergens iets over verzonnen feitelijke
+claims in klantcommunicatie. Een grens zonder bron zou de projectieregel
+decoratief maken, dus is het hier terechtgekomen, waar geen bron nodig is.
+
+**Wat grens 1 wél dekt**, en dat is een projectie met een echte bron: een datum mag
+alleen genoemd worden als hij aan de bron is nagegaan, en indicatieve termijnen
+worden nooit aangescherpt. Er is op dit moment geen bruikbare vaste datum, want de
+enige kandidaat is geblokkeerd tot verificatie.
+
+**Waar dit hoort te eindigen.** Een verzonnen deadline of capaciteitsgrens is in de
+eerste plaats misleiding en dus een kwestie van recht, geen commerciële smaak.
+Zodra `domains/gtm/playbooks/juridisch-kader-outbound.md` bestaat, hoort het daar
+te staan en kan grens 1 het als projectie opnemen. Tot die tijd draagt deze
+uitsluiting het, en zolang de laag uit staat is er ook geen doctrineregel die het
+zou voorstellen.
 
 ## 4. De anti-garantie
 
@@ -143,3 +176,26 @@ van die klant.
 vast welke grootheid de klant bewust ongelimiteerd houdt, en sluit die grootheid
 uit als aangrijpingspunt voor schaarste, limieten en upgradedruk. Is dat niet
 vastgesteld, dan is dat een vraag aan Ward en geen aanname.
+
+---
+
+## Herkomst per uitsluiting
+
+De tegenhanger van de bronnenlijst in [`99-grenzen.md`](99-grenzen.md). Hier is
+"laag-eigen" de verwachte uitkomst en geen uitzondering, om de reden bovenaan dit
+bestand.
+
+| # | Uitsluiting | Bron buiten de laag | Removal-neutraal |
+|---|---|---|---|
+| 1 | loterijen en weggeefacties als instapaanbod | de Wet op de kansspelen, met corroboratie in de productdocumentatie van de eerste klant | ja, en de wettelijke beperking blijft ook zonder de laag gelden |
+| 2 | facturatie per 28 dagen | geen | ja |
+| 3 | gefabriceerde schaarste en tijdsdruk | geen. Hoort in het juridisch kader outbound zodra dat bestaat | ja |
+| 4 | de anti-garantie | geen | ja |
+| 5 | proefperiode met boeteclausule | geen, en de toetsing die hij vereist kan niet plaatsvinden zolang het juridisch kader ontbreekt | ja |
+| 6 | de volumenorm van honderd acties per dag | geen als verbod, maar `outbound-principes.md` principe 6 blijft onafhankelijk gelden op elke volumeafspraak | ja, en principe 6 blijft ook zonder de laag gelden |
+| 7 | schaarste of limiet op datavergaring | de vastgelegde propositiekeuze van de klant, vindplaats bij het activeringsblok | ja, en de propositiekeuze blijft ook zonder de laag gelden |
+
+**Wat "removal-neutraal" hier betekent.** Verwijder de laag en er verandert geen
+gedrag, want de mechanica die deze punten verwerpen bestaat dan niet meer. Bij de
+punten 1, 6 en 7 blijft er daarnaast een beperking staan die niet van deze laag
+afhangt, en die was er ook voordat deze laag bestond.

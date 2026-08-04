@@ -16,6 +16,77 @@ Format per besluit:
 
 ---
 
+## 2026-08-04, de projectieregel geldt voor grenzen en niet voor uitsluitingen
+
+**Context.** De verwijderbelofte van een laag rust op de projectieregel: een grens
+ontstaat niet in de laag maar wijst naar een beperking die elders al geldt, dus
+verwijderen heft geen beperking op. Die regel is alleen waar als hij per grens
+klopt. Bij het narekenen bleek dat hij te breed was opgeschreven: hij gold in het
+manifest ook voor uitsluitingen, en twee beperkingen hadden in deze repo geen
+voorganger.
+
+**Besluit.** Drie dingen.
+
+1. **De projectieregel geldt voor grenzen.** Bij elke grens staat de bron, met een
+   letterlijke aanhaling waar die bestaat, en er is een auditlijst met per grens
+   een verdict. Zeven van de acht zijn projectie.
+2. **Uitsluitingen zijn laag-eigen, en dat is geen tekort.** Een uitsluiting
+   verwerpt mechanica die zonder de laag niet bestaat. Verwijderen haalt de
+   doctrineregel en de verwerping in één keer weg, dus netto nul. Er hoort dus
+   geen externe bron bij gezocht te worden, en dat zou ook misleidend zijn.
+3. **Twee beperkingen zijn verplaatst of gemarkeerd.** Het verbod op
+   geconstrueerde schaarste en tijdsdruk had geen bron en is van grens 1 naar
+   uitsluiting 3 gegaan. Grens 5 (de bronnaam komt nergens naar buiten) heeft geen
+   bron en staat gemarkeerd als laag-eigen, wel removal-neutraal, want zonder de
+   laag verdwijnt `SOURCES.md` mee en is er geen naam meer om te beschermen.
+
+**Alternatieven, en waarom ze afvielen.** Een bron aanwijzen die de beperking niet
+werkelijk oplegt: afgevallen, en dit is de kern. Dan wordt de projectieregel
+decoratief, en een decoratieve regel is erger dan een gemarkeerde uitzondering,
+want hij wekt vertrouwen dat hij niet verdient. Voor elke bronloze beperking een
+nieuw playbook aanleggen: afgevallen voor nu, want het verbod op verzonnen claims
+hoort in het juridisch kader outbound en dat bestaat nog niet. Een playbook
+aanleggen om een laag te kunnen verantwoorden, is de verkeerde volgorde.
+
+**Gevolg.** Er staat nu een gat in de repo dat eerder onzichtbaar was: verdwijnt
+deze laag, dan verbiedt niets een verzonnen deadline of capaciteitsgrens in
+outbound. Dat is een gat in de repo en niet in de laag. Het hoort in
+`domains/gtm/playbooks/juridisch-kader-outbound.md`, en zodra dat bestaat kan
+grens 1 het weer als projectie opnemen. Tot die tijd draagt uitsluiting 3 het.
+
+Daarnaast is de bron van grens 2 zwakker dan hij lijkt: de sectie
+"Gevoeligheden" in het klantprofiel staat daar gelabeld als afgeleid en nog te
+bevestigen. Wordt die sectie herschreven, dan moet grens 2 opnieuw beoordeeld
+worden.
+
+**Herzien wanneer.** Zodra het juridisch kader outbound bestaat, dan de vraag
+welke laag-eigen beperkingen daarheen verhuizen. En bij het bevestigen van de
+sectie "Gevoeligheden" in het klantprofiel.
+
+## 2026-08-04, een geblokkeerd doctrinevoorstel wordt gemeld en niet stil weggefilterd
+
+**Context.** De precedenceregel van de laag is een filter: een grens of
+uitsluiting kan een doctrinevoorstel tegenhouden. Als dat filter stil werkt, is
+niet te zien hoe vaak het vuurt.
+
+**Besluit.** Elke blokkade wordt gemeld in de sectie "Wat ik niet kon vaststellen"
+van de output: welk voorstel, welke grens of uitsluiting hem tegenhield, en wat er
+in plaats daarvan is gedaan. In dezelfde geest als de meldplicht bij
+tegenstrijdigheid tussen geheugenlagen in de root-`CLAUDE.md`, regels 55 tot 58.
+
+**Alternatieven.** Alleen de uitkomst melden en niet het geblokkeerde voorstel:
+afgevallen. Dan is de output netter en verdwijnt precies het signaal waarvoor de
+melding bestaat.
+
+**Gevolg.** Het aantal blokkades is een maat voor de aansluiting van de laag op
+deze markt. Veel blokkades betekent dat de doctrine slecht past, en dat is de
+bevinding waarop later besloten wordt hem te verwijderen. Een stil filter zou dat
+weggooien en de laag onweerlegbaar maken. Blokkades gaan daarom mee in het
+voorstel voor de aanbevelingentabel in fase C, naast de voorspelkwaliteit.
+
+**Herzien wanneer.** Als blijkt dat vrijwel elk voorstel een blokkade oplevert. Dan
+is de vraag niet of de melding moet blijven, maar of de laag hier thuishoort.
+
 ## 2026-08-04, de commerciële doctrine is een laag in het domein, de bedragen staan bij de klant
 
 **Context.** Er kwam externe commerciële mechanica beschikbaar (aanbodontwerp,

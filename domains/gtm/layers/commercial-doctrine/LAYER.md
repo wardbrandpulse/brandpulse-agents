@@ -143,6 +143,24 @@ Twee gevolgen die anders verkeerd gelezen worden:
   output benoemd in de sectie "Wat ik niet kon vaststellen". Stil oplossen mag
   niet, ook niet als de uitkomst evident lijkt.
 
+### Een geblokkeerd voorstel wordt gemeld
+
+Het filter werkt niet stil. Houdt een grens of een uitsluiting een
+doctrinevoorstel tegen, dan is dat geen ruis maar informatie: het laat zien waar
+de methodiek en onze beperkingen uiteenlopen.
+
+Wat er gemeld wordt, per blokkade: welk voorstel, welke grens of uitsluiting hem
+tegenhield, en wat er in plaats daarvan is gedaan. Dat hoort in de sectie "Wat ik
+niet kon vaststellen" van de output, in dezelfde geest als de meldplicht bij
+tegenstrijdigheid tussen geheugenlagen (root-`CLAUDE.md`, regels 55 tot 58).
+
+**Waarom dit meer is dan netheid.** Het aantal blokkades is een maat voor de
+aansluiting van de laag op deze markt. Veel blokkades betekent dat de doctrine
+slecht past, en dat is precies de bevinding waarop later besloten wordt hem te
+verwijderen. Een stil filter zou dat signaal weggooien en de laag onweerlegbaar
+maken. Blokkades worden daarom meegenomen in het voorstel voor de
+aanbevelingentabel in fase C, naast de voorspelkwaliteit.
+
 ## 5. Het juridisch kader is een openstaande afhankelijkheid
 
 **Het bestaat nog niet.** De precedenceverwijzing hierboven wijst naar een
@@ -185,17 +203,30 @@ en uitsluitingen gelden onverkort.
 
 [`99-grenzen.md`](99-grenzen.md) en [`90-uitsluitingen.md`](90-uitsluitingen.md)
 gelden op elke stand. Dat lijkt te botsen met "op `off` is het gedrag identiek
-aan zonder laag", maar dat doet het niet, om één reden:
+aan zonder laag". Het botst niet, maar de reden is voor grenzen en uitsluitingen
+verschillend, en dat onderscheid moet scherp blijven.
 
-**Geen enkele grens en geen enkele uitsluiting ontstaat in deze laag.** Ze zijn
-allemaal een projectie van een beperking die elders al geldt: in de
-root-`CLAUDE.md`, in het domein, in het klantprofiel, in het ICP, in de
-sectorlaag of in de wet. Haal de laag weg en er verdwijnt geen enkele beperking,
-want de bron ervan staat er nog.
+**Grenzen zijn een projectie.** Een grens ontstaat niet hier; hij is een
+beperking die elders al geldt, in de root-`CLAUDE.md`, in het domein, in het
+klantprofiel, in het ICP, in de sectorlaag of in de wet. Haal de laag weg en de
+beperking staat er nog, want de bron ervan is niet verdwenen. Bij elke grens
+staat de bron erbij, met een letterlijke aanhaling waar die bestaat.
 
-Dat is precies wat de laag verwijderbaar maakt zonder gedragsverandering. Zou een
-grens hier ontstaan in plaats van geprojecteerd worden, dan zou verwijderen een
-beperking opheffen, en dan was de verwijderbelofte onwaar.
+**Uitsluitingen zijn laag-eigen, en dat mag.** Een uitsluiting verwerpt een
+mechanisme dat de bron aanreikt. Zonder de laag bestaat dat mechanisme niet in
+deze repo, dus is er niets te verwerpen. Verwijderen haalt de doctrineregel en
+de verwerping in één keer weg: netto nul. Een uitsluiting heeft daarom géén
+externe bron nodig, en het zou misleidend zijn er een bij te zoeken.
+
+**Twee grenzen zijn wél laag-eigen**, en die staan als zodanig gemarkeerd in
+[`99-grenzen.md`](99-grenzen.md), met per grens de consequentie erbij. Dat is de
+eerlijke uitkomst van het narekenen: liever twee gemarkeerde uitzonderingen dan
+een bron aanwijzen die de beperking niet werkelijk oplegt. Dan zou de
+projectieregel decoratief worden en dat is erger dan een uitzondering.
+
+**Waar de belofte per regel geldt, staat in de bronnenlijst** in
+[`99-grenzen.md`](99-grenzen.md), sectie "Herkomst per grens". Voor een
+laag-eigen grens geldt de verwijderbelofte niet, en dat staat er letterlijk.
 
 ## 7. Verwijderprocedure
 
@@ -207,11 +238,16 @@ Vijf stappen. Daarna houdt de agent identiek gedrag.
 2. **Verwijder de map** `domains/gtm/layers/commercial-doctrine/`. Blijft
    `domains/gtm/layers/` leeg achter, verwijder die dan ook.
 3. **Verwijder** `infra/laag-check.sh`. Dat script bestaat uitsluitend om deze
-   laag te controleren en heeft zonder de laag geen functie.
-4. **Laat `memory/decisions.md` staan.** Besluiten worden niet verwijderd; een
-   teruggedraaid besluit krijgt de markering vervallen met datum, conform de
-   praktijk in dat bestand en de degradatieregel in de root-`CLAUDE.md`, sectie
-   3. Een besluit dat spoorloos verdwijnt, wordt over een jaar opnieuw genomen.
+   laag te controleren en heeft zonder de laag geen functie. Blijft het staan,
+   dan faalt het voor altijd op een ontbrekend activeringsblok en wordt een rode
+   check normaal, en dat is erger dan geen check.
+4. **Zet een statusnotitie bij de besluiten in `memory/decisions.md`.** De
+   besluiten blijven staan en worden niet verwijderd, maar ze krijgen de
+   markering vervallen met datum en de reden, conform de praktijk in dat bestand
+   (zie het vervallen besluit van 2026-07-29 over `utm_medium`) en de
+   degradatieregel in de root-`CLAUDE.md`, sectie 3. Een besluit dat spoorloos
+   verdwijnt, wordt over een jaar opnieuw genomen. Een besluit dat blijft staan
+   zonder notitie, leest als geldend beleid over een laag die er niet meer is.
 5. **Verifieer** dat er niets achterblijft:
 
    ```
@@ -228,10 +264,15 @@ vier redenen die alle vier machinaal of per inspectie te controleren zijn:
 
 1. Geen enkel bestand onder `domains/` verwijst naar de laag. Dit wordt getest,
    zie `infra/laag-check.sh`.
-2. De enige verwijzing van buiten is het activeringsblok, en stap 1 verwijdert
-   dat.
-3. Geen grens en geen uitsluiting ontstaat hier, dus verwijderen heft geen
-   beperking op. Zie sectie 6.
+2. **Er zijn precies drie verwijzingen van buiten, en de procedure handelt alle
+   drie af.** Het activeringsblok verdwijnt (stap 1), het checkscript verdwijnt
+   (stap 3), en de besluiten blijven staan met een statusnotitie (stap 4). Geen
+   vierde: dat is wat de check afdwingt.
+3. Geen grens die als projectie is gemarkeerd ontstaat hier, dus verwijderen
+   heft die beperking niet op. Voor de twee laag-eigen grenzen geldt dat niet, en
+   dat staat per grens in [`99-grenzen.md`](99-grenzen.md). Uitsluitingen zijn
+   laag-eigen maar removal-neutraal, want ze verwerpen mechanica die zonder de
+   laag niet bestaat. Zie sectie 6.
 4. De laag heeft nooit een bedrag, een taxonomiewaarde, een ICP-criterium of een
    drempel vastgesteld. Die staan allemaal buiten de laag en blijven staan.
 

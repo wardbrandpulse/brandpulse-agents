@@ -252,6 +252,7 @@ root-[`CLAUDE.md`](../../../CLAUDE.md), regels 55 tot 58.
 | Datavergaring ongelimiteerd | `docs/pricing-and-plans-blueprint.md` in de productrepository `wardbrandpulse/QRius`, kernregel dat klanten niet worden afgestraft op datavergaring: scans, consumentenprofielen en resolver-calls zijn ongelimiteerd op elk pakket |
 | Kansspelwetgeving bij win-acties | `docs/activatie-systeem.md` in dezelfde repository, sectie "Win-actie & kansspelwetgeving" |
 | Bestaande prijsstructuur | `apps/website/src/lib/plans.ts` en `apps/portal/src/lib/plans/config.ts` in dezelfde repository. De code is de bron, `docs/pricing-and-plans-blueprint.md` loopt erachteraan. Niet wijzigen vanuit dit domein |
+| Er bestaat al een ankerbedrag | Het portaal draagt voor Enterprise 8.500 per maand en 81.600 per jaar in `apps/portal/src/lib/plans/config.ts` en toont dat als "vanaf" met een contactknop. De website toont voor Enterprise geen prijs ("op maat") en de blueprint noemt geen bedrag. Dezelfde contactroute aan beide kanten, het getal aan één kant zichtbaar. Relevant voor de besluitenlijst in fase D: er is dus al een de facto ondergrens, ook zonder besluit daarover. Repareren gebeurt in de productrepo, niet hier |
 
 ## Openstaand
 
