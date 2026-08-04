@@ -3,24 +3,40 @@
 > **Bewijslast: n=0.** Deze laag is externe, niet-gevalideerde kennis. Zie
 > [`LAYER.md`](LAYER.md).
 
-Acht grenzen. Ze gelden op **elke** stand van de intensiteitsschijf, ook op
+Negen grenzen. Ze gelden op **elke** stand van de intensiteitsschijf, ook op
 `off`, en ze gelden ongeacht wat een doctrineregel voorstelt.
 
-**De projectieregel.** Een grens ontstaat niet hier. Hij is een beperking die
-elders al geldt, en dit bestand wijst er alleen naar. Dat is de reden dat de laag
-verwijderbaar is zonder gedragsverandering: haal hem weg en de beperking staat er
-nog, want de bron ervan is niet verdwenen.
+Overtreding is een fout, geen afweging.
+
+## De projectieregel, en de toets erachter
+
+Een grens ontstaat bij voorkeur niet hier. Hij is een beperking die elders al
+geldt, en dit bestand wijst er alleen naar. Dat is wat de laag verwijderbaar maakt
+zonder gedragsverandering: haal hem weg en de beperking staat er nog, want de bron
+ervan is niet verdwenen.
 
 **Die regel is alleen waar als hij per grens klopt.** Daarom staat bij elke grens
-de bron, met een letterlijke aanhaling waar die bestaat, en staat in de sectie
-"Herkomst per grens" onderaan de volledige lijst met per grens een verdict.
+de bron, met een letterlijke aanhaling waar die bestaat, en staat onderaan de
+auditlijst met per grens een verdict.
 
-**Eén grens is laag-eigen**, en die is als zodanig gemarkeerd. Dat is de eerlijke
-uitkomst van het narekenen. Een bron aanwijzen die de beperking niet werkelijk
-oplegt zou de projectieregel decoratief maken, en dat is erger dan een
-gemarkeerde uitzondering.
+**De toets is één vraag: zou de agent dit ook voorstellen zonder de laag?** Dat
+antwoord bepaalt de categorie, en de categorie bepaalt of de verwijderbelofte voor
+die regel geldt.
 
-Overtreding is een fout, geen afweging.
+| Categorie | Wat de regel beperkt | Bron nodig | Verwijderen is |
+|---|---|---|---|
+| **1. projectie** | gedrag dat er zonder de laag ook is | ja, en die is er | neutraal |
+| **2. laag-eigen, removal-neutraal** | alleen wat de laag zelf introduceert | nee | neutraal, want regel en mechanica verdwijnen samen |
+| **3. laag-eigen, niet removal-neutraal** | gedrag dat er zonder de laag ook is | ja, maar die is er niet | **versoepelt iets. Dit is een gat in de repo** |
+
+Van de negen grenzen zijn er zeven categorie 1, één categorie 2 (grens 5) en één
+categorie 3 (grens 9).
+
+**Categorie 3 is geen restcategorie en geen nette oplossing.** Het is een gat, en
+het staat als gat gelabeld omdat de andere twee uitwegen slechter zijn: een bron
+aanwijzen die de beperking niet werkelijk oplegt maakt de projectieregel
+decoratief, en de regel weglaten zou de beperking laten vallen. Een gat dat
+zichtbaar is, wordt gedicht. Een gat dat als projectie is gelabeld, niet.
 
 ---
 
@@ -58,12 +74,10 @@ Een indicatieve termijn mag als richting genoemd worden, met dat voorbehoud er
 letterlijk bij. Dit geldt in elke regelgedreven markt en niet alleen in de sector
 waar het voor het eerst opkwam.
 
-**Wat hier bewust níet staat.** Het verbod op een *geconstrueerde* deadline of een
-verzonnen capaciteitsgrens. Dat verbod had in deze repo geen voorganger, dus het
-kan hier niet als projectie staan. Het staat als uitsluiting 3 in
-[`90-uitsluitingen.md`](90-uitsluitingen.md), waar het thuishoort: het verwerpt een
-mechanisme dat de bron aanreikt, en zonder de laag bestaat dat mechanisme hier
-niet. Zie de sectie "Herkomst per grens" voor waarom dat de eerlijke plek is.
+**Het verbod op een geconstrueerde deadline staat apart, in grens 9.** Deze grens
+gaat over een datum die bestaat en niet nagegaan is. Grens 9 gaat over een datum
+die niet bestaat. Dat zijn twee verschillende fouten met een verschillende
+herkomst, en grens 9 valt in categorie 3.
 
 **De klantlaag kan strenger zijn en wint dan.** Staat er in het klantprofiel een
 strengere eis over het noemen van deadlines, dan geldt die, conform de
@@ -226,6 +240,42 @@ buiten dit domein plaatst.
 **Reden dat dit een aparte grens is en niet een detail:** een verzonnen bedrag in
 een methodiekbestand wordt bij de volgende klant hergebruikt als uitgangspunt.
 
+## Grens 9. Geen geconstrueerde schaarste of tijdsdruk
+
+> **Categorie 3: laag-eigen en niet removal-neutraal. Dit is een gat in de repo.**
+
+Geen deadline die wij verzinnen. Geen capaciteitsgrens die niet bestaat. Geen
+oplopende prijs die niet gaat oplopen. Ook niet als het werkt, en ook niet op stand
+`scherp`.
+
+Schaarste mag alleen genoemd worden als hij feitelijk waar is: een capaciteitsgrens
+die er echt is, of een datum die echt vaststaat. De enige vorm van tijdsdruk die
+deze laag mag gebruiken is een aangekondigde prijsverhoging die werkelijk doorgaat,
+en de voorwaarden daarvoor staan in
+[`50-betaalstructuur.md`](50-betaalstructuur.md), sectie 5.
+
+**Waarom dit een gat is en niet een projectie.** Deze beperking heeft in deze repo
+geen voorganger: er staat nergens iets over verzonnen feitelijke claims in
+klantcommunicatie. En de mechanica bestaat wél zonder de laag, want elke agent die
+outboundcopy schrijft kan urgentie verzinnen. De toets valt dus twee keer verkeerd
+uit: geen bron, en niet removal-neutraal.
+
+**De consequentie, letterlijk.** Wordt deze laag verwijderd, dan verdwijnt deze
+beperking en verbiedt niets in deze repo nog een verzonnen deadline. Dat is geen
+theoretisch risico: het is precies het soort claim dat onder druk ontstaat en dat
+achteraf niet meer te herstellen is.
+
+**Waar dit hoort te eindigen.** Een verzonnen deadline of capaciteitsgrens is in de
+eerste plaats misleiding en dus een kwestie van recht, geen commerciële smaak. Het
+hoort in `domains/gtm/playbooks/juridisch-kader-outbound.md`. Zodra dat bestaat,
+verhuist deze grens daarheen en wordt hij categorie 1. Tot die tijd staat hij hier
+met dit label.
+
+**Eerder stond dit als tweede helft van grens 1 en daarna als uitsluiting 3.** Beide
+plekken waren fout: in grens 1 stond het zonder bron alsof het geprojecteerd was, en
+als uitsluiting las het als removal-neutraal, wat het niet is. Zie het besluit van
+2026-08-04 in [`memory/decisions.md`](../../../../memory/decisions.md).
+
 ---
 
 ## Herkomst per grens
@@ -234,27 +284,24 @@ Dit is de auditlijst van de projectieregel. Staat hier een grens met verdict
 "laag-eigen", dan is dat een bewuste, gemarkeerde uitzondering en geen
 vergeetachtigheid.
 
-| Grens | Bron buiten de laag | Verdict |
-|---|---|---|
-| 1, datum aan de bron geverifieerd | `memory/sectors/ebike.md` (verbatim aangehaald), en strenger op de klantas in `clients/<klant>/profiel.md`, sectie "Gevoeligheden" | projectie |
-| 2, geen wettelijke garantie of onnakombare toezegging | `clients/<klant>/profiel.md`, sectie "Gevoeligheden", twee bullets, plus `domains/gtm/CLAUDE.md` sectie 1 | projectie, **maar de bron is zelf gelabeld als afgeleid en nog te bevestigen** |
-| 3, juridisch kader wint | `domains/gtm/CLAUDE.md` sectie 1, plus het besluit van 2026-08-04. Het kader zelf bestaat nog niet | projectie, met openstaande afhankelijkheid |
-| 4, huisstijl is het plafond | root-`CLAUDE.md` sectie 1, plus `clients/<klant>/profiel.md` | projectie |
-| 5, bronnaam nergens naar buiten | **geen.** Alleen het besluit van 2026-08-04 | **laag-eigen**, wel removal-neutraal |
-| 6, laag raakt het ICP niet aan | root-`CLAUDE.md` sectie 1, het twee-assenbesluit van 2026-07-29, en `clients/<klant>/gtm/icp.md` | projectie |
-| 7, niet als vastgestelde kennis | root-`CLAUDE.md` sectie 3 en sectie 4 | projectie |
-| 8, geen bedragen | root-`CLAUDE.md` sectie 1 en sectie 9, plus `domains/gtm/CLAUDE.md` sectie 1 | projectie |
+| Grens | Zou de agent dit ook zonder de laag doen? | Bron buiten de laag | Categorie |
+|---|---|---|---|
+| 1, datum aan de bron geverifieerd | ja | `memory/sectors/ebike.md` (verbatim aangehaald), en strenger op de klantas in `clients/<klant>/profiel.md`, sectie "Gevoeligheden" | 1, projectie |
+| 2, geen wettelijke garantie of onnakombare toezegging | ja | `clients/<klant>/profiel.md`, sectie "Gevoeligheden", twee bullets, plus `domains/gtm/CLAUDE.md` sectie 1 | 1, projectie, **maar de bron is zelf gelabeld als afgeleid en nog te bevestigen** |
+| 3, juridisch kader wint | ja | `domains/gtm/CLAUDE.md` sectie 1, plus het besluit van 2026-08-04. Het kader zelf bestaat nog niet | 1, projectie, met openstaande afhankelijkheid |
+| 4, huisstijl is het plafond | ja | root-`CLAUDE.md` sectie 1, plus `clients/<klant>/profiel.md` | 1, projectie |
+| 5, bronnaam nergens naar buiten | **nee**, er is zonder de laag geen bron om te noemen | geen, en geen nodig | 2, laag-eigen en removal-neutraal |
+| 6, laag raakt het ICP niet aan | ja | root-`CLAUDE.md` sectie 1, het twee-assenbesluit van 2026-07-29, en `clients/<klant>/gtm/icp.md` | 1, projectie |
+| 7, niet als vastgestelde kennis | ja | root-`CLAUDE.md` sectie 3 en sectie 4 | 1, projectie |
+| 8, geen bedragen | ja | root-`CLAUDE.md` sectie 1 en sectie 9, plus `domains/gtm/CLAUDE.md` sectie 1 | 1, projectie |
+| 9, geen geconstrueerde schaarste | **ja**, elke agent die copy schrijft kan urgentie verzinnen | **geen** | **3, laag-eigen en niet removal-neutraal. Gat in de repo** |
 
-**Wat hier niet in staat en waar het gebleven is.** Het verbod op geconstrueerde
-schaarste en tijdsdruk stond eerst in grens 1. Het had geen bron in deze repo, dus
-het is verplaatst naar uitsluiting 3. Dat is geen verzwakking terwijl de laag aan
-staat, want uitsluitingen gelden op elke stand. Het is wel eerlijker: als de laag
-verdwijnt, verbiedt niets in deze repo nog een verzonnen deadline, en dat is een
-gat in de repo en niet in de laag.
+**Er staat precies één gat in deze lijst, en het is grens 9.** Zolang het juridisch
+kader outbound ontbreekt, draagt deze laag een beperking die bij verwijdering
+verdwijnt terwijl hij zou moeten blijven. Dat staat als openstaand punt op de
+klantas, met de prioriteit die eraan hangt.
 
-**Dat gat hoort in het juridisch kader outbound.** Een verzonnen deadline of
-capaciteitsgrens is in de eerste plaats een kwestie van misleiding en dus van
-recht, niet van commerciële smaak. Zodra
-`domains/gtm/playbooks/juridisch-kader-outbound.md` bestaat, hoort het daar te
-staan, en dan kan grens 1 het weer als projectie opnemen. Tot die tijd draagt
-uitsluiting 3 het.
+**Grens 2 is geen gat maar wel de zwakste projectie.** De bron bestaat, maar staat in
+het klantprofiel gelabeld als afgeleid en nog te bevestigen. Bevestigen is een
+openstaand punt met Ward als eigenaar. Wordt die sectie herschreven, dan verliest
+deze grens zijn grond en moet hij opnieuw beoordeeld worden.

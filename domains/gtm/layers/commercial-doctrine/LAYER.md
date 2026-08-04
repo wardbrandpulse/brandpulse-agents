@@ -175,6 +175,21 @@ uit en dat blijft zo.
 laag de vraag "mag dit" beantwoorden. Deze laag kan hem zeker niet beantwoorden:
 hij bepaalt wat werkt.
 
+### Het kader heeft inmiddels twee vastgestelde onderdelen die erop wachten
+
+Dit is geen vage TODO meer. Uit fase A en B kwamen twee beperkingen die wij zelf
+hebben opgeschreven en die daar horen te staan in plaats van hier:
+
+1. **Geen geconstrueerde deadline of capaciteitsgrens.** Nu grens 9, categorie 3,
+   dus een beperking die bij verwijdering van de laag verdwijnt.
+2. **Geen garantie over een wettelijke uitkomst.** Nu grens 2, en de bron daarvan
+   staat in het klantprofiel gelabeld als afgeleid en nog te bevestigen.
+
+**Dat verandert de prioriteit.** Zolang het kader ontbreekt draagt deze laag twee
+regels die bij verwijdering wegvallen terwijl ze zouden moeten blijven. Het gaat
+daarmee niet om netheid maar om twee beperkingen die op de verkeerde plek staan.
+Beide staan als openstaand punt op de klantas.
+
 **Een inhoudelijk gereede laag opent de verzendpoort niet.** Die poort staat in
 [`outbound-principes.md`](../../playbooks/outbound-principes.md), principe 2, en
 sluit met: "Zonder een ingevuld verzenddomein wordt er geen outbound verstuurd."
@@ -206,27 +221,35 @@ gelden op elke stand. Dat lijkt te botsen met "op `off` is het gedrag identiek
 aan zonder laag". Het botst niet, maar de reden is voor grenzen en uitsluitingen
 verschillend, en dat onderscheid moet scherp blijven.
 
-**Grenzen zijn een projectie.** Een grens ontstaat niet hier; hij is een
-beperking die elders al geldt, in de root-`CLAUDE.md`, in het domein, in het
-klantprofiel, in het ICP, in de sectorlaag of in de wet. Haal de laag weg en de
-beperking staat er nog, want de bron ervan is niet verdwenen. Bij elke grens
-staat de bron erbij, met een letterlijke aanhaling waar die bestaat.
+**De toets is één vraag: zou de agent dit ook doen zonder de laag?** Dat antwoord
+bepaalt de categorie, en de categorie bepaalt of de verwijderbelofte voor die regel
+geldt. Drie categorieën, en ze gelden voor grenzen en uitsluitingen door elkaar:
 
-**Uitsluitingen zijn laag-eigen, en dat mag.** Een uitsluiting verwerpt een
-mechanisme dat de bron aanreikt. Zonder de laag bestaat dat mechanisme niet in
-deze repo, dus is er niets te verwerpen. Verwijderen haalt de doctrineregel en
-de verwerping in één keer weg: netto nul. Een uitsluiting heeft daarom géén
-externe bron nodig, en het zou misleidend zijn er een bij te zoeken.
+| Categorie | Beperkt | Bron nodig | Verwijderen is |
+|---|---|---|---|
+| **1. projectie** | gedrag dat er zonder de laag ook is | ja, en die is er | neutraal |
+| **2. laag-eigen, removal-neutraal** | alleen wat de laag introduceert | nee | neutraal, regel en mechanica verdwijnen samen |
+| **3. laag-eigen, niet removal-neutraal** | gedrag dat er zonder de laag ook is | ja, maar die is er niet | **versoepelt iets. Een gat in de repo** |
 
-**Twee grenzen zijn wél laag-eigen**, en die staan als zodanig gemarkeerd in
-[`99-grenzen.md`](99-grenzen.md), met per grens de consequentie erbij. Dat is de
-eerlijke uitkomst van het narekenen: liever twee gemarkeerde uitzonderingen dan
-een bron aanwijzen die de beperking niet werkelijk oplegt. Dan zou de
-projectieregel decoratief worden en dat is erger dan een uitzondering.
+**Categorie 1 is waar de meeste beperkingen thuishoren.** Een projectie ontstaat niet
+hier; de beperking staat in de root-`CLAUDE.md`, in het domein, in het klantprofiel,
+in het ICP, in de sectorlaag of in de wet. Haal de laag weg en ze staat er nog.
 
-**Waar de belofte per regel geldt, staat in de bronnenlijst** in
-[`99-grenzen.md`](99-grenzen.md), sectie "Herkomst per grens". Voor een
-laag-eigen grens geldt de verwijderbelofte niet, en dat staat er letterlijk.
+**Categorie 2 heeft geen bron nodig en dat is geen tekort.** Verwerpt een regel
+mechanica die alleen via de doctrine binnenkomt, dan haalt verwijderen beide in één
+keer weg. Er een bron bij zoeken zou misleidend zijn.
+
+**Categorie 3 is een gat, en het staat als gat gelabeld.** Er valt op dit moment
+precies één regel in: grens 9, het verbod op geconstrueerde schaarste. Verwijder de
+laag en die beperking verdwijnt terwijl hij zou moeten blijven. De twee alternatieven
+zijn slechter: een bron aanwijzen die de beperking niet werkelijk oplegt maakt de
+projectieregel decoratief, en de regel weglaten laat de beperking vallen.
+
+**Waar elke regel valt, staat in de twee auditlijsten:**
+[`99-grenzen.md`](99-grenzen.md) sectie "Herkomst per grens" en
+[`90-uitsluitingen.md`](90-uitsluitingen.md) sectie "Herkomst per uitsluiting".
+Beide hebben de toetsvraag als kolom, zodat de indeling na te rekenen is en niet
+alleen te vertrouwen.
 
 ## 7. Verwijderprocedure
 

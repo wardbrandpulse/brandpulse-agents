@@ -16,6 +16,52 @@ Format per besluit:
 
 ---
 
+## 2026-08-04, de toets voor een laag-eigen beperking is of de agent hem ook zonder de laag zou voorstellen
+
+**Vervangt punt 2 en punt 3 van het besluit hieronder over de projectieregel. Dat
+besluit blijft staan met een correctienotitie.**
+
+**Context.** Het eerdere besluit stelde dat uitsluitingen geen bron nodig hebben
+omdat ze mechanica verwerpen die zonder de laag niet bestaat. De redenering klopt,
+de regel was te breed: niet alles in `90-uitsluitingen.md` is laag-eigen. Een
+weggeefactie kan een agent voorstellen zonder enige doctrine; een anti-garantie niet.
+Daardoor stond het verbod op geconstrueerde schaarste als uitsluiting gelabeld, en
+las het als removal-neutraal terwijl het dat niet is.
+
+**Besluit.** De toets is één vraag: **zou de agent dit ook voorstellen zonder de
+laag?** Dat antwoord bepaalt de categorie, en de categorie geldt voor grenzen en
+uitsluitingen door elkaar.
+
+| Categorie | Beperkt | Bron nodig | Verwijderen is |
+|---|---|---|---|
+| 1, projectie | gedrag dat er zonder de laag ook is | ja, en die is er | neutraal |
+| 2, laag-eigen en removal-neutraal | alleen wat de laag introduceert | nee | neutraal |
+| 3, laag-eigen en niet removal-neutraal | gedrag dat er zonder de laag ook is | ja, maar die is er niet | **versoepelt iets** |
+
+**Gevolg, en dat is de kern van deze correctie.** Categorie 3 ontbrak, en daar valt
+precies één regel in: het verbod op geconstrueerde schaarste en tijdsdruk. Dat staat
+nu als grens 9 met dat label, met de consequentie er letterlijk bij: verwijder de
+laag en deze beperking verdwijnt terwijl hij zou moeten blijven.
+
+Uitsluiting 3 blijft als leeg nummer staan met een verwijzing naar grens 9.
+Hernummeren zou de verwijzingen naar de punten 4 tot en met 7 breken en de
+vergelijkbaarheid met eerdere output kapotmaken, conform de root-`CLAUDE.md`,
+sectie 5.
+
+Herbeoordeling van alle zeven uitsluitingen tegen de toets: punt 1, 5 en 7 zijn
+categorie 1 (wet, domeinscope, propositiekeuze van de klant), punt 2, 4 en 6 zijn
+categorie 2, punt 3 is verplaatst. Van de negen grenzen zijn zeven categorie 1, is
+grens 5 categorie 2 en grens 9 categorie 3.
+
+**Alternatieven.** Categorie 3 niet benoemen en het verbod als uitsluiting laten
+staan: afgevallen, dan claimt het label removal-neutraliteit die er niet is, en dat
+is precies de decoratieve projectieregel die het eerdere besluit wilde voorkomen. Het
+verbod laten vallen omdat er geen bron is: afgevallen, dan wordt een gat in de repo
+opgelost door de beperking weg te halen.
+
+**Herzien wanneer.** Zodra het juridisch kader outbound bestaat. Grens 9 verhuist dan
+daarheen en wordt categorie 1, en dan staat er geen categorie 3 meer in de laag.
+
 ## 2026-08-04, de projectieregel geldt voor grenzen en niet voor uitsluitingen
 
 **Context.** De verwijderbelofte van een laag rust op de projectieregel: een grens
@@ -39,6 +85,13 @@ voorganger.
    uitsluiting 3 gegaan. Grens 5 (de bronnaam komt nergens naar buiten) heeft geen
    bron en staat gemarkeerd als laag-eigen, wel removal-neutraal, want zonder de
    laag verdwijnt `SOURCES.md` mee en is er geen naam meer om te beschermen.
+
+**⚠️ Gecorrigeerd op 2026-08-04, na beoordeling.** Punt 2 hierboven was te breed en
+punt 3 zette daardoor één regel op de verkeerde plek. De correctie staat als apart
+besluit hieronder: "de toets voor een laag-eigen beperking is of de agent hem ook
+zonder de laag zou voorstellen". Punt 1 en de rest van dit besluit blijven staan.
+De oorspronkelijke formulering blijft hier onaangeroerd, want een besluit dat stil
+wordt bijgesteld is niet meer te volgen.
 
 **Alternatieven, en waarom ze afvielen.** Een bron aanwijzen die de beperking niet
 werkelijk oplegt: afgevallen, en dit is de kern. Dan wordt de projectieregel

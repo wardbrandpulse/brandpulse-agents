@@ -276,6 +276,28 @@ root-[`CLAUDE.md`](../../../CLAUDE.md), regels 55 tot 58.
 7. Waar de pijplijn wordt bijgehouden.
 8. Als er een magazine komt: `<GtmView event="magazine_view" />` op die pagina
    zetten. De component staat klaar, de pagina bestaat nog niet.
+9. **De sectie "Gevoeligheden" in [`../profiel.md`](../profiel.md) bevestigen.**
+   Eigenaar: Ward. Die sectie staat nu gelabeld als "Afgeleid uit het product, nog
+   te bevestigen", en twee bullets erin zijn de bron van de grens in de
+   doctrinelaag die een garantie over een wettelijke uitkomst verbiedt. Dat is de
+   grens waar fout zijn het duurst is. Wordt de sectie herschreven of verworpen,
+   dan verliest die grens zijn grond en moet hij opnieuw beoordeeld worden.
+   Bevestigen is dus geen administratie maar het stevig zetten van een beperking
+   die nu op afgeleide grond staat.
+10. **Juridisch kader outbound aanleggen**, voorziene plek
+    `domains/gtm/playbooks/juridisch-kader-outbound.md`. Als
+    randvoorwaardendocument dat vastgelegde operationele beperkingen registreert,
+    niet als juridische duiding: dat laatste valt buiten dit domein.
+    **Twee vastgestelde onderdelen wachten er al op**, en dat verandert de
+    prioriteit van dit punt:
+    - geen geconstrueerde deadline of capaciteitsgrens (nu een laag-eigen grens
+      die bij verwijdering van de laag verdwijnt terwijl hij zou moeten blijven);
+    - geen garantie over een wettelijke uitkomst (nu een grens op afgeleide grond,
+      zie punt 9).
+
+    Daarnaast hangt de vraag "mag dit" er volledig aan: zonder dit kader kan geen
+    enkele laag hem beantwoorden. Zie ook punt 5, het verzenddomein: die poort
+    blijft dicht ongeacht hoe compleet de methodiek is.
 
 ### ⚠️ Hostconsistentie, en waarom dat de attributie raakt
 

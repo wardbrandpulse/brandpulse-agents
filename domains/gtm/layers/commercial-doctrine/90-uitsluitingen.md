@@ -21,25 +21,31 @@ een keuze en kan later herzien worden, met een besluit in
 [`memory/decisions.md`](../../../../memory/decisions.md). Stilzwijgend
 terugbouwen kan niet.
 
-## Uitsluitingen zijn laag-eigen, en dat is geen tekort
+## Welke uitsluiting een bron nodig heeft, en welke niet
 
-De projectieregel in [`99-grenzen.md`](99-grenzen.md) eist dat elke grens een
-bron buiten de laag heeft. **Voor uitsluitingen geldt die eis niet, en het zou
-misleidend zijn er bronnen bij te zoeken.**
+De projectieregel in [`99-grenzen.md`](99-grenzen.md) eist dat een beperking een
+bron buiten de laag heeft. Die eis geldt hier niet automatisch, maar hij vervalt
+ook niet automatisch.
 
-De reden is dat een uitsluiting een mechanisme verwerpt dat zonder deze laag niet
-bestaat. Er is in deze repo niets dat een verloting als instapaanbod voorstelt, of
-facturatie per 28 dagen, of een anti-garantie. Die mechanica komt binnen met de
-doctrine en gaat eruit met de doctrine.
+**De regel is niet "uitsluitingen hebben geen bron nodig".** Hij is: een verwerping
+van **laag-eigen mechanica** heeft geen bron nodig. Dat is niet hetzelfde, want niet
+alles wat hieronder staat komt alleen via de doctrine binnen.
 
-**Daarmee is elke uitsluiting removal-neutraal.** Verwijder de laag en je haalt de
-doctrineregel én de verwerping in één keer weg. Netto nul, dus de
-verwijderbelofte blijft heel zonder dat er ergens een externe bron nodig is.
+**De toets is één vraag: zou de agent dit ook voorstellen zonder de laag?**
 
-Twee uitsluitingen hebben er alsnog een, en dat is toeval en geen eis: punt 1
-(kansspelwetgeving) berust op de wet en punt 7 op een vastgelegde propositiekeuze
-van de klant. Bij die twee gaat de beperking dus verder dan deze laag. De volledige
-lijst staat onderaan in "Herkomst per uitsluiting".
+- **Nee**, het komt alleen via de doctrine binnen. Dan is er geen bron nodig, want
+  verwijderen haalt mechanica en verwerping in één keer weg. Netto nul. Dat geldt
+  voor de anti-garantie: niets in deze repo brengt die op.
+- **Ja**, het bestaat ook zonder de laag. Dan is er wél een bron nodig. Een
+  weggeefactie is daar het voorbeeld van: een agent kan die voorstellen zonder enige
+  doctrine, dus punt 1 heeft zijn bron nodig, en die heeft hij (de wet).
+
+Valt de toets twee keer verkeerd uit, dus mechanica die er ook zonder de laag is en
+géén bron, dan is het geen uitsluiting maar een gat, en dan hoort het bij de
+grenzen met dat label. Dat was het geval bij geconstrueerde schaarste: zie punt 3
+hieronder, dat daarom is verplaatst.
+
+De volledige beoordeling staat onderaan in "Herkomst per uitsluiting".
 
 ---
 
@@ -70,33 +76,29 @@ constructie dat bij de eerste factuurcontrole van een inkoopafdeling opvalt, en
 dan is niet de constructie het gespreksonderwerp maar je betrouwbaarheid. In een
 inkoopproces met meerdere beslissers is dat een dure ruil voor één extra cyclus.
 
-## 3. Gefabriceerde schaarste en tijdsdruk
+## 3. Gefabriceerde schaarste en tijdsdruk (verplaatst naar grens 9)
 
-**Wat de bron voorschrijft.** Een deadline of een oplopende prijs als
-standaardonderdeel van elk aanbod, ongeacht of er een echte grens onder zit.
+> **Verplaatst op 2026-08-04. Het nummer blijft staan en wordt niet hergebruikt.**
 
-**Waarom niet.** Schaarste mag alleen genoemd worden als hij feitelijk waar is: een
-capaciteitsgrens die echt bestaat, of een datum die echt vaststaat. Een
-geconstrueerde deadline en een verzonnen capaciteitsgrens zijn beide uitgesloten,
-ook als ze werken, en ook op stand `scherp`.
+Dit punt stond hier als uitsluiting. Dat was fout, en de fout zat in het label en
+niet in de inhoud.
 
-**Deze uitsluiting draagt het hele verbod, en dat is met opzet.** In de eerste
-opzet stond het in grens 1. Bij het narekenen van de projectieregel bleek dat het
-in deze repo geen voorganger had: er staat nergens iets over verzonnen feitelijke
-claims in klantcommunicatie. Een grens zonder bron zou de projectieregel
-decoratief maken, dus is het hier terechtgekomen, waar geen bron nodig is.
+**Waarom het hier niet hoort.** Een uitsluiting verwerpt mechanica die zonder de
+laag niet bestaat, en is daardoor removal-neutraal. Geconstrueerde urgentie bestaat
+wél zonder de laag: elke agent die outboundcopy schrijft kan een deadline verzinnen.
+En er is geen bron in deze repo die het verbiedt. De toets valt dus twee keer
+verkeerd uit, en dan is het geen uitsluiting maar een gat.
 
-**Wat grens 1 wél dekt**, en dat is een projectie met een echte bron: een datum mag
-alleen genoemd worden als hij aan de bron is nagegaan, en indicatieve termijnen
-worden nooit aangescherpt. Er is op dit moment geen bruikbare vaste datum, want de
-enige kandidaat is geblokkeerd tot verificatie.
+Als uitsluiting las het als "netto nul, geen bron nodig", en dat is voor dit item
+onwaar: verwijderen van de laag haalt deze beperking werkelijk weg.
 
-**Waar dit hoort te eindigen.** Een verzonnen deadline of capaciteitsgrens is in de
-eerste plaats misleiding en dus een kwestie van recht, geen commerciële smaak.
-Zodra `domains/gtm/playbooks/juridisch-kader-outbound.md` bestaat, hoort het daar
-te staan en kan grens 1 het als projectie opnemen. Tot die tijd draagt deze
-uitsluiting het, en zolang de laag uit staat is er ook geen doctrineregel die het
-zou voorstellen.
+**Waar het nu staat.** [`99-grenzen.md`](99-grenzen.md), grens 9, met het label
+categorie 3: laag-eigen en niet removal-neutraal, met de consequentie erbij. Het
+verbod is niet veranderd, alleen de plek en het label.
+
+**Het nummer blijft leeg.** Hernummeren zou de verwijzingen naar punt 4 tot en met 7
+breken en de vergelijkbaarheid met eerdere output kapotmaken, conform de
+root-[`CLAUDE.md`](../../../../CLAUDE.md), sectie 5.
 
 ## 4. De anti-garantie
 
@@ -181,21 +183,25 @@ vastgesteld, dan is dat een vraag aan Ward en geen aanname.
 
 ## Herkomst per uitsluiting
 
-De tegenhanger van de bronnenlijst in [`99-grenzen.md`](99-grenzen.md). Hier is
-"laag-eigen" de verwachte uitkomst en geen uitzondering, om de reden bovenaan dit
-bestand.
+De tegenhanger van de auditlijst in [`99-grenzen.md`](99-grenzen.md), met dezelfde
+toets en dezelfde drie categorieën. Hier is categorie 2 de verwachte uitkomst, om de
+reden bovenaan dit bestand, maar hij is niet de enige.
 
-| # | Uitsluiting | Bron buiten de laag | Removal-neutraal |
-|---|---|---|---|
-| 1 | loterijen en weggeefacties als instapaanbod | de Wet op de kansspelen, met corroboratie in de productdocumentatie van de eerste klant | ja, en de wettelijke beperking blijft ook zonder de laag gelden |
-| 2 | facturatie per 28 dagen | geen | ja |
-| 3 | gefabriceerde schaarste en tijdsdruk | geen. Hoort in het juridisch kader outbound zodra dat bestaat | ja |
-| 4 | de anti-garantie | geen | ja |
-| 5 | proefperiode met boeteclausule | geen, en de toetsing die hij vereist kan niet plaatsvinden zolang het juridisch kader ontbreekt | ja |
-| 6 | de volumenorm van honderd acties per dag | geen als verbod, maar `outbound-principes.md` principe 6 blijft onafhankelijk gelden op elke volumeafspraak | ja, en principe 6 blijft ook zonder de laag gelden |
-| 7 | schaarste of limiet op datavergaring | de vastgelegde propositiekeuze van de klant, vindplaats bij het activeringsblok | ja, en de propositiekeuze blijft ook zonder de laag gelden |
+| # | Uitsluiting | Zou de agent dit ook zonder de laag doen? | Bron buiten de laag | Categorie |
+|---|---|---|---|---|
+| 1 | loterijen en weggeefacties als instapaanbod | **ja**, plausibel zonder enige doctrine | de Wet op de kansspelen, met corroboratie in de productdocumentatie van de eerste klant | 1, projectie |
+| 2 | facturatie per 28 dagen voor dertien cycli | nee, de constructie komt met de doctrine | geen, en geen nodig | 2, laag-eigen en removal-neutraal |
+| 3 | gefabriceerde schaarste en tijdsdruk | ja | geen | **verplaatst naar grens 9, categorie 3** |
+| 4 | de anti-garantie | nee | geen, en geen nodig | 2, laag-eigen en removal-neutraal |
+| 5 | proefperiode met boeteclausule | ja, een proefvorm is een gewoon voorstel | `domains/gtm/CLAUDE.md` sectie 1: juridische afweging valt buiten dit domein, dus de agent mag de boetevariant niet zelf beoordelen | 1, projectie van een bevoegdheidsgrens |
+| 6 | de volumenorm van honderd acties per dag | nee, niet die norm. "Meer versturen" wel | `outbound-principes.md` principe 6 dekt het aangrenzende gedrag onafhankelijk | 2 voor de norm, en het aangrenzende gedrag is categorie 1 |
+| 7 | schaarste of limiet op datavergaring | ja, plausibel bij een opdracht om upgradedruk te maken | de vastgelegde propositiekeuze van de klant, vindplaats bij het activeringsblok | 1, projectie |
 
-**Wat "removal-neutraal" hier betekent.** Verwijder de laag en er verandert geen
-gedrag, want de mechanica die deze punten verwerpen bestaat dan niet meer. Bij de
-punten 1, 6 en 7 blijft er daarnaast een beperking staan die niet van deze laag
-afhangt, en die was er ook voordat deze laag bestond.
+**Wat categorie 2 hier betekent.** Verwijder de laag en er verandert geen gedrag,
+want de mechanica die het punt verwerpt bestaat dan niet meer.
+
+**Bij de punten 1, 5, 6 en 7 blijft er ook zonder de laag een beperking staan.** De
+wet, de domeinscope, principe 6 en de propositiekeuze van de klant hangen niet van
+deze laag af en golden al voordat hij bestond. Dat is de reden dat ze een bron
+hebben en nodig hebben: zonder die bron zouden ze categorie 3 zijn geweest, en dan
+zou verwijderen iets versoepelen.
