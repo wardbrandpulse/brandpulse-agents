@@ -3,10 +3,13 @@
 > **Bewijslast: n=0.** Deze laag is externe, niet-gevalideerde kennis. Zie
 > [`LAYER.md`](LAYER.md).
 >
-> **⚠️ Status: voorstel. Nog niet gebouwd, nog niet toegepast.** Er staat geen
-> migratiebestand in `supabase/migrations/`, met opzet: de SQL hieronder staat
-> inline zodat hij niet per ongeluk kan worden toegepast. Bouwen gebeurt na
-> akkoord van Ward.
+> **Status: gebouwd en toegepast op 2026-08-04**, na akkoord van Ward. Het
+> migratiebestand is
+> [`20260804105505_doctrinelaag_meetkoppeling.sql`](../../../../supabase/migrations/20260804105505_doctrinelaag_meetkoppeling.sql).
+> Dat bestand is de bron, niet de database.
+>
+> **De SQL in sectie 6 blijft hier staan als toelichting**, met de afweging per
+> kolom erbij. Wijkt hij af van het migratiebestand, dan is dit bestand fout.
 
 Zonder meetkoppeling is de laag niet te evalueren en dus niet eerlijk te
 verwijderen. Dit bestand beschrijft wat er vastgelegd moet worden en waarom.
@@ -115,7 +118,7 @@ advies zijn twee verschillende soorten ding. Voorwaardelijke verplichting op een
 attribuut is iets anders dan voorwaardelijke verplichting op de bestaansreden van de
 tabel.
 
-**Voorstel: een eigen tabel `agent_blocked_proposals`.** Zonder `gtm_`-prefix en met
+**Daarom een eigen tabel, `agent_blocked_proposals`.** Zonder `gtm_`-prefix en met
 een `domain`-kolom, om dezelfde reden als bij `agent_recommendations`: de vorm is
 domeinoverstijgend, want elke laag in elk domein kan een voorstel blokkeren. De
 check-constraint op `domain` staat op alleen `gtm`, als typefoutbescherming en niet als
@@ -298,16 +301,27 @@ formulering.
 open, en de drempels waarmee hij te beantwoorden zou zijn, blijven staan zoals ze
 staan.
 
-## 6. De migratie, als voorstel
+## 6. De migratie
 
-**Nog niet aangelegd.** Bestandsnaam volgens de conventie in
-[`migratie-proces.md`](../../../../infra/migratie-proces.md):
-`20260804UUMMSS_doctrinelaag_meetkoppeling.sql`, met de tijdstempel gezet op het
-moment van aanmaken. Alleen in het `Brandpulse GTM`-project. Idempotent. Engelse
-identifiers, Nederlandse constraintwaarden, zoals in de vier bestaande migraties.
+**Toegepast op 2026-08-04** in het `Brandpulse GTM`-project, als
+`supabase/migrations/20260804105505_doctrinelaag_meetkoppeling.sql`. Idempotent.
+Engelse identifiers, Nederlandse constraintwaarden, zoals in de vier eerdere
+migraties.
+
+**Geverifieerd na het toepassen**, en niet op het uitblijven van een foutmelding:
+alle negen kolommen aanwezig met de bedoelde nullability, `segment` op `not null`,
+alle achttien constraints aanwezig, alle drie de indexen aanwezig, RLS aan zonder
+policies, en `anon` en `authenticated` kunnen niets lezen. De bestaande 48 rijen in
+`gtm_events` bleven staan en de ingest kan er nog steeds in schrijven, want alle
+nieuwe kolommen zijn nullable met constraints die `NULL` toestaan.
+
+De beveiligingscontrole geeft vijf regels `rls_enabled_no_policy` op niveau INFO,
+één per tabel. Dat is de bedoelde toestand en geen openstaand punt; zie
+[`brandpulse-gtm.md`](../../../../infra/brandpulse-gtm.md).
 
 ```sql
--- VOORSTEL, NOG NIET TOEGEPAST.
+-- Toegepast op 2026-08-04. Het migratiebestand is de bron; deze weergave is de
+-- toelichting erbij.
 --
 -- Meetkoppeling voor de commerciele doctrinelaag. Zonder deze kolommen is de laag
 -- niet te evalueren en dus niet eerlijk te verwijderen.
@@ -507,13 +521,21 @@ end $$;
 
 Een toegepaste migratie wordt nooit teruggedraaid
 ([`migratie-proces.md`](../../../../infra/migratie-proces.md), sectie 6). Verdwijnt de
-laag daarna, dan blijven deze kolommen en deze tabel staan.
+laag, dan blijven deze kolommen en deze tabel staan.
 
 **Dat is het enige onomkeerbare residu van de laag, het bestaat uit lege kolommen en
 een lege tabel, en het verandert geen gedrag.** Het staat ook in
 [`LAYER.md`](LAYER.md), sectie 7, zodat het later niet als een gebroken belofte
 leest.
 
-Wat wél opgeruimd moet worden bij verwijdering is de check-constraint op
-`source_layer`, want die noemt de laag bij naam. Dat is een migratie van één regel en
-hij hoort dan bij de verwijderstappen.
+**Twee dingen die bij verwijdering wél moeten gebeuren**, en ze staan als stap 6 in de
+verwijderprocedure:
+
+1. **De twee check-constraints op `source_layer` droppen**, in
+   `agent_recommendations` en `agent_blocked_proposals`. Die noemen de laag bij naam.
+   Met een **nieuwe** migratie, niet door de oude aan te passen. De kolommen blijven:
+   een lege kolom is gedragsneutraal, een constraint die naar een verdwenen laag
+   verwijst is dat niet.
+2. **Het migratiebestand blijft staan.** Dat is de reden dat
+   `infra/laag-check.sh` `supabase/migrations/` als derde uitzondering kent, met die
+   reden erbij in de uitvoer in plaats van stil weggefilterd.

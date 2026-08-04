@@ -20,7 +20,8 @@ root-`CLAUDE.md`.
 |---|---|---|---|
 | gebeurtenissen | de GTM-events (`gtm_events`) | Supabase-project `Brandpulse GTM`, ref `syyhnsghnozaqctaavbl` | bestaat |
 | bezwaren | gecodeerde replies (`gtm_objections`) | zelfde project | bestaat |
-| aanbevelingen | voorspelling en uitkomst (`agent_recommendations`, met `domain` naast `client`) | zelfde project | bestaat |
+| aanbevelingen | voorspelling en uitkomst (`agent_recommendations`, met `domain` naast `client`) | zelfde project | bestaat, sinds 2026-08-04 met herkomst, intensiteit, segment en verdict |
+| geblokkeerde voorstellen | doctrinevoorstellen die een grens tegenhield (`agent_blocked_proposals`) | zelfde project | bestaat sinds 2026-08-04, **nog leeg** |
 | accounts | motion per account (`gtm_accounts`) | zelfde project | bestaat, **nog leeg** |
 | productdata Qrius | platformdata van Qrius-klanten | Supabase-project `QRious`, ref `rylmnfaaylnnnbiuywlq` (productie) | bestaat, **buiten scope voor GTM** |
 | pijplijn | waar deals en stadia staan | `TODO` | |

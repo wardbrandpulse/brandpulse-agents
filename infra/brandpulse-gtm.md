@@ -40,7 +40,8 @@ niet de database.
 | `gtm_events` | commerciële gebeurtenissen | `occurred_at`, `client`, `segment`, `source`, `asset`, `event_type` |
 | `gtm_objections` | gecodeerde replies | `occurred_at`, `client`, `segment`, `objection_code`, `verbatim` |
 | `gtm_accounts` | accounteigenschappen die niet per aanraking verschillen | `client`, `account`, `motion` |
-| `agent_recommendations` | voorspelling en uitkomst per advies | `client`, `domain`, `predicted_impact`, `status`, `actual_impact` |
+| `agent_recommendations` | voorspelling en uitkomst per advies | `client`, `domain`, `segment`, `predicted_impact`, `status`, `actual_impact`, `prediction_verdict`, `source_layer` |
+| `agent_blocked_proposals` | doctrinevoorstellen die door een grens zijn tegengehouden | `client`, `domain`, `proposal`, `blocked_by`, `alternative` |
 
 Alle gesloten waardelijsten worden afgedwongen met check-constraints die exact
 overeenkomen met [`taxonomie.md`](../domains/gtm/playbooks/taxonomie.md). Wijkt
@@ -59,7 +60,16 @@ structuur domeinoverstijgend. De check-constraint staat voorlopig op alleen
 stille rij met een typefout. Dat is typefoutbescherming en geen principiële
 domeinbeperking; zie `memory/decisions.md`.
 
-**`segment` en `source` mogen NULL zijn.** `NULL` betekent **ongelabeld**: we
+**`agent_recommendations.segment` mag juist NOOIT NULL zijn**, en dat is geen
+inconsistentie met de regel hieronder. Bij een advies is er geen meetgat: de schrijver
+kent zijn eigen scope. Voor een advies dat over alle segmenten gaat is er de expliciete
+waarde `domeinbreed`, vastgelegd in
+[`taxonomie.md`](../domains/gtm/playbooks/taxonomie.md), sectie 6. **Die waarde hoort
+nooit in `gtm_events` of `gtm_objections`:** een aanraking heeft een segment of hij is
+ongelabeld, en zou `domeinbreed` daar belanden, dan staat hij in elke
+segmentrapportage naast de echte segmenten alsof hij er een van is.
+
+**`segment` en `source` in `gtm_events` mogen NULL zijn.** `NULL` betekent **ongelabeld**: we
 weten het niet. Dat is iets anders dan `source = 'direct'`, wat betekent dat er
 aantoonbaar geen bron was. Ongelabelde rijen worden apart geteld en nooit
 verdeeld over de bekende waarden. `meta.labelled` geeft in één boolean aan of
@@ -143,8 +153,9 @@ Er zijn geen eindgebruikers op dit project en er is geen inlog. Komt die er ooit
 wel, dan zijn policies vanaf dat moment verplicht en is deny-by-default niet
 langer voldoende.
 
-De beveiligingscontrole meldt hierover drie regels `rls_enabled_no_policy` op
-niveau INFO. Dat is de bedoelde toestand, geen openstaand punt.
+De beveiligingscontrole meldt hierover **vijf** regels `rls_enabled_no_policy` op
+niveau INFO, één per tabel. Dat is de bedoelde toestand, geen openstaand punt. Het
+aantal loopt mee met het aantal tabellen; bij drie tabellen waren het er drie.
 
 ### Een schema is geen vertrouwensgrens
 

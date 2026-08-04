@@ -20,16 +20,22 @@
 #   zelfde bestand is fout, want dan is er een verwijzing bijgekomen die de
 #   verwijderprocedure niet opruimt.
 #
-# TWEE UITZONDERINGEN, bij ontwerp en niet verborgen
+# DRIE UITZONDERINGEN, bij ontwerp en niet verborgen
 #   memory/decisions.md      Besluiten worden nooit verwijderd, ze vervallen met
 #                            datum. Deze verwijzing blijft dus per definitie
 #                            achter na verwijdering, en dat is de bedoeling.
+#   supabase/migrations/     Een toegepast migratiebestand wordt NOOIT aangepast
+#                            en nooit verwijderd (migratie-proces.md, sectie 1 en
+#                            6). De check-constraints op source_layer noemen de
+#                            laag bij naam, dus die verwijzing blijft ook staan.
+#                            Verwijderen gebeurt met een NIEUWE migratie die de
+#                            constraint dropt, niet door de oude te wissen.
 #   infra/laag-check.sh      Dit script zelf. Het bestaat uitsluitend om deze
 #                            laag te controleren en wordt bij verwijdering
 #                            meeverwijderd (stap 3 van de verwijderprocedure).
 #
-#   Beide staan hieronder in de uitvoer, zodat ze zichtbaar zijn in plaats van
-#   stil weggefilterd. Een uitzondering die je niet ziet, is een gat.
+#   Alle drie staan hieronder in de uitvoer, zodat ze zichtbaar zijn in plaats
+#   van stil weggefilterd. Een uitzondering die je niet ziet, is een gat.
 #
 # Exitcode 0 = beide beweringen gehaald, 1 = minstens een probleem.
 
@@ -42,6 +48,7 @@ cd "$ROOT" || exit 1
 LAAG_DIR="domains/gtm/layers/commercial-doctrine"
 ACTIVERING="clients/qrius/gtm/config.md"
 BESLUITEN="memory/decisions.md"
+MIGRATIES="supabase/migrations"
 DIT_SCRIPT="infra/laag-check.sh"
 
 # Waaraan je een verwijzing naar deze laag herkent: de slug en de Nederlandse
@@ -103,6 +110,15 @@ fi
 BESL="$(printf '%s\n' "$TREFFERS" | grep "^\./${BESLUITEN}:" || true)"
 toon "TOEGESTAAN  ${BESLUITEN} (besluiten worden nooit verwijderd)" "$BESL"
 
+MIGR="$(printf '%s\n' "$TREFFERS" | grep "^\./${MIGRATIES}/" || true)"
+MIGR_N="$(printf '%s' "$MIGR" | grep -c . || true)"
+printf 'TOEGESTAAN  %s/ (%s treffers, een toegepaste migratie wordt nooit gewist)\n' \
+  "$MIGRATIES" "$MIGR_N"
+if [ -n "$MIGR" ]; then
+  printf '%s\n' "$MIGR" | sed 's|^\./|  |' | cut -c1-100
+fi
+printf '\n'
+
 ZELF="$(printf '%s\n' "$TREFFERS" | grep "^\./${DIT_SCRIPT}:" || true)"
 ZELF_N="$(printf '%s' "$ZELF" | grep -c . || true)"
 printf 'TOEGESTAAN  %s (dit script, %s treffers, wordt meeverwijderd)\n\n' \
@@ -113,6 +129,7 @@ REST="$(printf '%s\n' "$TREFFERS" \
   | grep -v "^\./domains/" \
   | grep -v "^\./${ACTIVERING}:" \
   | grep -v "^\./${BESLUITEN}:" \
+  | grep -v "^\./${MIGRATIES}/" \
   | grep -v "^\./${DIT_SCRIPT}:" \
   | grep -v '^$' \
   || true)"
@@ -133,7 +150,7 @@ fi
 
 if [ "$fail" -eq 0 ]; then
   echo "RESULTAAT: beide beweringen gehaald. De laag is verwijderbaar met de"
-  echo "           vijf stappen uit ${LAAG_DIR}/LAYER.md, sectie 7."
+  echo "           zes stappen uit ${LAAG_DIR}/LAYER.md, sectie 7."
 else
   echo "RESULTAAT: minstens een probleem, zie hierboven. Zolang dit faalt is"
   echo "           verwijderbaarheid een belofte en geen eigenschap."

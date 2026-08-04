@@ -269,7 +269,7 @@ alleen te vertrouwen.
 
 ## 7. Verwijderprocedure
 
-Vijf stappen. Daarna houdt de agent identiek gedrag.
+Zes stappen. Daarna houdt de agent identiek gedrag.
 
 1. **Verwijder de regel `commercial-doctrine`** uit de tabel in sectie "Lagen"
    van `clients/<klant>/gtm/config.md`, voor elke klant waar hij staat. Blijft de
@@ -287,26 +287,35 @@ Vijf stappen. Daarna houdt de agent identiek gedrag.
    degradatieregel in de root-`CLAUDE.md`, sectie 3. Een besluit dat spoorloos
    verdwijnt, wordt over een jaar opnieuw genomen. Een besluit dat blijft staan
    zonder notitie, leest als geldend beleid over een laag die er niet meer is.
-5. **Verifieer** dat er niets achterblijft:
+5. **Drop de twee check-constraints op `source_layer`**, in
+   `agent_recommendations` en `agent_blocked_proposals`. Die noemen de laag bij
+   naam. Met een **nieuwe** migratie, niet door de bestaande aan te passen
+   ([`infra/migratie-proces.md`](../../../../infra/migratie-proces.md), sectie 1 en
+   6). **De kolommen en de tabel blijven staan:** een lege kolom is
+   gedragsneutraal, een constraint die naar een verdwenen laag verwijst is dat
+   niet. Zie [`80-meetkoppeling.md`](80-meetkoppeling.md), sectie 7.
+6. **Verifieer** dat er niets achterblijft:
 
    ```
    grep -ril "commercial-doctrine" . --exclude-dir=.git
    ```
 
-   Verwacht: uitsluitend treffers in `memory/decisions.md`. Elke andere treffer
-   is een restant.
+   Verwacht: uitsluitend treffers in `memory/decisions.md` en in
+   `supabase/migrations/`. Beide blijven bij ontwerp staan, want een besluit en een
+   toegepaste migratie worden nooit gewist. Elke andere treffer is een restant.
 
 ### De garantie, en waar hij ophoudt
 
-Na deze vijf stappen is het gedrag identiek aan het gedrag van vóór de laag, om
+Na deze zes stappen is het gedrag identiek aan het gedrag van vóór de laag, om
 vier redenen die alle vier machinaal of per inspectie te controleren zijn:
 
 1. Geen enkel bestand onder `domains/` verwijst naar de laag. Dit wordt getest,
    zie `infra/laag-check.sh`.
-2. **Er zijn precies drie verwijzingen van buiten, en de procedure handelt alle
-   drie af.** Het activeringsblok verdwijnt (stap 1), het checkscript verdwijnt
-   (stap 3), en de besluiten blijven staan met een statusnotitie (stap 4). Geen
-   vierde: dat is wat de check afdwingt.
+2. **Er zijn precies vier verwijzingen van buiten, en de procedure handelt ze alle
+   vier af.** Het activeringsblok verdwijnt (stap 1), het checkscript verdwijnt
+   (stap 3), de besluiten blijven staan met een statusnotitie (stap 4), en het
+   migratiebestand blijft staan terwijl de constraints die de laag bij naam noemen
+   worden gedropt (stap 5). Geen vijfde: dat is wat de check afdwingt.
 3. Geen grens die als projectie is gemarkeerd ontstaat hier, dus verwijderen
    heft die beperking niet op. Voor de twee laag-eigen grenzen geldt dat niet, en
    dat staat per grens in [`99-grenzen.md`](99-grenzen.md). Uitsluitingen zijn
@@ -346,7 +355,7 @@ gedragsneutraal, een constraint die naar een verdwenen laag verwijst is dat niet
 | [`50-betaalstructuur.md`](50-betaalstructuur.md) | betaalsplitsing, factuurritme, ankeren als techniek | B |
 | [`60-acquisitiemath.md`](60-acquisitiemath.md) | levensduurmarge tegen acquisitiekosten, terugverdientijd | B |
 | [`70-gespreksstructuur.md`](70-gespreksstructuur.md) | zes stappen, bezwaren op de canonieke codes | B |
-| [`80-meetkoppeling.md`](80-meetkoppeling.md) | voorspelling, verdict en blokkades. **Voorstel, nog niet gebouwd** | C |
+| [`80-meetkoppeling.md`](80-meetkoppeling.md) | voorspelling, verdict en blokkades. Gebouwd en toegepast 2026-08-04 | C |
 
 Genummerd per tiental zodat er tussengevoegd kan worden zonder te hernummeren.
 Hernummeren breekt de verwijzingen in de intensiteitsschijf.
